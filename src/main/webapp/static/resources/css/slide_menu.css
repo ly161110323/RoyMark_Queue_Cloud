@@ -1,0 +1,26 @@
+#slideMenu,.slideMenu{
+	position: absolute;
+	background-color: white;
+	border:1px solid black;
+	font: normal 12px Verdana;
+	line-height: 18px;
+	z-index: 100;
+	width:300px;
+	left: 40px;
+}
+
+.left-window{
+	width: 100%;
+	background-color: #CCCCCC;
+	line-height: 22px;
+	text-align: center;
+}
+
+.right-window{
+	font-size: 14px;
+	color: #ffffff;
+	background-color: #70b734;
+	line-width: 50px;
+	text-align: center;
+	font-weight: bold;
+}

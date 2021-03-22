@@ -1,0 +1,62 @@
+/*信息一览分页行样式*/
+/*周金庭　2010-1-19*/
+.pagination {
+	margin: 0px 0px 5px 0px;
+	padding: 5px 10px 5px 13px;
+	height: 25px;
+	background-color: #EBEFF2;
+	width: 100%;
+	text-align:right;
+}
+td.pagination{
+	text-align:right;
+}
+.pagination ul {
+	margin: 0;
+	padding: 0;
+	font-size: 18px;
+	
+}
+
+.pagination li {
+	list-style-type: none;
+	display: inline;
+	
+	margin:0px;
+}
+
+.pagination a,.pagination a:visited {
+	padding: 3px 7px;
+	border: 1px solid #9aafe5;
+	text-decoration: none;
+	color: #2e6ab1;
+}
+
+.pagination input {
+	font-size: 12px;
+	color: #330066;
+	width: 25px;
+}
+
+.pagination a:hover,.pagination a:active {
+	border: 1px solid #2b66a5;
+	color: #000;
+	background-color: lightyellow;
+}
+
+.pagination li form {
+	margin: 0px;
+	display: inline;
+}
+
+input.pagesubmit {
+	width: 82px;
+}
+
+.pagination  li.disablepage{
+	padding: 3px 7px;
+	border: 1px solid #ccc;
+	color: #777;
+	margin-right:5px;
+}
+

@@ -1,0 +1,309 @@
+[2020-01-10 17:19:45] DEBUG 137 statementLog - {conn-10001, pstmt-20000} executed. select WebAccount_Ls as webaccountLs, WebAccount_Code as webaccountCode, WebAccount_Name as webaccountName, WebAccount_Name_PY as webaccountNamePy, WebAccount_LogIn as webaccountLogin
+	, WebAccount_Password as webaccountPassword, Employee_Ls as employeeLs, Case_Ls as caseLs, WebAccount_Image as webaccountImage, WebAccount_Text as webaccountText
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, WebAccount_ShowNo as webaccountShowno
+from hospitalqueue_webaccount
+where WebAccount_LogIn = 'roymarkadmin'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20001} executed. select Case_Ls as caseLs, Case_Id as caseId, Case_Name as caseName, Case_Name_PY as caseNamePy, Case_IsDefault as caseIsdefault
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, Case_ShowNo as caseShowno
+from hospitalqueue_case
+where Case_IsDefault = '1'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20002} executed. select Menu_Ls as menuLs, Menu_Code as menuCode, Menu_Name as menuName, Menu_Name_PY as menuNamePy, Menu_Level as menuLevel
+	, Menu_Up as menuUp, Menu_IsShow as menuIsshow, Menu_IsNewWindow as menuIsnewwindow, Menu_Url as menuUrl, Menu_ShowNo as menuShowno
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, Menu_ImagePath as menuImagepath
+from hospitalqueue_menuinfo
+where Menu_IsShow = '1'
+	and status = '1'
+order by Menu_ShowNo asc
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105002345860'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105002838737'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003159613'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003536184'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003606876'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003331804'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003440170'
+[2020-01-10 17:20:02] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003503389'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191106163151417'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191225165637329'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003645843'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003709342'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003751087'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191105003819413'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191121090844937'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191121090910570'
+[2020-01-10 17:20:03] DEBUG 137 statementLog - {conn-10001, pstmt-20003} executed. select count(1)
+from hospitalqueue_menuinfo
+where Status = '1'
+	and Menu_IsShow = '1'
+	and Menu_Up = '20191121090933461'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10001, pstmt-20004} executed. select TerminalGroup_Ls as terminalgroupLs, Case_Ls as caseLs, TerminalGroup_Name as terminalgroupName, TerminalGroup_Code as terminalgroupCode, TerminalGroup_Text as terminalgroupText
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, TerminalGroup_ShowNo as terminalgroupShowno, TerminalGroup_Name_PY as terminalgroupNamePy
+from hospitalqueue_terminalgroup
+where Status = '1'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10001, pstmt-20005} executed. select DictionaryType_Ls as dictionarytypeLs, DictionaryType_Id as dictionarytypeId, DictionaryType_Name as dictionarytypeName, DictionaryType_Name_PY as dictionarytypeNamePy, DictionaryType_IsShow as dictionarytypeIsshow
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, DictionaryType_ShowNo as dictionarytypeShowno
+from hospitalqueue_dictionarytype
+where DictionaryType_Name = '÷’∂À¿‡–Õ'
+	and DictionaryType_IsShow = '1'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10001, pstmt-20006} executed. select Case_Ls as caseLs, Case_Id as caseId, Case_Name as caseName, Case_Name_PY as caseNamePy, Case_IsDefault as caseIsdefault
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, Case_ShowNo as caseShowno
+from hospitalqueue_case
+where Status = '1'
+	and Case_IsDefault = '1'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10002, pstmt-20007} executed. select Case_Ls as caseLs, Case_Id as caseId, Case_Name as caseName, Case_Name_PY as caseNamePy, Case_IsDefault as caseIsdefault
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, Case_ShowNo as caseShowno
+from hospitalqueue_case
+where Status = '1'
+	and Case_IsDefault = '1'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10001, pstmt-20008} executed. select BasicCase_Ls as basiccaseLs, BasicCase_Name as basiccaseName, Case_Ls as caseLs, DefaultRun_Type as defaultrunType, DefaultExe_Name as defaultexeName
+	, DefaultFile_Type as defaultfileType, DefaultFile_Path as defaultfilePath, Is_UsePptPlayer as isUsepptplayer, PptPlayer_Path as pptplayerPath, VideoPlayer_Type as videoplayerType
+	, Is_SupportSelect as isSupportselect, ResumePlay_Time as resumeplayTime, Play_Type as playType, Start_X as startX, Start_Y as startY
+	, Play_Width as playWidth, Play_Height as playHeight, SplitPlay_Width as splitplayWidth, Com1_State as com1State, Com1_BaudRate as com1Baudrate
+	, Com1_DataBit as com1Databit, Com1_ParityCheckDigit as com1Paritycheckdigit, Com1_StopBit as com1Stopbit, Com1_OpenProjector as com1Openprojector, Com1_CloseProjector as com1Closeprojector
+	, Com2_State as com2State, Com2_BaudRate as com2Baudrate, Com2_DataBit as com2Databit, Com2_ParityCheckDigit as com2Paritycheckdigit, Com2_StopBit as com2Stopbit
+	, Com2_OpenProjector as com2Openprojector, Com2_CloseProjector as com2Closeprojector, Com3_State as com3State, Com3_BaudRate as com3Baudrate, Com3_DataBit as com3Databit
+	, Com3_ParityCheckDigit as com3Paritycheckdigit, Com3_StopBit as com3Stopbit, Com3_OpenProjector as com3Openprojector, Com3_CloseProjector as com3Closeprojector, Com4_State as com4State
+	, Com4_BaudRate as com4Baudrate, Com4_DataBit as com4Databit, Com4_ParityCheckDigit as com4Paritycheckdigit, Com4_StopBit as com4Stopbit, Com4_OpenProjector as com4Openprojector
+	, Com4_CloseProjector as com4Closeprojector, Com5_State as com5State, Com5_BaudRate as com5Baudrate, Com5_DataBit as com5Databit, Com5_ParityCheckDigit as com5Paritycheckdigit
+	, Com5_StopBit as com5Stopbit, Com5_OpenProjector as com5Openprojector, Com5_CloseProjector as com5Closeprojector, Com6_State as com6State, Com6_BaudRate as com6Baudrate
+	, Com6_DataBit as com6Databit, Com6_ParityCheckDigit as com6Paritycheckdigit, Com6_StopBit as com6Stopbit, Com6_OpenProjector as com6Openprojector, Com6_CloseProjector as com6Closeprojector
+	, Com7_State as com7State, Com7_BaudRate as com7Baudrate, Com7_DataBit as com7Databit, Com7_ParityCheckDigit as com7Paritycheckdigit, Com7_StopBit as com7Stopbit
+	, Com7_OpenProjector as com7Openprojector, Com7_CloseProjector as com7Closeprojector, Com8_State as com8State, Com8_BaudRate as com8Baudrate, Com8_DataBit as com8Databit
+	, Com8_ParityCheckDigit as com8Paritycheckdigit, Com8_StopBit as com8Stopbit, Com8_OpenProjector as com8Openprojector, Com8_CloseProjector as com8Closeprojector, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+from hospitalqueue_basiccase
+where Status = '1'
+	and Case_Ls = 'Case1001'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10002, pstmt-20009} executed. select Dictionary_Ls as dictionaryLs, Dictionary_Id as dictionaryId, Dictionary_Name as dictionaryName, Dictionary_Name_PY as dictionaryNamePy, Dictionarytype_Ls as dictionarytypeLs
+	, Case_Ls as caseLs, Dictionary_IsShow as dictionaryIsshow, Dictionary_Parameter_1 as dictionaryParameter1, Dictionary_Parameter_2 as dictionaryParameter2, Dictionary_Parameter_3 as dictionaryParameter3
+	, Dictionary_Parameter_4 as dictionaryParameter4, Dictionary_Parameter_5 as dictionaryParameter5, Dictionary_Parameter_6 as dictionaryParameter6, Dictionary_Parameter_7 as dictionaryParameter7, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Dictionary_ShowNo as dictionaryShowno
+from hospitalqueue_dictionary
+where Dictionarytype_Ls = '20191105100147353'
+	and Case_Ls = 'Case1001'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10003, pstmt-20010} executed. SELECT COUNT(1) FROM hospitalqueue_terminal t LEFT JOIN hospitalqueue_terminalgroup tg ON t.TerminalGroupID = tg.TerminalGroup_Ls LEFT JOIN hospitalqueue_basiccase b ON t.BasicCase_Ls = b.BasicCase_Ls LEFT JOIN hospitalqueue_dictionary d ON t.SelectTerminal = d.Dictionary_Ls WHERE t.Status = '1'
+[2020-01-10 17:20:05] DEBUG 137 statementLog - {conn-10003, pstmt-20011} executed. select t.Terminal_Ls, t.Case_Ls, t.TerminalID, t.TerminalName, t.BasicCase_Ls
+	, t.TerminalIP, t.TerminalMac, t.SelectTerminal, t.TerminalGroupID, t.Create_User
+	, t.Create_Time, t.Update_User, t.Update_Time, t.Status, t.Terminal_FilePath
+	, t.Terminal_IsPowerUp, t.Terminal_IsReStart, t.LastExeUpdate_Time, t.TerminalName_PY, t.Terminal_ShowNo
+	, tg.TerminalGroup_Name, b.BasicCase_Name, d.Dictionary_Name
+from hospitalqueue_terminal t
+	left join hospitalqueue_terminalgroup tg on t.TerminalGroupID = tg.TerminalGroup_Ls
+	left join hospitalqueue_basiccase b on t.BasicCase_Ls = b.BasicCase_Ls
+	left join hospitalqueue_dictionary d on t.SelectTerminal = d.Dictionary_Ls
+where t.Status = '1'
+limit 0, 10
+[2020-01-10 17:20:13] DEBUG 137 statementLog - {conn-10003, pstmt-20012} executed. select DictionaryType_Ls as dictionarytypeLs, DictionaryType_Id as dictionarytypeId, DictionaryType_Name as dictionarytypeName, DictionaryType_Name_PY as dictionarytypeNamePy, DictionaryType_IsShow as dictionarytypeIsshow
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, DictionaryType_ShowNo as dictionarytypeShowno
+from hospitalqueue_dictionarytype
+where DictionaryType_Id = 'ShowExe'
+	or DictionaryType_Id = 'ServiceExe'
+[2020-01-10 17:20:13] DEBUG 137 statementLog - {conn-10003, pstmt-20013} executed. select Dictionary_Ls as dictionaryLs, Dictionary_Id as dictionaryId, Dictionary_Name as dictionaryName, Dictionary_Name_PY as dictionaryNamePy, Dictionarytype_Ls as dictionarytypeLs
+	, Case_Ls as caseLs, Dictionary_IsShow as dictionaryIsshow, Dictionary_Parameter_1 as dictionaryParameter1, Dictionary_Parameter_2 as dictionaryParameter2, Dictionary_Parameter_3 as dictionaryParameter3
+	, Dictionary_Parameter_4 as dictionaryParameter4, Dictionary_Parameter_5 as dictionaryParameter5, Dictionary_Parameter_6 as dictionaryParameter6, Dictionary_Parameter_7 as dictionaryParameter7, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Dictionary_ShowNo as dictionaryShowno
+from hospitalqueue_dictionary
+where Status = '1'
+	and Dictionary_IsShow = '1'
+	and Dictionarytype_Ls = '20191105004948253'
+[2020-01-10 17:20:13] DEBUG 137 statementLog - {conn-10001, pstmt-20014} executed. SELECT COUNT(1) FROM hospitalqueue_execase e LEFT JOIN hospitalqueue_dictionary d ON e.ExeType = d.Dictionary_Ls LEFT JOIN hospitalqueue_case c ON e.Case_Ls = c.Case_Ls WHERE e.`Status` = '1'
+[2020-01-10 17:20:13] DEBUG 137 statementLog - {conn-10001, pstmt-20015} executed. select e.ExeCase_Ls, e.Case_Ls, e.ExeCase_Id, e.ExeCase_Name, e.ExeCase_Help
+	, e.ExeType, e.Create_User, e.Create_Time, e.Update_User, e.Update_Time
+	, e.Status, e.ExeCase_Name_PY, e.ExeCase_ShowNo, d.Dictionary_Name, c.Case_Name
+from hospitalqueue_execase e
+	left join hospitalqueue_dictionary d on e.ExeType = d.Dictionary_Ls
+	left join hospitalqueue_case c on e.Case_Ls = c.Case_Ls
+where e.`Status` = '1'
+order by e.ExeCase_ShowNo
+limit 0, 10
+[2020-01-10 17:20:13] DEBUG 137 statementLog - {conn-10003, pstmt-20013} executed. select Dictionary_Ls as dictionaryLs, Dictionary_Id as dictionaryId, Dictionary_Name as dictionaryName, Dictionary_Name_PY as dictionaryNamePy, Dictionarytype_Ls as dictionarytypeLs
+	, Case_Ls as caseLs, Dictionary_IsShow as dictionaryIsshow, Dictionary_Parameter_1 as dictionaryParameter1, Dictionary_Parameter_2 as dictionaryParameter2, Dictionary_Parameter_3 as dictionaryParameter3
+	, Dictionary_Parameter_4 as dictionaryParameter4, Dictionary_Parameter_5 as dictionaryParameter5, Dictionary_Parameter_6 as dictionaryParameter6, Dictionary_Parameter_7 as dictionaryParameter7, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Dictionary_ShowNo as dictionaryShowno
+from hospitalqueue_dictionary
+where Status = '1'
+	and Dictionary_IsShow = '1'
+	and Dictionarytype_Ls = '20191105014129624'
+[2020-01-10 17:20:14] DEBUG 137 statementLog - {conn-10003, pstmt-20016} executed. SELECT COUNT(1) FROM hospitalqueue_webaccount w LEFT JOIN hospitalqueue_case c ON w.Case_Ls = c.Case_Ls LEFT JOIN hospitalqueue_employee e ON w.Employee_Ls = e.Employee_Ls WHERE w.Status = '1'
+[2020-01-10 17:20:14] DEBUG 137 statementLog - {conn-10003, pstmt-20017} executed. select w.WebAccount_Ls, w.WebAccount_Code, w.WebAccount_Name, w.WebAccount_Name_PY, w.WebAccount_LogIn
+	, w.WebAccount_Password, w.Employee_Ls, w.Case_Ls, w.WebAccount_Image, w.WebAccount_Text
+	, w.Create_User, w.Create_Time, w.Update_User, w.Update_Time, w.Status
+	, w.WebAccount_ShowNo, c.Case_Name, e.Employee_Name
+from hospitalqueue_webaccount w
+	left join hospitalqueue_case c on w.Case_Ls = c.Case_Ls
+	left join hospitalqueue_employee e on w.Employee_Ls = e.Employee_Ls
+where w.Status = '1'
+limit 0, 10
+[2020-01-10 17:20:15] DEBUG 137 statementLog - {conn-10003, pstmt-20018} executed. select count(1)
+from hospitalqueue_roleinfo
+where Status = '1'
+[2020-01-10 17:20:15] DEBUG 137 statementLog - {conn-10003, pstmt-20019} executed. select Role_Ls as roleLs, Role_Code as roleCode, Role_Name as roleName, Role_Name_PY as roleNamePy, Role_IsShow as roleIsshow
+	, Role_Text as roleText, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime
+	, Status, Role_ShowNo as roleShowno
+from hospitalqueue_roleinfo
+where Status = '1'
+limit 0, 10
+[2020-01-10 17:20:17] DEBUG 137 statementLog - {conn-10003, pstmt-20020} executed. select count(1)
+from hospitalqueue_exeuploadlog
+where ExeUploadLog_ExeType in ('1', '2', '3', '4')
+	and Status = '1'
+[2020-01-10 17:20:17] DEBUG 137 statementLog - {conn-10003, pstmt-20021} executed. select ExeUploadLog_Ls as exeuploadlogLs, Case_Ls as caseLs, ExeUploadLog_DateTime as exeuploadlogDatetime, ExeUploadLog_Version as exeuploadlogVersion, ExeUploadLog_ExeType as exeuploadlogExetype
+	, ExeUploadLog_WebAccount as exeuploadlogWebaccount, ExeUpload_Path as exeuploadPath, Status
+from hospitalqueue_exeuploadlog
+where ExeUploadLog_ExeType in ('1', '2', '3', '4')
+	and Status = '1'
+order by ExeUploadLog_DateTime desc
+limit 0, 10
+[2020-01-10 17:20:18] DEBUG 137 statementLog - {conn-10003, pstmt-20022} executed. select count(1)
+from hospitalqueue_exeuploadlog
+where Status = '1'
+	and ExeUploadLog_ExeType = 'ShowExe_Pharmacy_Clinic_Android'
+[2020-01-10 17:20:18] DEBUG 137 statementLog - {conn-10003, pstmt-20023} executed. select ExeUploadLog_Ls as exeuploadlogLs, Case_Ls as caseLs, ExeUploadLog_DateTime as exeuploadlogDatetime, ExeUploadLog_Version as exeuploadlogVersion, ExeUploadLog_ExeType as exeuploadlogExetype
+	, ExeUploadLog_WebAccount as exeuploadlogWebaccount, ExeUpload_Path as exeuploadPath, Status
+from hospitalqueue_exeuploadlog
+where Status = '1'
+	and ExeUploadLog_ExeType = 'ShowExe_Pharmacy_Clinic_Android'
+order by ExeUploadLog_DateTime desc
+limit 0, 10
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10003, pstmt-20024} executed. select DictionaryType_Ls as dictionarytypeLs, DictionaryType_Id as dictionarytypeId, DictionaryType_Name as dictionarytypeName, DictionaryType_Name_PY as dictionarytypeNamePy, DictionaryType_IsShow as dictionarytypeIsshow
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, DictionaryType_ShowNo as dictionarytypeShowno
+from hospitalqueue_dictionarytype
+where DictionaryType_Id = 'Department_Type'
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10001, pstmt-20025} executed. select DictionaryType_Ls as dictionarytypeLs, DictionaryType_Id as dictionarytypeId, DictionaryType_Name as dictionarytypeName, DictionaryType_Name_PY as dictionarytypeNamePy, DictionaryType_IsShow as dictionarytypeIsshow
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, DictionaryType_ShowNo as dictionarytypeShowno
+from hospitalqueue_dictionarytype
+where DictionaryType_Id = 'Department_Type'
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10002, pstmt-20026} executed. select Department_Ls as departmentLs, Department_Name as departmentName, Department_Name_PY as departmentNamePy, Up_Department as upDepartment, Department_Id as departmentId
+	, Case_Ls as caseLs, Department_Type as departmentType, Is_Diversion as isDiversion, Department_Level as departmentLevel, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Department_ShowNo as departmentShowno
+	, Department_Print as departmentPrint
+from hospitalqueue_department
+where Status = '1'
+	and Department_Level = 1
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10003, pstmt-20028} executed. select Dictionary_Ls as dictionaryLs, Dictionary_Id as dictionaryId, Dictionary_Name as dictionaryName, Dictionary_Name_PY as dictionaryNamePy, Dictionarytype_Ls as dictionarytypeLs
+	, Case_Ls as caseLs, Dictionary_IsShow as dictionaryIsshow, Dictionary_Parameter_1 as dictionaryParameter1, Dictionary_Parameter_2 as dictionaryParameter2, Dictionary_Parameter_3 as dictionaryParameter3
+	, Dictionary_Parameter_4 as dictionaryParameter4, Dictionary_Parameter_5 as dictionaryParameter5, Dictionary_Parameter_6 as dictionaryParameter6, Dictionary_Parameter_7 as dictionaryParameter7, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Dictionary_ShowNo as dictionaryShowno
+from hospitalqueue_dictionary
+where Status = '1'
+	and Dictionary_IsShow = '1'
+	and Dictionarytype_Ls = '20191105012304352'
+order by Dictionary_ShowNo asc
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10001, pstmt-20027} executed. select Dictionary_Ls as dictionaryLs, Dictionary_Id as dictionaryId, Dictionary_Name as dictionaryName, Dictionary_Name_PY as dictionaryNamePy, Dictionarytype_Ls as dictionarytypeLs
+	, Case_Ls as caseLs, Dictionary_IsShow as dictionaryIsshow, Dictionary_Parameter_1 as dictionaryParameter1, Dictionary_Parameter_2 as dictionaryParameter2, Dictionary_Parameter_3 as dictionaryParameter3
+	, Dictionary_Parameter_4 as dictionaryParameter4, Dictionary_Parameter_5 as dictionaryParameter5, Dictionary_Parameter_6 as dictionaryParameter6, Dictionary_Parameter_7 as dictionaryParameter7, Create_User as createUser
+	, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status, Dictionary_ShowNo as dictionaryShowno
+from hospitalqueue_dictionary
+where Status = '1'
+	and Dictionary_IsShow = '1'
+	and Dictionarytype_Ls = '20191105012304352'
+order by Dictionary_ShowNo asc
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10002, pstmt-20029} executed. SELECT COUNT(1) FROM hospitalqueue_department d LEFT JOIN hospitalqueue_dictionary d2 ON d.Department_Type = d2.Dictionary_Ls WHERE d.Status = '1'
+[2020-01-10 17:20:21] DEBUG 137 statementLog - {conn-10002, pstmt-20030} executed. select d.Department_Ls, d.Department_Name, d.Department_Name_PY, d.Up_Department, d.Department_Id
+	, d.Case_Ls, d.Department_Type, d.Is_Diversion, d.Department_Level, d.Create_User
+	, d.Create_Time, d.Update_User, d.Update_Time, d.Status, d.Department_Showno
+	, d.Department_Print, d2.Dictionary_Ls, d2.Dictionary_Name
+from hospitalqueue_department d
+	left join hospitalqueue_dictionary d2 on d.Department_Type = d2.Dictionary_Ls
+where d.Status = '1'
+limit 0, 10
+[2020-01-10 17:20:22] DEBUG 137 statementLog - {conn-10002, pstmt-20031} executed. select count(1)
+from hospitalqueue_pharmacyconsulting
+where Status = '1'
+[2020-01-10 17:20:22] DEBUG 137 statementLog - {conn-10002, pstmt-20032} executed. select PharmacyConsulting_Ls as pharmacyconsultingLs, PharmacyConsulting_Name as pharmacyconsultingName, PharmacyConsulting_Name_PY as pharmacyconsultingNamePy, PharmacyConsulting_No as pharmacyconsultingNo, Case_Ls as caseLs
+	, PharmacyConsulting_Status as pharmacyconsultingStatus, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime
+	, Status, PharmacyConsulting_ShowNo as pharmacyconsultingShowno, PharmacyConsulting_TerminalExeConfig as pharmacyconsultingTerminalexeconfig
+from hospitalqueue_pharmacyconsulting
+where Status = '1'
+limit 0, 10
+[2020-01-10 17:20:28] DEBUG 137 statementLog - {conn-10002, pstmt-20033} executed. select DictionaryType_Ls as dictionarytypeLs, DictionaryType_Id as dictionarytypeId, DictionaryType_Name as dictionarytypeName, DictionaryType_Name_PY as dictionarytypeNamePy, DictionaryType_IsShow as dictionarytypeIsshow
+	, Create_User as createUser, Create_Time as createTime, Update_User as updateUser, Update_Time as updateTime, Status
+	, DictionaryType_ShowNo as dictionarytypeShowno
+from hospitalqueue_dictionarytype
+where Status = '1'
+	and DictionaryType_IsShow = '1'
+[2020-01-10 17:20:28] DEBUG 137 statementLog - {conn-10003, pstmt-20034} executed. SELECT COUNT(1) FROM hospitalqueue_dictionary d LEFT JOIN hospitalqueue_dictionarytype dt ON d.Dictionarytype_Ls = dt.DictionaryType_Ls LEFT JOIN hospitalqueue_case c ON d.Case_Ls = c.Case_Ls WHERE d.`Status` = '1'
+[2020-01-10 17:20:28] DEBUG 137 statementLog - {conn-10003, pstmt-20035} executed. select d.Dictionary_Ls, d.Dictionary_Id, d.Dictionary_Name, d.Dictionary_Name_PY, d.Dictionarytype_Ls
+	, dt.DictionaryType_Name, d.Case_Ls, c.Case_Name, d.Dictionary_IsShow, d.Dictionary_Parameter_1
+	, d.Dictionary_Parameter_2, d.Dictionary_Parameter_3, d.Dictionary_Parameter_4, d.Dictionary_Parameter_5, d.Dictionary_Parameter_6
+	, d.Dictionary_Parameter_7, d.Create_User, d.Create_Time, d.Update_User, d.Update_Time
+	, d.Status, d.Dictionary_ShowNo
+from hospitalqueue_dictionary d
+	left join hospitalqueue_dictionarytype dt on d.Dictionarytype_Ls = dt.DictionaryType_Ls
+	left join hospitalqueue_case c on d.Case_Ls = c.Case_Ls
+where d.`Status` = '1'
+order by d.Dictionarytype_Ls, d.Dictionary_ShowNo
+limit 0, 10
