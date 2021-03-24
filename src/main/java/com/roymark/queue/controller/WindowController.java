@@ -17,7 +17,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/window")
 public class WindowController {
 
-private static final Logger logger = LogManager.getLogger(WindowController.class);
+	private static final Logger logger = LogManager.getLogger(WindowController.class);
     
 	@Autowired
     private WindowService windowSerivce;

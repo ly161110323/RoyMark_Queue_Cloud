@@ -16,7 +16,7 @@ import net.sf.json.JSONObject;
 @RestController
 @RequestMapping("/user")
 public class ServerController {
-private static final Logger logger = LogManager.getLogger(ServerController.class);
+	private static final Logger logger = LogManager.getLogger(ServerController.class);
     
 	@Autowired
     private ServerService serverSerivce;
