@@ -97,20 +97,21 @@
             	layer.alert("所属大厅不能为空!");
             	return false;
             }
-		    var url="${ctx}/webaccount/login";
+		    var url="${ctx}/test/test1";
             $.ajax({
 
-                type:"POST",
+                type:"GET",
                 //提交的网址
                 url:url,
                 //提交的数据   该参数为属性值类型的参数
-                data:{loginId:username,passWord:pwd,"areaLs":areaLs},
+                data:{},
                 //返回数据的格式
                 dataType: "json",
 
                 success:function(data){
                     // console.log("data:"+JSON.stringify(data));
                     // console.log("data result:"+data.result);
+                console.log(data);
 				if(data.result=='success')
                 {
                     var indexUrl="${ctx}/page/manage/index.jsp";

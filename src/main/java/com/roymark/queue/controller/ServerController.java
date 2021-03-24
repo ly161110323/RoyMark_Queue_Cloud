@@ -14,7 +14,7 @@ import com.roymark.queue.service.ServerService;
 import net.sf.json.JSONObject;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/server")
 public class ServerController {
 	private static final Logger logger = LogManager.getLogger(ServerController.class);
     

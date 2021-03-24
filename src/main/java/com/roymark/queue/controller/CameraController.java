@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roymark.queue.entity.Camera;
-import com.roymark.queue.entity.Server;
 import com.roymark.queue.service.CameraService;
-import com.roymark.queue.service.ServerService;
 
 import net.sf.json.JSONObject;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/camera")
 public class CameraController {
 private static final Logger logger = LogManager.getLogger(CameraController.class);
     

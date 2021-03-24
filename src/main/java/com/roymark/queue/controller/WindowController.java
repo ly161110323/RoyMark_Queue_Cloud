@@ -24,6 +24,7 @@ public class WindowController {
 	
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllWindows() {
+		System.out.println("fuck");
 		JSONObject jsonObject = new JSONObject();
 	
 		try {
