@@ -2,6 +2,7 @@ package com.roymark.queue.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ private static final Logger logger = LogManager.getLogger(CameraController.class
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			boolean result = cameraService.update(camera, null);
+			boolean result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getId, camera.getId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 				return jsonObject;

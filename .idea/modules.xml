@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/RoyMark_Queue_Cloud.iml" filepath="$PROJECT_DIR$/RoyMark_Queue_Cloud.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/roymark_cloud_oldversion.iml" filepath="$PROJECT_DIR$/.idea/roymark_cloud_oldversion.iml" />
     </modules>
   </component>

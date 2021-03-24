@@ -2,6 +2,7 @@ package com.roymark.queue.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			boolean result = serverSerivce.update(server, null);
+			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getId, server.getId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 				return jsonObject;

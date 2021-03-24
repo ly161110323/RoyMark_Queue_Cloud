@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +131,7 @@ public class UserController {
 			if (tempUser.getPwd() != null) {
 				tempUser.setPwd(Md5Util.EncoderByMd5(tempUser.getPwd()));
 			}
-			boolean result = userSerivce.update(tempUser, new QueryWrapper<User>(tempUser));
+			boolean result = userSerivce.update(tempUser, Wrappers.<User>lambdaUpdate().eq(User::getId, tempUser.getId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 			} else {

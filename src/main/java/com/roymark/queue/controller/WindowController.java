@@ -1,7 +1,10 @@
 package com.roymark.queue.controller;
 
+import java.sql.Wrapper;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +68,9 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			boolean result = windowSerivce.update(window, null);
+			// boolean result = windowSerivce.update(window, new UpdateWrapper<Window>().eq("window_id", window.getId()));
+			boolean result = windowSerivce.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getId, window.getId()));
+
 			if (result) {
 				jsonObject.put("result", "ok");
 				return jsonObject;
