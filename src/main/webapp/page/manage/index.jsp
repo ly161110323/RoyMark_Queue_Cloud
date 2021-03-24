@@ -66,19 +66,19 @@
 		<div class="sidebar-collapse">
 			<ul class="nav" id="side-menu">
 				<%--树状菜单开始--%>
-					<li title="请选择办事大厅">
+					<li title="图像服务器管理">
 						<a href="#">
 						<i class="layui-icon layui-icon-1">
 							<img style="margin-top: 3;" src="${ctx}/resources/images/m.png">
 						</i>
-						<span class="nav-label">请选择办事大厅</span>
+						<span class="nav-label">图像服务器管理</span>
 						<span class="fa arrow"></span>
 						</a>
-					<ul class="nav nav-second-level">
-						<div style="padding-left: 32px;">
-							<ul id="indextree" class="ztree"></ul>
-						</div>
-					</ul>
+<%--					<ul class="nav nav-second-level">--%>
+<%--						<div style="padding-left: 32px;">--%>
+<%--							<ul id="indextree" class="ztree"></ul>--%>
+<%--						</div>--%>
+<%--					</ul>--%>
 					</li>
 				<%--树状菜单结束--%>
 				<c:forEach items="${sessionScope.menuList}" var="item">
