@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Data
 @TableName(value = "abnomaly")
@@ -21,10 +21,16 @@ public class Abnomaly  implements Serializable {
     @TableField(value = "abnomaly_event")
     private String event;
 
-    @TableField(value = "abnomaly_date")
-    private Date date;
+    @TableField(value = "abnomaly_start_date")
+    private Timestamp startDate;
+    
+    @TableField(value = "abnomaly_end_date")
+    private Timestamp endDate;
 
-    @TableField(value = "abnomaly_link")
+    @TableField(value = "abnomaly_confidence")
+    private double confidence;
+
+	@TableField(value = "abnomaly_link")
     private String Link;
 
     @TableField(value = "window_id")
@@ -49,12 +55,29 @@ public class Abnomaly  implements Serializable {
 		this.event = event;
 	}
 
-	public Date getDate() {
-		return date;
+
+	public Timestamp getStartDate() {
+		return startDate;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setStartDate(Timestamp startDate) {
+		this.startDate = startDate;
+	}
+
+	public Timestamp getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Timestamp endDate) {
+		this.endDate = endDate;
+	}
+
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
 	}
 
 	public String getLink() {

@@ -1,6 +1,5 @@
 package com.roymark.queue.controller;
 
-import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.roymark.queue.entity.User;
 import com.roymark.queue.service.UserService;
-import com.roymark.queue.util.GetDataLs;
 import com.roymark.queue.util.GetLoginIp;
 import com.roymark.queue.util.Md5Util;
 import com.roymark.queue.util.UploadUtil;
@@ -31,7 +29,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/user")
 public class UserController {
 
-	private static final Logger logger = LogManager.getLogger(QueueAreaController.class);
+	private static final Logger logger = LogManager.getLogger(UserController.class);
     
 	@Autowired
     private UserService userSerivce;
