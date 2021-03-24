@@ -97,7 +97,7 @@
             	layer.alert("所属大厅不能为空!");
             	return false;
             }
-		    var url="${ctx}/test/test1";
+		    var url="${ctx}/window/getAll";
             $.ajax({
 
                 type:"GET",
