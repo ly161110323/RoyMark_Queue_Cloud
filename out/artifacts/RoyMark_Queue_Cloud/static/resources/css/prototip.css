@@ -1,0 +1,99 @@
+.tooltip {
+color:#FFFFFF;
+width:150px;
+}
+.tooltip .title {
+-x-system-font:none;
+background:#0F6788 none repeat scroll 0 0;
+font-family:Georgia,serif;
+font-size:17px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:italic;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:5px;
+}
+.tooltip .content {
+-x-system-font:none;
+background:dodgerblue none repeat scroll 0 0;
+font-family:Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:5px;
+}
+.pinktip {
+border:5px solid #A1A1A1;
+}
+.pinktip .title {
+-x-system-font:none;
+background:#FF1E53 none repeat scroll 0 0;
+color:#FFFFFF;
+font-family:Georgia,serif;
+font-size:17px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:italic;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:5px;
+}
+.pinktip .content {
+background:#FFFFFF none repeat scroll 0 0;
+color:#555555;
+padding:5px;
+}
+.darktip {
+width:200px;
+}
+.darktip .title, .darktip .content {
+border:5px solid #999999;
+padding:5px;
+}
+.darktip .title {
+-x-system-font:none;
+background:#606060 none repeat scroll 0 0;
+border-bottom:medium none;
+color:#FFFFFF;
+font-family:Georgia,serif;
+font-size:17px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:italic;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+}
+.darktip .content {
+-x-system-font:none;
+background:#808080 none repeat scroll 0 0;
+border-top:medium none;
+color:#FFFFFF;
+font-family:Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+}
+.commentbox {
+background-color:dodgerblue;
+padding:10px;
+}
+.commentfooter {
+background:transparent url(arrow.gif) no-repeat scroll 20px 0;
+color:#4A4A4A;
+font-size:90%;
+margin-bottom:0.5em;
+padding-left:58px;
+padding-top:1px;
+}

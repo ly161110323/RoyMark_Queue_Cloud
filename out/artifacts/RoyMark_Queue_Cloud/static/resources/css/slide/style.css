@@ -1,0 +1,94 @@
+@charset "utf-8";
+/* CSS Document */
+html, body, ul, li, h1, h2, h3, h4, h5, h6, fieldset, legend {padding:0; margin:0;}
+body {font:12px/normal 	Arial,​Tahoma,​verdana,​Helvetica,​sans-serif;}
+ul,li {list-style-type:none; text-transform:capitalize;}
+.clear {clear:both; *display:inline;/*IE only*/}
+
+/*menu*/
+#nav { width:100px; display:block;margin-left:-18px;} /*控制一级菜单*/
+#nav .jquery_out {float:left;line-height:25px;display:block; width:100px; text-align:center; color:#336666;font:18px/32px "微软雅黑"; background:#DFDFDF 0 0 repeat-x;}
+#nav .jquery_out .smile {padding-left:1em;}
+#nav .jquery_inner {margin-left:16px;}
+#nav .jquery {margin-right:1px;padding:0 2em;width:100px;}
+#nav .mainlevel {background:	url("../images/topbg2.jpg");  float:left; width:120px;/*IE6 only*/}
+
+#nav .mainlevel a {text-align: center;cursor:pointer;
+	vertical-align: bottom;color:#336666;
+	padding-top: 1px; text-decoration:none; line-height:32px; display:block; padding:0 20px; }
+	#nav .mainlevel span {text-align: center;cursor:pointer;
+	vertical-align: bottom;color:#336666;
+	padding-top: 1px; text-decoration:none; line-height:32px; display:block; padding:0 20px; }
+#nav .mainlevel a:hover {color:#FF0000; text-decoration:none; background:#DFDFDF 0 0 repeat-x;width:80px;cursor:pointer;}/*控制鼠标放置时的宽度*/
+#nav .mainlevel span:hover {color:#FF0000; text-decoration:none; background:url("../images/topbg2.jpg") 0 0 repeat-x;width:80px;cursor:pointer;}
+#nav .mainlevel ul {display:none; position:absolute;width:100px;cursor:pointer;}
+#nav .mainlevel li { border-top:1px solid #ffffff; background:#DFDFDF; width:100px;/*IE6 only*/cursor:pointer;}/*二级菜单宽度*/
+
+.mainlevel a {text-align: center;cursor:pointer;
+	vertical-align: bottom;color:#336666;
+	padding-top: 1px; text-decoration:none; line-height:32px; display:block; } 
+.top-nav {
+	font-size:12px;
+	list-style:none;
+}
+.top-nav li {
+    
+	float:left;
+	list-style:none;
+	margin-right:1px;
+}
+.top-nav li a {
+	padding-top:1px;
+	line-height:32px;
+	text-decoration:none;
+	display:block;
+	width:100px;
+	text-align:center;
+	cursor:pointer;
+}
+.top-nav li ul li a {
+	line-height:32px;
+	text-decoration:none;
+	background:#DDDDDD;
+	display:block;
+	width:100px;
+	text-align:center;
+	cursor:pointer;
+}
+.top-nav li a:hover {
+	color:red;
+}
+.top-nav ul {
+	list-style:none;
+	display:none;
+	width:100px;
+	padding:0;
+	position:absolute;
+}
+.top-nav li ul li ul {
+	position:absolute;
+	line-height:20px;
+	margin-top:-33px;
+	left:100px;
+}       
+.top-nav li ul li{
+	border-bottom:1px solid #fff;
+}
+#top-nav { width:100px; display:block;margin-left:-18px;} /*控制一级菜单*/
+#top-nav .mainlevel {background:	url("../images/topbg2.jpg");  float:left; width:120px;/*IE6 only*/}
+#top-nav .mainlevel a {text-align: center;cursor:pointer;
+	vertical-align: bottom;color:#336666;
+	padding-top: 1px; text-decoration:none; line-height:32px; display:block; padding:0 20px; }
+#top-nav .mainlevel span {text-align: center;cursor:pointer;
+	vertical-align: bottom;color:#336666;
+	padding-top: 1px; text-decoration:none; line-height:32px; display:block; padding:0 20px; }
+#top-nav .mainlevel a:hover {color:#FF0000; text-decoration:none; background:#DFDFDF 0 0 repeat-x;width:80px;cursor:pointer;}/*控制鼠标放置时的宽度*/
+#top-nav .mainlevel span:hover {color:#FF0000; text-decoration:none; background:url("../images/topbg2.jpg") 0 0 repeat-x;width:80px;cursor:pointer;}
+#top-nav .mainlevel ul {display:none; position:absolute;width:100px;cursor:pointer;}
+#top-nav .mainlevel li { border-top:1px solid #ffffff; background:#DFDFDF; width:100px;cursor:pointer;}/*二级菜单宽度*/
+
+
+.log {text-align:center; color:#336666; line-height:25px; text-transform:capitalize; margin:15px auto;}
+
+
+

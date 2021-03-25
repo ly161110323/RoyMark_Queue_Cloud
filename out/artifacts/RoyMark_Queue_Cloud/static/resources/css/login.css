@@ -1,0 +1,175 @@
+BODY {
+	FONT-FAMILY: Arial, Verdana, Helvetica, sans-serif, "΢���ź�"; COLOR: #7a797a; FONT-SIZE: 12px
+}
+TABLE {
+	FONT-FAMILY: Arial, Verdana, Helvetica, sans-serif, "΢���ź�"; COLOR: #7a797a; FONT-SIZE: 12px
+}
+IMG {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; VERTICAL-ALIGN: middle; BORDER-TOP: 0px; BORDER-RIGHT: 0px
+}
+A {
+	TEXT-DECORATION: none
+}
+A:hover {
+	TEXT-DECORATION: underline
+}
+BODY {
+	PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px
+}
+HTML {
+	PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px
+}
+UL {
+	PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px
+}
+LI {
+	PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px
+}
+BODY {
+	HEIGHT: 100%; OVERFLOW: hidden
+}
+HTML {
+	HEIGHT: 100%; OVERFLOW: hidden
+}
+#wrapper-div {
+	PADDING-BOTTOM: 21px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; HEIGHT: 100%; PADDING-TOP: 41px
+}
+HTML > BODY #wrapper-div {
+	POSITION: absolute; WIDTH: auto; BOTTOM: 0px; HEIGHT: auto; TOP: 0px; RIGHT: 0px; LEFT: 0px
+}
+#header-div {
+	POSITION: absolute; TEXT-ALIGN: right; WIDTH: 100%; BACKGROUND: url(../../images/header-bg.gif); HEIGHT: 41px; TOP: 0px
+}
+#header-div A {
+	COLOR: white
+}
+#main-div {
+	POSITION: relative; BACKGROUND: url(../../images/login-middle-bg.gif) #f7f6f8 no-repeat center center; HEIGHT: 100%
+}
+HTML > BODY #main-div {
+	POSITION: absolute; WIDTH: 100%; BOTTOM: 21px; HEIGHT: auto; TOP: 41px
+}
+#footer-div {
+	POSITION: absolute; WIDTH: 100%; BOTTOM: 0px; BACKGROUND: url(../../images/header-bg.gif); HEIGHT: 21px
+}
+#footer-div .copyrights {
+	MIN-WIDTH: 640px; TEXT-ALIGN: center; FONT: 12px/21px Arial; HEIGHT: 21px; COLOR: #999999
+}
+#footer-reg-div {
+	POSITION: relative; WIDTH: 100%; BOTTOM: 0px; BACKGROUND: url(../../images/header-bg.gif); HEIGHT: 21px
+}
+#footer-reg-div .copyrights {
+	MIN-WIDTH: 640px; TEXT-ALIGN: center; BACKGROUND: url(../../images/header-bg.gif) no-repeat right 50%; HEIGHT: 21px
+}
+#toplink-div {
+	Z-INDEX: 99; POSITION: absolute; TOP: 8px; RIGHT: 8px
+}
+#toplink-div A {
+	FLOAT: left; COLOR: #391847
+}
+#toplink-div .line {
+	WIDTH: 15px; BACKGROUND: url(../images/toplink-splitline.gif) no-repeat center center; FLOAT: left; HEIGHT: 16px
+}
+#toplink-div A.menu-item {
+	WIDTH: 56px; BACKGROUND: url(../images/toplink-arrow.gif) no-repeat right 5px
+}
+#topGradient {
+	POSITION: absolute; WIDTH: 100%; HEIGHT: 200px
+}
+#bottomGradient {
+	POSITION: absolute; WIDTH: 100%; HEIGHT: 200px
+}
+#topGradient {
+	BACKGROUND: url(login-top-gradient.png)
+}
+#bottomGradient {
+	BOTTOM: 0px; BACKGROUND: url(../../images/login-bottom-gradient.png)
+}
+#welcome {
+	POSITION: absolute; TOP: 45%; LEFT: 50%
+}
+#content {
+	POSITION: absolute; TOP: 45%; LEFT: 50%
+}
+#welcome {
+	MARGIN: 105px 0px 0px 200px; WIDTH: 220px; HEIGHT: 52px
+}
+#content {
+	Z-INDEX: 100; MARGIN: -100px 0px 0px -305px; WIDTH: 700px; HEIGHT: 210px
+}
+.conpart {
+	WIDTH: 50%; FLOAT: left
+}
+.logo {
+	BACKGROUND: url(../images/login-logo.png) no-repeat; HEIGHT: 69px
+}
+.conpart UL {
+	LIST-STYLE-TYPE: none; MARGIN: -5px 0px 18px 35px; LIST-STYLE-IMAGE: none
+}
+.conpart LI {
+	PADDING-BOTTOM: 0px; LINE-HEIGHT: 20px; PADDING-LEFT: 6px; PADDING-RIGHT: 2px; BACKGROUND: url(../../images/login-li-icon.gif) no-repeat 0px 8px; PADDING-TOP: -5px
+}
+.conpart .links {
+	MARGIN-LEFT: 31px
+}
+.conpart .links IMG {
+	MARGIN-RIGHT: 3px
+}
+.conpart .links A {
+	COLOR: #a08dae; FONT-WEIGHT: bold; MARGIN-RIGHT: 4px
+}
+.conpart H2 {
+	MARGIN: 45px 0px 10px 17px; COLOR: #000; FONT-SIZE: 14px
+}
+.conpart TABLE {
+	MARGIN-LEFT: 17px
+}
+.conpart TD {
+	LINE-HEIGHT: 34px; COLOR: #6f4577
+}
+.conpart A {
+	COLOR: #0000ff
+}
+.conpart .txt-input {
+	BORDER-BOTTOM: #a89ead 1px solid; BORDER-LEFT: #a89ead 1px solid; PADDING-BOTTOM: 1px; PADDING-LEFT: 1px; WIDTH: 149px; PADDING-RIGHT: 1px; BACKGROUND: url(../images/login-input-bg.gif) #fff no-repeat; HEIGHT: 17px; BORDER-TOP: #a89ead 1px solid; BORDER-RIGHT: #a89ead 1px solid; PADDING-TOP: 1px; _height: 21px; -background-attachment: fixed
+}
+.conpart .login-btn {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; LINE-HEIGHT: 20px; WIDTH: 72px; BACKGROUND: url(../images/login-btn.gif); HEIGHT: 20px; COLOR: #6f4577; BORDER-TOP: 0px; CURSOR: pointer; BORDER-RIGHT: 0px
+}
+.conpart .login-btn-dis {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; LINE-HEIGHT: 20px; WIDTH: 72px; BACKGROUND: url(../images/login-btn.gif); HEIGHT: 20px; BORDER-TOP: 0px; CURSOR: pointer; BORDER-RIGHT: 0px
+}
+.loginLogo-div {
+	HEIGHT: 180px
+}
+.loginLogo-div .logo_top {
+	HEIGHT: 80px
+}
+.loginLogo-div .logo_top .lflogo {
+	PADDING-BOTTOM: 0px; PADDING-LEFT: 4px; PADDING-RIGHT: 0px; FLOAT: left; PADDING-TOP: 5px
+}
+.loginLogo-div .logo_top .risystem {
+	WIDTH: 260px; FONT: 24px/26px Arial; FLOAT: left; COLOR: #000; PADDING-TOP: 15px
+}
+.loginLogo-div .logo_top .risystem B {
+	COLOR: #7f168a; FONT-WEIGHT: normal
+}
+.loginLogo-div .logo_top .risystem SPAN {
+	DISPLAY: block; FONT: 8px/20px Verdana; COLOR: #848484
+}
+.submitbtn { 
+ 	font-family: "Tahoma", "����";
+    font-size:9pt; color: black;
+    border: red 1px solid;
+    color:#7a797a;
+    BORDER-BOTTOM: #a89ead 1px solid; 
+    BORDER-LEFT: #a89ead 1px solid; 
+    BORDER-RIGHT: #a89ead 1px solid; 
+    BORDER-TOP: #a89ead 1px solid;
+    background-color: white;
+    CURSOR: hand;
+    font-style: normal ;
+    width:65px;
+    height:20px;
+	
+}

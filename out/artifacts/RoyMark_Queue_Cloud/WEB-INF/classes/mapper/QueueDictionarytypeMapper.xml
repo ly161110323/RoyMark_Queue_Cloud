@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueDictionarytypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueDictionarytype">
+        <id column="DictionaryType_Ls" property="dictionarytypeLs" />
+        <result column="DictionaryType_IsShow" property="dictionarytypeIsshow" />
+        <result column="DictionaryType_Id" property="dictionarytypeId" />
+        <result column="DictionaryType_Name" property="dictionarytypeName" />
+        <result column="Field_Name" property="fieldName" />
+        <result column="Field_Type" property="fieldType" />
+        <result column="Field_state" property="fieldState" />
+        <result column="Create_User" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        DictionaryType_IsShow, DictionaryType_Ls, DictionaryType_Id, DictionaryType_Name, Field_Name, Field_Type, Field_state, Create_User, Create_Time, Update_User, Update_Time, Status
+    </sql>
+
+</mapper>

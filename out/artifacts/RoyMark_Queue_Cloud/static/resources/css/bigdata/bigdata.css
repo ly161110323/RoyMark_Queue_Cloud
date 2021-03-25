@@ -1,0 +1,201 @@
+@font-face {
+	font-family: 'iconfont';
+	src: url('../font/iconfont.eot');
+	src: url('../font/iconfont.eot?#iefix') format('embedded-opentype'), url('../font/iconfont.woff') format('woff'), url('../font/iconfont.ttf') format('truetype'), url('../font/iconfont.svg#iconfont') format('svg');
+}
+
+.iconfont {
+	font-family: "iconfont" !important;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke-width: 0.2px;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	margin: 0 auto;
+	height: 100%;
+	background-image: url(../images/bg.png);
+	background-size: 100%;
+	color: #ffffff;
+	font-family: "微软雅黑";
+	overflow:hidden;
+}
+
+#count {
+	margin-left: auto;
+	margin-right: auto;
+}
+.gradient {
+	background: #040851;
+	background: -moz-linear-gradient(top, #040851 0%, #003fad 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #040851), color-stop(100%, #003fad));
+	background: -webkit-linear-gradient(top, #040851 0%, #003fad 100%);
+	background: -o-linear-gradient(top, #040851 0%, #003fad 100%);
+	background: -ms-linear-gradient(top, #040851 0%, #003fad 100%);
+	background: linear-gradient(to bottom, #040851 0%, #003fad 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#040851', endColorstr='#003fad', GradientType=0);
+}
+
+:root .gradient {
+	filter: none;
+}
+ 
+table {
+	padding: 20px 0 0 0;
+	width:100%; height:100%;
+	overflow:hidden;
+}
+
+table td {
+	border: 1px solid #1e2962;
+	background-color: rgba(0, 0, 0, 0.3);
+	vertical-align: top;
+	-webkit-box-shadow: 0px 0px 10px #233253 inset;
+	-moz-box-shadow: 0px 0px 10px #233253 inset;
+	box-shadow: 0px 0px 10px #233253 inset;
+}
+
+#apDiv {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+	width: 100%;
+	height: 15px;
+	background: #291b4e;
+	-moz-box-shadow: 2px 2px 5px #000000;
+	-webkit-box-shadow: 2px 2px 5px #000000;
+	box-shadow: 2px 2px 5px #000000;
+}
+
+#trapezoid {
+	border-top: 40px solid #291b4e;
+	border-left: 50px solid transparent;
+	border-right: 50px solid transparent;
+	height: 0;
+	width: 350px;
+	position: absolute;
+	left: 33%;
+	top: 0;
+	z-index: 1;
+	text-align: center;
+	filter: drop-shadow(3px 3px 3px rgba(0, 0, 0, 1));
+}
+
+#coverDiv {
+	width: 650px;
+	background-color: #291b4e;
+	position: absolute;
+	left: 28%;
+	top: 0;
+	height: 15px;
+	z-index: 2;
+}
+
+#trapezoid span {
+	top: -30px;
+	left: 10px;
+	position: absolute;
+	width: 100%;
+	font-size: 20px;
+	letter-spacing: 5px;
+	text-shadow: 0.1em 0.1em 0.2em black;
+}
+
+.acceptico {
+	color: #297cff;
+	font-size: 20px;
+	margin: 10px 40px 0 30px;
+	height: 80px;
+}
+
+.acceptico i {
+	margin-right: -10px;
+	dispaly:inline-block;
+}
+
+.red {
+	color: red;
+}
+
+.divtitle {
+	color: #81e4d9;
+	font-size: 10pt;
+	margin: 20px 0 0 10px;
+}
+
+ul,
+ol {
+	list-style: none;
+}
+
+#acptime li i {
+	margin-right: 10px;
+}
+
+#acptime li {
+	margin-top: 15px;
+}
+
+#acptime {
+	font-family: "宋体";
+	color: #a5bddf;
+}
+
+#acptime span {
+	color: #fff;
+	margin: 0 10px;
+	font-family: 'digifacewide';
+	letter-spacing: 5px;
+	font-size: 20px;
+	text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #4c5db1, 0 0 70px #4c5db1, 0 0 80px #4c5db1, 0 0 100px #4c5db1, 0 0 150px #4c5db1;
+}
+
+@font-face {
+	font-family: 'digifacewide';
+	src: url('../font/digifacewide.woff') format('woff');
+}
+
+#wait_f{margin: 0px;padding: 0px;width: 100%;font-family:"宋体";color: #a5bddf;}
+#wait_f li{height: 22px;margin-top: 10px;line-height: 22px;}
+#wait_f div{width: 50%;display:inline-block;text-align: center;}
+.bgaa9{background-color: #0a3aa9;}
+.mintext{
+	margin-top: 5px;
+	margin-left: 20px;
+	text-align: center;
+	}
+.mintext span,.textflag{color: yellow;font-size: 24px;font-family: "Arial";}
+.ml20{margin-left: 20px;margin-top: 40px;}
+.ml10{margin-left: 10px;}
+.mb10{margin-bottom: 10px;}
+img{margin: 10px 0 0 10px;}
+#apinfo {
+	position: relative;
+	left: 20px;
+	top: -300px;
+	width: 213px;
+	z-index: 3;
+	text-shadow: 0.1em 0.2em 0.2em black;
+	font-size: 18px;
+}
+}
+#aptable {
+	position: relative;left: 10px;top: -185px;width: 300px;z-index: 4;
+}
+.arrow-right {
+width:0;
+height:0;
+border-top:8px solid transparent;
+border-bottom: 8px solid transparent;
+border-left: 8px solid #b9d3ff;
+font-size: 16px;
+}
+#aptable table{margin: 0;padding: 0;background-color: #01132b;color: #b9d3ff;}
+#aptable table td{border:1px #395a9f solid;}
+.main-badge{background-color: rgba(7, 117, 252, 0.1);margin: 20px;width: 92%;height: 340px;}
+.font1{color: yellow;font-size: 28px;font-family: "Arial";}
+.font2{color: yellow;font-size: 16px;font-family: "Arial";}
+.font3{color:#b9d3ff;font-size: 16px;font-family: "宋体";}
+.font4{font-size: 12px;font-family: "Arial";}

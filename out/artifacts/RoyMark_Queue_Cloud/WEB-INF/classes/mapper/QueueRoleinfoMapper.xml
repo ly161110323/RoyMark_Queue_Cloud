@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueRoleinfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueRoleinfo">
+        <id column="Role_Ls" property="roleLs" />
+        <result column="Role_Code" property="roleCode" />
+        <result column="Role_Name" property="roleName" />
+        <result column="Role_IsShow" property="roleIsshow" />
+        <result column="Role_Text" property="roleText" />
+        <result column="Create_User" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+        <result column="area_Ls" property="areaLs" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Role_Ls, Role_Code, Role_Name, Role_IsShow, Role_Text, Create_User, Create_Time, Update_User, Update_Time, Status, area_Ls
+    </sql>
+
+</mapper>

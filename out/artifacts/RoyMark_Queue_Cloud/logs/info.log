@@ -1,0 +1,26 @@
+[2020-01-10 17:18:43] INFO  org.springframework.web.context.ContextLoader 270 initWebApplicationContext - Root WebApplicationContext: initialization started
+[2020-01-10 17:19:02] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+[2020-01-10 17:19:14] INFO  org.springframework.web.context.ContextLoader 306 initWebApplicationContext - Root WebApplicationContext initialized in 30969 ms
+[2020-01-10 17:19:22] INFO  org.springframework.web.servlet.FrameworkServlet 524 initServletBean - Initializing Servlet 'SpringMVC'
+[2020-01-10 17:19:29] INFO  org.springframework.web.servlet.FrameworkServlet 546 initServletBean - Completed initialization in 6814 ms
+[2021-03-25 10:41:15] INFO  org.springframework.web.context.ContextLoader 270 initWebApplicationContext - Root WebApplicationContext: initialization started
+[2021-03-25 10:41:26] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+[2021-03-25 10:41:30] INFO  org.springframework.web.context.ContextLoader 306 initWebApplicationContext - Root WebApplicationContext initialized in 14468 ms
+[2021-03-25 10:41:33] INFO  org.springframework.web.servlet.FrameworkServlet 524 initServletBean - Initializing Servlet 'SpringMVC'
+[2021-03-25 10:41:36] INFO  org.springframework.web.servlet.FrameworkServlet 546 initServletBean - Completed initialization in 3079 ms
+[2021-03-25 11:08:18] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} closed
+[2021-03-25 13:56:34] INFO  org.springframework.web.context.ContextLoader 270 initWebApplicationContext - Root WebApplicationContext: initialization started
+[2021-03-25 13:56:55] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+[2021-03-25 13:57:11] INFO  org.springframework.web.context.ContextLoader 306 initWebApplicationContext - Root WebApplicationContext initialized in 36239 ms
+[2021-03-25 13:57:14] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} closed
+[2021-03-25 14:00:28] INFO  org.springframework.web.context.ContextLoader 270 initWebApplicationContext - Root WebApplicationContext: initialization started
+[2021-03-25 14:00:38] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+[2021-03-25 14:00:42] INFO  org.springframework.web.context.ContextLoader 306 initWebApplicationContext - Root WebApplicationContext initialized in 14000 ms
+[2021-03-25 14:00:46] INFO  org.springframework.web.servlet.FrameworkServlet 524 initServletBean - Initializing Servlet 'SpringMVC'
+[2021-03-25 14:00:49] INFO  org.springframework.web.servlet.FrameworkServlet 546 initServletBean - Completed initialization in 2873 ms
+[2021-03-25 14:24:36] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} closed
+[2021-03-25 14:24:59] INFO  org.springframework.web.context.ContextLoader 270 initWebApplicationContext - Root WebApplicationContext: initialization started
+[2021-03-25 14:25:10] INFO  com.alibaba.druid.support.logging.Log4j2Impl 106 info - {dataSource-1} inited
+[2021-03-25 14:25:13] INFO  org.springframework.web.context.ContextLoader 306 initWebApplicationContext - Root WebApplicationContext initialized in 13978 ms
+[2021-03-25 14:25:17] INFO  org.springframework.web.servlet.FrameworkServlet 524 initServletBean - Initializing Servlet 'SpringMVC'
+[2021-03-25 14:25:19] INFO  org.springframework.web.servlet.FrameworkServlet 546 initServletBean - Completed initialization in 2554 ms

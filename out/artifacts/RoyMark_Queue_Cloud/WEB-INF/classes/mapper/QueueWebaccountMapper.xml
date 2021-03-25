@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueWebaccountMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueWebaccount">
+        <id column="WebAccount_Ls" property="webaccountLs" />
+        <result column="UserInfo_Ls" property="userinfoLs" />
+        <result column="Area_Ls" property="areaLs" />
+        <result column="WebAccount_LogIn" property="webaccountLogin" />
+        <result column="WebAccount_Name" property="webaccountName" />
+        <result column="WebAccount_Code" property="webaccountCode" />
+        <result column="WebAccount_Password" property="webaccountPassword" />
+        <result column="WebAccount_Text" property="webaccountText" />
+        <result column="WebAccount_Image" property="webaccountImage" />
+        <result column="Create_user" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+        <result column="Area_Name" property="areaName"  />
+        <result column="UserInfo_Name" property="userInfoName" />
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        WebAccount_Ls, UserInfo_Ls, Area_Ls, WebAccount_LogIn, WebAccount_Name, WebAccount_Code, WebAccount_Password, WebAccount_Text, WebAccount_Image, Create_user, Create_Time, Update_User, Update_Time, Status, Area_Name, UserInfo_Name
+    </sql>
+
+    <select id="searchPageWebaccountInfoList"
+            resultMap="BaseResultMap">
+        select
+        u.WebAccount_Ls,u.WebAccount_Code,u.WebAccount_Name,u.WebAccount_Text,
+        u.Area_ls,a.Area_Name,u.UserInfo_Ls,t.UserInfo_Name,
+        u.WebAccount_Login,u.WebAccount_Password,u.WebAccount_Image,
+        u.create_user,u.create_time,u.update_user,u.update_time,u.status
+        from queue_WebAccount u
+        left join queue_area a on u.Area_Ls = a.Area_Ls
+        left join queue_userinfo t on u.UserInfo_Ls=t.UserInfo_Ls
+        where  u.Status='1'
+        <if test="webaccount.webaccountName!= ''">
+            and u.WebAccount_Name like "%${webaccount.webaccountName}%"
+        </if>
+        <if test="webaccount.areaLs!= null">
+            and u.Area_Ls="${webaccount.areaLs}"
+        </if>
+    </select>
+
+</mapper>
