@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueSelectareaMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueSelectarea">
+        <id column="SelectArea_Ls" property="selectareaLs" />
+        <result column="Area_Ls" property="areaLs" />
+        <result column="SelectArea_Id" property="selectareaId" />
+        <result column="SelectArea_Name" property="selectareaName" />
+        <result column="Create_User" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+        <result column="SelectArea_Print" property="selectareaPrint" />
+        <result column="SelectArea_OrderNo" property="selectareaOrderno" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        SelectArea_Ls, Area_Ls, SelectArea_Id, SelectArea_Name, Create_User, Create_Time, Update_User, Update_Time, Status, SelectArea_Print, SelectArea_OrderNo
+    </sql>
+    <resultMap id="CombinedResultMap" type="com.roymark.queue.entity.QueueSelectarea"   extends="BaseResultMap" >
+        <result property="areaName" column="Area_Name"/>
+    </resultMap>
+    <select id="searchSelectAreaList" parameterType="com.roymark.queue.entity.QueueSelectarea" resultMap="CombinedResultMap">
+	select
+    u.SelectArea_Ls,u.SelectArea_Name,u.SelectArea_Id,u.area_ls,u.SelectArea_OrderNo,
+    a.Area_Name,u.create_user,u.create_time,u.update_user,u.update_time,u.status,u.SelectArea_Print
+    from Queue_SelectArea u
+    left join queue_area a on u.area_ls=a.area_ls
+    where 1=1
+	AND u.area_Ls =#{selectarea.areaLs}
+    and u.Status = '1'
+    order by u.SelectArea_OrderNo
+  </select>
+</mapper>

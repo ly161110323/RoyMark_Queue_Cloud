@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueDeptMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueDept">
+        <id column="Dept_Ls" property="deptLs" />
+        <result column="Area_Ls" property="areaLs" />
+        <result column="Dept_Id" property="deptId" />
+        <result column="Dept_Name" property="deptName" />
+        <result column="Dept_Print" property="deptPrint" />
+        <result column="Dept_OrderNo" property="deptOrderno" />
+        <result column="Dept_MaxTakeNo" property="deptMaxtakeno" />
+        <result column="Dept_MaxAppointment" property="deptMaxappointment" />
+        <result column="Dept_ImagePath" property="deptImagepath" />
+        <result column="Py_Code" property="pyCode" />
+        <result column="Wb_Code" property="wbCode" />
+        <result column="Create_User" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+        <result column="CaseArea_Ls" property="caseareaLs" />
+        <result column="DEPT_STATE" property="deptState" />
+        <result column="SelectArea_Ls" property="selectareaLs" />
+        <result column="Other_Id" property="otherId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Dept_Ls, Area_Ls, Dept_Id, Dept_Name, Dept_Print, Dept_OrderNo, Dept_MaxTakeNo, Dept_MaxAppointment, Dept_ImagePath, Py_Code, Wb_Code, Create_User, Create_Time, Update_User, Update_Time, Status, CaseArea_Ls, DEPT_STATE, SelectArea_Ls, Other_Id
+    </sql>
+
+    <resultMap id="CombinedResultMap" type="com.roymark.queue.entity.QueueDept"   extends="BaseResultMap" >
+        <result property="isHaveUser" column="isHaveUser"/>
+        <result property="isHaveMatter" column="isHaveMatter"/>
+    </resultMap>
+
+    <select id="selectDeptList" resultMap="CombinedResultMap" parameterType="com.roymark.queue.entity.QueueDept" >
+        SELECT
+        DISTINCT  t.*,IFNULL(mc.mcont,0) AS isHaveMatter,IFNULL(uc.mcont,0) AS isHaveUser
+        FROM queue_dept t
+        LEFT JOIN
+        (
+        SELECT m.Dept_Ls,COUNT(1) mcont FROM queue_matter m
+        WHERE 1=1 AND m.Status='1'
+        AND m.Matter_IsQueue=1
+        GROUP BY m.Dept_Ls
+        ) mc ON t.Dept_Ls=mc.Dept_Ls
+        LEFT JOIN
+        (
+        SELECT u.Dept_Ls,COUNT(1) mcont FROM queue_userinfo u
+        WHERE 1=1 AND u.Status='1'
+        GROUP BY u.Dept_Ls
+        ) uc ON t.Dept_Ls=uc.Dept_Ls
+
+        LEFT JOIN queue_matter AS qm
+        ON t.Dept_Ls = qm.Dept_Ls AND qm.status = 1
+        where 1=1
+        <if test="dept.deptName!=null and dept.deptName!=''">
+            and t.Dept_Name like concat('%',#{dept.deptName},'%')
+        </if>
+        <if test="dept.caseareaLs!=null and dept.caseareaLs!=0">
+            and t.CaseArea_Ls=#{dept.caseareaLs}
+        </if>
+        <if test="null != dept.caseareaLsList and dept.caseareaLsList.size > 0" >
+            and t.CaseArea_Ls  in
+            <foreach collection="dept.caseareaLsList" item="item" open="(" separator=","  close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND t.Status = '1'
+        AND t.area_Ls =#{dept.areaLs}  ORDER BY t.Dept_OrderNo,t.Dept_Name
+    </select>
+
+    <!--对部门表的关联表做逻辑删除 add by wfz 2019-09-11-->
+    <update id="updateMatterStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_Matter
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateWindowMatterStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_WindowMatter
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+  </update>
+
+
+    <update id="updateTakeMatterCaseStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_TakeMatterCase
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateTakeMatterCaseInfoStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_TakeMatterCaseInfo
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateMatterTableStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_MatterTable
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateMatterTableEmptyStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_MatterTableEmpty
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateMatterGuideStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_MatterGuide
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+
+    <update id="updateMatterLabelStatusByDeptLs" parameterType="java.util.List">
+  	update Queue_MatterLabel
+  	set Status = '0'
+  		where dept_ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+  </update>
+    <!-- 对部门表的关联表做逻辑删除结束 add by wfz 2019-09-11-->
+
+    <!-- 通过主键路逻辑删除 -->
+    <update id="deleteDeptByPrimaryKeyDeptStatus" parameterType="java.util.List">
+        update queue_dept
+        set Status = '0'
+        where Dept_Ls in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

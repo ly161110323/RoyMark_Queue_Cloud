@@ -1,11 +1,11 @@
 package com.roymark.queue.dao;
 
+import com.roymark.queue.entity.ActionUser;
 import org.springframework.stereotype.Repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.roymark.queue.entity.User;
 
 @Repository
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends BaseMapper<ActionUser> {
 
 }

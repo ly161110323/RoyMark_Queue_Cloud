@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.QueueDictionaryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.QueueDictionary">
+        <id column="Dictionary_Ls" property="dictionaryLs" />
+        <result column="Dictionary_Id" property="dictionaryId" />
+        <result column="Dictionary_Name" property="dictionaryName" />
+        <result column="Dictionarytype_Ls" property="dictionarytypeLs" />
+        <result column="Area_Ls" property="areaLs" />
+        <result column="Dictionary_IsShow" property="dictionaryIsshow" />
+        <result column="Dictionary_Parameter_1" property="dictionaryParameter1" />
+        <result column="Dictionary_Parameter_2" property="dictionaryParameter2" />
+        <result column="Dictionary_Parameter_3" property="dictionaryParameter3" />
+        <result column="Dictionary_Parameter_4" property="dictionaryParameter4" />
+        <result column="Dictionary_Parameter_5" property="dictionaryParameter5" />
+        <result column="Dictionary_Parameter_6" property="dictionaryParameter6" />
+        <result column="Dictionary_Parameter_7" property="dictionaryParameter7" />
+        <result column="Create_User" property="createUser" />
+        <result column="Create_Time" property="createTime" />
+        <result column="Update_User" property="updateUser" />
+        <result column="Update_Time" property="updateTime" />
+        <result column="Status" property="Status" />
+    </resultMap>
+    <!--多表联合的复合字段,继承baseResultMap可以区分出哪些是复合的字段-->
+    <resultMap id="CombinedResultMap" type="com.roymark.queue.entity.QueueDictionary" extends="BaseResultMap">
+        <result column="DictionaryType_Id" property="dictionarytypeId" />
+        <result column="DictionaryType_Name" property="dictionarytypeName" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Dictionary_Ls, Dictionary_Id, Dictionary_Name, Dictionarytype_Ls, Area_Ls, Dictionary_IsShow, Dictionary_Parameter_1, Dictionary_Parameter_2, Dictionary_Parameter_3, Dictionary_Parameter_4, Dictionary_Parameter_5, Dictionary_Parameter_6, Dictionary_Parameter_7, Create_User, Create_Time, Update_User, Update_Time, Status
+    </sql>
+
+    <select id="searchDictionary" parameterType="com.roymark.queue.entity.QueueDictionary" resultMap="CombinedResultMap">
+        select  Queue_Dictionary.*,queue_dictionarytype.DictionaryType_Name,queue_dictionarytype.DictionaryType_Id  from Queue_Dictionary
+        left join queue_dictionarytype on
+        queue_dictionarytype.DictionaryType_Ls=Queue_Dictionary.DictionaryType_Ls
+        where Queue_Dictionary.Status=1
+        and Queue_Dictionary.Area_Ls =#{dictionary.areaLs}
+        <if test="dictionary.dictionarytypeLs!= null and dictionary.dictionarytypeLs !=0">
+            and  Queue_Dictionary.Dictionarytype_Ls= #{dictionary.dictionarytypeLs}
+        </if>
+        <if test="dictionary.dictionaryName!= null and dictionary.dictionaryName !=''">
+            and  Queue_Dictionary.Dictionary_Name like concat('%',#{dictionary.dictionaryName},'%')
+        </if>
+    </select>
+
+    <select id="getDictionaryByType" parameterType="com.roymark.queue.entity.QueueDictionary" resultMap="BaseResultMap">
+		SELECT
+			queue_dictionary.Dictionary_Ls,
+			queue_dictionary.Dictionary_Id,
+			queue_dictionary.Dictionary_Name,
+			queue_dictionary.Dictionarytype_Ls,
+			queue_dictionarytype.Dictionarytype_Name,
+			queue_dictionarytype.Dictionarytype_Id,
+			queue_dictionary.Area_Ls,
+			queue_dictionary.Dictionary_IsShow,
+			queue_dictionary.Dictionary_Parameter_1,
+			queue_dictionary.Dictionary_Parameter_2,
+			queue_dictionary.Dictionary_Parameter_3,
+			queue_dictionary.Dictionary_Parameter_4,
+			queue_dictionary.Dictionary_Parameter_5,
+			queue_dictionary.Dictionary_Parameter_6,
+			queue_dictionary.Dictionary_Parameter_7,
+			queue_dictionary.Create_User,
+			queue_dictionary.Create_Time,
+			queue_dictionary.Update_User,
+			queue_dictionary.Update_Time,
+			queue_dictionary.`Status`
+		FROM
+			queue_area ,
+			queue_dictionary ,
+			queue_dictionarytype
+		WHERE
+			queue_dictionary.Dictionarytype_Ls = queue_dictionarytype.DictionaryType_Ls AND
+			queue_dictionarytype.DictionaryType_Id = #{dictionary.dictionarytypeId} AND
+			queue_dictionary.Area_Ls = queue_area.Area_Ls AND
+			queue_area.Area_Ls =#{dictionary.areaLs} AND
+			queue_dictionary.Dictionary_IsShow='1'
+
+	</select>
+
+    <select id="getExeTypeDicTionaryInfo"  parameterType="com.roymark.queue.entity.QueueDictionary" resultMap="CombinedResultMap">
+		SELECT
+			queue_dictionary.Dictionary_Ls,
+			queue_dictionary.Dictionary_Id,
+			queue_dictionary.Dictionary_Name,
+			queue_dictionary.Dictionarytype_Ls,
+			queue_dictionarytype.Dictionarytype_Name,
+			queue_dictionarytype.Dictionarytype_Id,
+			queue_dictionary.Area_Ls,
+			queue_dictionary.Dictionary_IsShow,
+			queue_dictionary.Dictionary_Parameter_1,
+			queue_dictionary.Dictionary_Parameter_2,
+			queue_dictionary.Dictionary_Parameter_3,
+			queue_dictionary.Dictionary_Parameter_4,
+			queue_dictionary.Dictionary_Parameter_5,
+			queue_dictionary.Dictionary_Parameter_6,
+			queue_dictionary.Dictionary_Parameter_7,
+			queue_dictionary.Create_User,
+			queue_dictionary.Create_Time,
+			queue_dictionary.Update_User,
+			queue_dictionary.Update_Time,
+			queue_dictionary.`Status`
+		FROM
+			queue_area ,
+			queue_dictionary ,
+			queue_dictionarytype
+		WHERE
+			queue_dictionary.Dictionarytype_Ls = queue_dictionarytype.DictionaryType_Ls AND
+			queue_dictionarytype.DictionaryType_Id in ('ShowExe','ServiceExe') AND
+			queue_dictionary.Area_Ls = queue_area.Area_Ls AND
+			queue_dictionary.Area_Ls =#{dictionary.areaLs} AND
+			queue_dictionary.Dictionary_IsShow='1'
+	</select>
+	<select id="getDictionaryByTypeIdList" parameterType="com.roymark.queue.entity.QueueDictionary" resultMap="CombinedResultMap">
+		select  Queue_Dictionary.*,queue_dictionarytype.DictionaryType_Name,queue_dictionarytype.DictionaryType_Id  from Queue_Dictionary
+		left join queue_dictionarytype on
+		queue_dictionarytype.DictionaryType_Ls=Queue_Dictionary.DictionaryType_Ls
+		where Queue_Dictionary.Status=1
+		and Queue_Dictionary.Area_Ls =#{dictionary.areaLs}
+		<if test="dictionary.dictionarytypeId!=null and dictionary.dictionarytypeId!=''">
+			and Queue_Dictionary.Dictionary_Id like concat('ShowExe','%')
+		</if>
+
+	</select>
+</mapper>

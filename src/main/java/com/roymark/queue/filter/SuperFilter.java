@@ -1,7 +1,6 @@
 package com.roymark.queue.filter;
 
-import com.roymark.queue.entity.User;
-import org.springframework.http.HttpStatus;
+import com.roymark.queue.entity.ActionUser;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -38,7 +37,7 @@ public class SuperFilter extends OncePerRequestFilter
         }
         if(doSuperFilter)
         {
-            User loginUser = (User) request.getSession().getAttribute("LOGIN_USER");
+            ActionUser loginUser = (ActionUser) request.getSession().getAttribute("LOGIN_USER");
             Integer topAreaId = 0; // this program don't need
             int topAreaIdValue=topAreaId.intValue();
             if(topAreaIdValue!=0)

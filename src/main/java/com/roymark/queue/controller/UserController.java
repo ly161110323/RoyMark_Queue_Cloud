@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.roymark.queue.entity.ActionUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.roymark.queue.entity.User;
 import com.roymark.queue.service.UserService;
 import com.roymark.queue.util.GetLoginIp;
 import com.roymark.queue.util.Md5Util;
@@ -45,14 +45,14 @@ public class UserController {
 			HttpServletRequest request = attributes.getRequest();
 			HttpSession session = request.getSession();
 			
-			User user = new User();
-			user.setId(loginId);
-			QueryWrapper<User> queryWrapper =  new QueryWrapper<User>(user);
-			user = userSerivce.getOne(queryWrapper);
+			ActionUser actionUser = new ActionUser();
+			actionUser.setId(loginId);
+			QueryWrapper<ActionUser> queryWrapper =  new QueryWrapper<ActionUser>(actionUser);
+			actionUser = userSerivce.getOne(queryWrapper);
 			
-			if (user != null) {
-				if (Md5Util.checkpassword(pwd, user.getPwd())) {
-					session.setAttribute("LOGIN_USER", user);
+			if (actionUser != null) {
+				if (Md5Util.checkpassword(pwd, actionUser.getPwd())) {
+					session.setAttribute("LOGIN_USER", actionUser);
 					// 取得登陆客户端IP
 					String loginIp = GetLoginIp.getIpAddr(request);
 					session.setAttribute("LOGIN_CLIENT", loginIp);
@@ -110,9 +110,9 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-	public Object update(User tempUser, @RequestParam("updateName") String updateName,
-			@RequestParam("updateNo") String updateNo,
-			@RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
+	public Object update(ActionUser tempActionUser, @RequestParam("updateName") String updateName,
+						 @RequestParam("updateNo") String updateNo,
+						 @RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
 		JSONObject jsonObject = new JSONObject();
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = attributes.getRequest();
@@ -125,13 +125,13 @@ public class UserController {
 				String uploadPath = "/RemoteQueue/upload/user/";
 				filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 			}
-			tempUser.setPhoto(filePath);
+			tempActionUser.setPhoto(filePath);
 			
 			// 对密码进行MD5加密
-			if (tempUser.getPwd() != null) {
-				tempUser.setPwd(Md5Util.EncoderByMd5(tempUser.getPwd()));
+			if (tempActionUser.getPwd() != null) {
+				tempActionUser.setPwd(Md5Util.EncoderByMd5(tempActionUser.getPwd()));
 			}
-			boolean result = userSerivce.update(tempUser, Wrappers.<User>lambdaUpdate().eq(User::getId, tempUser.getId()));
+			boolean result = userSerivce.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getId, tempActionUser.getId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 			} else {
@@ -147,18 +147,18 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-	public Object insert(User tempUser,
+	public Object insert(ActionUser tempActionUser,
 			@RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
 		JSONObject jsonObject = new JSONObject();
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = attributes.getRequest();
 		
 		try {
-			List<User> existUsers = userSerivce.list();
+			List<ActionUser> existActionUsers = userSerivce.list();
 					
 			int repeatId = 0;
-				for (User user : existUsers) {
-					if (user.getId().equals(tempUser.getId())) {
+				for (ActionUser actionUser : existActionUsers) {
+					if (actionUser.getId().equals(tempActionUser.getId())) {
 						repeatId++;
 					}
 				}
@@ -172,14 +172,14 @@ public class UserController {
 						String uploadPath = "/RemoteQueue/upload/user/";
 						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 					}
-					tempUser.setPhoto(filePath);
+					tempActionUser.setPhoto(filePath);
 					
 					// 对密码进行MD5加密
-					if (tempUser.getPwd() != null) {
-						tempUser.setPwd(Md5Util.EncoderByMd5(tempUser.getPwd()));
+					if (tempActionUser.getPwd() != null) {
+						tempActionUser.setPwd(Md5Util.EncoderByMd5(tempActionUser.getPwd()));
 					}
 
-					boolean result = userSerivce.save(tempUser);
+					boolean result = userSerivce.save(tempActionUser);
 					if (result) {
 						jsonObject.put("result", "ok");
 						return jsonObject;
@@ -200,8 +200,8 @@ public class UserController {
 	public Object getAllUsers() {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			List<User> users = userSerivce.list();
-			jsonObject.put("users", users);
+			List<ActionUser> actionUsers = userSerivce.list();
+			jsonObject.put("actionUsers", actionUsers);
 			jsonObject.put("result", "ok");
 			return jsonObject;
 		} catch (Exception e) {
@@ -212,10 +212,10 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
-	public Object delete(User tempUser) {
+	public Object delete(ActionUser tempActionUser) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			boolean result = userSerivce.removeById(tempUser.getId());
+			boolean result = userSerivce.removeById(tempActionUser.getId());
 			if (result) {
 				jsonObject.put("result", "ok");
 				return jsonObject;

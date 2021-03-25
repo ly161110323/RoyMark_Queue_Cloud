@@ -69,7 +69,7 @@
 					<li title="请选择办事大厅">
 						<a href="#">
 						<i class="layui-icon layui-icon-1">
-							<img style="margin-top: 3;" src="${ctx}/resources/images/m.png">
+							<img style="margin-top: 3px;" src="${ctx}/resources/images/m.png">
 						</i>
 						<span class="nav-label">请选择办事大厅</span>
 						<span class="fa arrow"></span>
@@ -88,13 +88,13 @@
 								<a href="#">
 									<c:if test="${empty item.menuImagepath}">
 										<i class="layui-icon layui-icon-${item.menuLs}">
-											<img style="margin-top: 3;" src="${ctx}/resources/images/m.png">
+											<img style="margin-top: 3px;" src="${ctx}/resources/images/m.png">
 										</i>
 										<%--<i class="fa fa-desktop"></i>--%>
 									</c:if>
 									<c:if test="${not empty item.menuImagepath}">
 										<i class="layui-icon layui-icon-${item.menuLs}">
-											<img style="margin-top: 3;" src="${pageContext.request.contextPath }${item.menuImagepath}">
+											<img style="margin-top: 3px;" src="${pageContext.request.contextPath }${item.menuImagepath}">
 										</i>
 									</c:if>
 									<span class="nav-label">${item.menuName}</span>

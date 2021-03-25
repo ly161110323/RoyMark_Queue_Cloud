@@ -97,32 +97,25 @@
             	layer.alert("所属大厅不能为空!");
             	return false;
             }
-		    var url="${ctx}/camera/getAll";
-            /*var server = {
-                "id":2,
-                "name": 'update2',
-                "ip": '10.100.10.10',
-                "port": 800
-            };*/
+		    var url="${ctx}/webaccount/login";
             $.ajax({
 
-                type:"GET",
+                type:"POST",
                 //提交的网址
                 url:url,
                 //提交的数据   该参数为属性值类型的参数
-                data: {},
+                data:{loginId:username,passWord:pwd,"areaLs":areaLs},
                 //返回数据的格式
                 dataType: "json",
 
                 success:function(data){
                     // console.log("data:"+JSON.stringify(data));
                     // console.log("data result:"+data.result);
-                console.log(data);
-				if(data.result=='ok')
+				if(data.result=='success')
                 {
-                    // var indexUrl="${ctx}/page/manage/index.jsp";
+                    var indexUrl="${ctx}/page/manage/index.jsp";
                     // console.log("indexUrl:"+indexUrl);
-                    // window.location.href=indexUrl;*/
+                    window.location.href=indexUrl;
                 }
                 else {
                     // console.log("data:"+JSON.stringify(data));
@@ -239,7 +232,7 @@
 				<tr>
 					<td><font size=2 color="#919191"><B>&nbsp;&nbsp;&nbsp;&nbsp;用户名：</B></font></td>
 					<td>
-						<input type="text" style="height:22px;width:170px;" size="20" maxlength="20" name="loginId" id="loginId" value="roymarkadmin" onchange="checkuser()" />
+						<input type="text" style="height:22px;width:170px;" size="20" maxlength="20" name="loginId" id="loginId" value="" onchange="checkuser()" />
 					</td>
 				</tr>
 				<tr><td colspan="2"></td></tr>

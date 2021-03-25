@@ -1,6 +1,6 @@
 package com.roymark.queue.filter;
 
-import com.roymark.queue.entity.User;
+import com.roymark.queue.entity.ActionUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class SessionFilter extends OncePerRequestFilter
 {
@@ -43,7 +42,7 @@ public class SessionFilter extends OncePerRequestFilter
         {
             // 执行过滤
             // 从session中获取登录者实体
-            User loginUser = (User) request.getSession().getAttribute("LOGIN_USER");
+            ActionUser loginUser = (ActionUser) request.getSession().getAttribute("LOGIN_USER");
             if (null == loginUser)
             {
                 boolean isAjaxRequest = isAjaxRequest(request);
