@@ -14,7 +14,7 @@ public class ActionUser implements Serializable {
     
 	private static final long serialVersionUID = 1L;
 	
-	@TableId(value = "user_id", type = IdType.AUTO)
+	@TableId(value = "user_id")
     private String id;
 
 	@TableField(value = "user_pwd")
@@ -36,7 +36,7 @@ public class ActionUser implements Serializable {
     private String photo;
 
     @TableField(value = "window_id")
-    private Long windowId;
+    private String windowId;
 
     public String getId() {
         return id;
@@ -94,11 +94,11 @@ public class ActionUser implements Serializable {
         this.photo = photo;
     }
 
-    public Long getWindowId() {
+    public String getWindowId() {
         return windowId;
     }
 
-    public void setWindowId(Long windowId) {
+    public void setWindowId(String windowId) {
         this.windowId = windowId;
     }
 }

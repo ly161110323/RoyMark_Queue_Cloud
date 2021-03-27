@@ -14,8 +14,8 @@ public class Server implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "server_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "server_id")
+    private String id;
 
     @TableField(value = "server_name")
     private String name;
@@ -26,11 +26,18 @@ public class Server implements Serializable {
     @TableField(value = "server_port")
     private Long port;
 
-	public Long getId() {
+    @TableField(exist = false)
+	private String serverStatus;
+
+	@TableField(exist = false)
+	private String programStatus;
+
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -57,5 +64,20 @@ public class Server implements Serializable {
 	public void setPort(Long port) {
 		this.port = port;
 	}
-    
+
+	public String getServerStatus() {
+		return serverStatus;
+	}
+
+	public void setServerStatus(String serverStatus) {
+		this.serverStatus = serverStatus;
+	}
+
+	public String getProgramStatus() {
+		return programStatus;
+	}
+
+	public void setProgramStatus(String programStatus) {
+		this.programStatus = programStatus;
+	}
 }

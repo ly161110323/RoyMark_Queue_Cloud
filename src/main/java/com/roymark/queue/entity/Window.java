@@ -14,8 +14,8 @@ public class Window implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "window_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "window_id")
+    private String id;
 
     @TableField(value = "window_name")
     private String name;
@@ -29,11 +29,11 @@ public class Window implements Serializable {
     @TableField(value = "floor_id")
     private String floorId;
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

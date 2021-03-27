@@ -14,17 +14,17 @@ public class Floor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "floor_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "floor_id")
+    private String id;
 
     @TableField(value = "floor_name")
     private String name;
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

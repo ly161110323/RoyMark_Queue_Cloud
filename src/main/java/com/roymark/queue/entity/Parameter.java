@@ -14,8 +14,8 @@ public class Parameter implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "param_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "param_id")
+    private String id;
 
     @TableField(value = "param_name")
     private String name;
@@ -29,11 +29,11 @@ public class Parameter implements Serializable {
     @TableField(value = "param_remark")
     private String remark;
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

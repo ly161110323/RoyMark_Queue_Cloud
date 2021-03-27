@@ -17,13 +17,13 @@ import net.sf.json.JSONObject;
 @RestController
 @RequestMapping("/camera")
 public class CameraController {
-private static final Logger logger = LogManager.getLogger(CameraController.class);
+	private static final Logger logger = LogManager.getLogger(CameraController.class);
     
 	@Autowired
     private CameraService cameraService;
 	
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
-	public Object getAllServers() {
+	public Object getAllCameras() {
 		JSONObject jsonObject = new JSONObject();
 	
 		try {

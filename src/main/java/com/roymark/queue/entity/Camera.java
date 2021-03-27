@@ -15,8 +15,8 @@ public class Camera implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "cam_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "cam_id")
+    private String id;
 
     @TableField(value = "cam_video_addr")
     private String videoAddr;
@@ -34,13 +34,16 @@ public class Camera implements Serializable {
     private Date birth;
 
     @TableField(value = "window_id")
-    private Long windowId;
+    private String windowId;
 
-	public Long getId() {
+    @TableField(value = "server_id")
+	private String serverId;
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -84,12 +87,19 @@ public class Camera implements Serializable {
 		this.birth = birth;
 	}
 
-	public Long getWindowId() {
+	public String getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(Long windowId) {
+	public void setWindowId(String windowId) {
 		this.windowId = windowId;
 	}
 
+	public String getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(String serverId) {
+		this.serverId = serverId;
+	}
 }

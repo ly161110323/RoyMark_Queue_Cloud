@@ -1,10 +1,8 @@
 package com.roymark.queue.controller;
 
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.roymark.queue.entity.ActionUser;
@@ -18,9 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.roymark.queue.service.UserService;
-import com.roymark.queue.util.GetLoginIp;
 import com.roymark.queue.util.Md5Util;
 import com.roymark.queue.util.UploadUtil;
 
@@ -34,84 +30,10 @@ public class UserController {
     
 	@Autowired
     private UserService userSerivce;
-	
-	@RequestMapping("/login")
-	public Object login(String loginId, String pwd) {
-		JSONObject jsonObject = new JSONObject();
-		
-		try {
-			ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
-					.getRequestAttributes();
-			HttpServletRequest request = attributes.getRequest();
-			HttpSession session = request.getSession();
-			
-			ActionUser actionUser = new ActionUser();
-			actionUser.setId(loginId);
-			QueryWrapper<ActionUser> queryWrapper =  new QueryWrapper<ActionUser>(actionUser);
-			actionUser = userSerivce.getOne(queryWrapper);
-			
-			if (actionUser != null) {
-				if (Md5Util.checkpassword(pwd, actionUser.getPwd())) {
-					session.setAttribute("LOGIN_USER", actionUser);
-					// 取得登陆客户端IP
-					String loginIp = GetLoginIp.getIpAddr(request);
-					session.setAttribute("LOGIN_CLIENT", loginIp);
-					jsonObject.put("result", "success");
-					jsonObject.put("msg", "");
-					return jsonObject;
-				}
-				else {
-					jsonObject.put("result", "error");
-					jsonObject.put("msg", "密码错误!");
-					return jsonObject;
-				}
-			}
-			else {
-				jsonObject.put("result", "error");
-				jsonObject.put("msg", "该用户不存在!");
-				return jsonObject;
-			}
-			
-			// 保存客户端登陆IP纪录
-//          int count = loginServies.loginUserHistory(loginId);
-//          if (count == 0) {
-//              loginServies.addLoginUserHistory(loginId,
-//                      (String) session.getAttribute("LOGIN_CLIENT"));
-//          } else {
-//              loginServies.updLoginUserHistory(loginId,
-//                      (String) session.getAttribute("LOGIN_CLIENT"));
-//          }
-			
-		} catch (Exception e) {
-			logger.error("/user/login 错误:" + e.getMessage(), e);
-			jsonObject.put("result", "error");
-			jsonObject.put("msg", e.getMessage());
-			return jsonObject;
-		}
-	}
-	
-	@RequestMapping("/logout")
-	public String logout() {
-		try {
-			ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
-					.getRequestAttributes();
-			HttpServletRequest request = attributes.getRequest();
-			HttpSession session = request.getSession();
-			Enumeration em = request.getSession().getAttributeNames(); // 得到session中所有的属性名
-			while (em.hasMoreElements()) {
-				session.removeAttribute(em.nextElement().toString()); // 遍历删除session中的值
-			}
-			session.invalidate();
-			return "success";
-		} catch (Exception e) {
-			logger.error("/user/logout 错误:" + e.getMessage(), e);
-			return "error";
-		}
-	}
+
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-	public Object update(ActionUser tempActionUser, @RequestParam("updateName") String updateName,
-						 @RequestParam("updateNo") String updateNo,
+	public Object update(ActionUser tempActionUser,
 						 @RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
 		JSONObject jsonObject = new JSONObject();
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -229,6 +151,27 @@ public class UserController {
 			return jsonObject;
 		}
 	}
-	
+
+	@RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
+	public Object getOne(Long userId) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			ActionUser user = userSerivce.getById(userId);
+			if (user != null) {
+				jsonObject.put("result", "ok");
+				jsonObject.put("user", user);
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/user/getOne 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			return jsonObject;
+		}
+	}
 }
 

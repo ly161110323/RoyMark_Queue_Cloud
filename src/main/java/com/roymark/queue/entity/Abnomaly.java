@@ -15,8 +15,8 @@ public class Abnomaly  implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-    @TableId(value = "abnomaly_id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "abnomaly_id")
+    private String id;
 
     @TableField(value = "abnomaly_event")
     private String event;
@@ -31,19 +31,25 @@ public class Abnomaly  implements Serializable {
     private double confidence;
 
 	@TableField(value = "abnomaly_link")
-    private String Link;
+    private String link;
 
     @TableField(value = "window_id")
-    private Long windowId;
+    private String windowId;
 
     @TableField(value = "user_id")
     private String userId;
 
-	public Long getId() {
+    @TableField(exist = false)
+	private String windowName;
+
+    @TableField(exist = false)
+	private String userName;
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -81,18 +87,18 @@ public class Abnomaly  implements Serializable {
 	}
 
 	public String getLink() {
-		return Link;
+		return link;
 	}
 
 	public void setLink(String link) {
-		Link = link;
+		this.link = link;
 	}
 
-	public Long getWindowId() {
+	public String getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(Long windowId) {
+	public void setWindowId(String windowId) {
 		this.windowId = windowId;
 	}
 
@@ -104,5 +110,19 @@ public class Abnomaly  implements Serializable {
 		this.userId = userId;
 	}
 
-    
+	public String getWindowName() {
+		return windowName;
+	}
+
+	public void setWindowName(String windowName) {
+		this.windowName = windowName;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 }
