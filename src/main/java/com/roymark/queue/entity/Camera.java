@@ -14,8 +14,18 @@ import lombok.Data;
 public class Camera implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-    @TableId(value = "cam_id")
+
+	@TableId(value = "hidden_id")
+	private Long hiddenId;
+
+	public Long getHiddenId() {
+		return hiddenId;
+	}
+
+	public void setHiddenId(Long hiddenId) {
+		this.hiddenId = hiddenId;
+	}
+    @TableField(value = "cam_id")
     private String id;
 
     @TableField(value = "cam_video_addr")
@@ -33,11 +43,11 @@ public class Camera implements Serializable {
     @TableField(value = "cam_birth")
     private Date birth;
 
-    @TableField(value = "window_id")
-    private String windowId;
+    @TableField(value = "window_hidden_id")
+    private Long windowId;
 
-    @TableField(value = "server_id")
-	private String serverId;
+    @TableField(value = "server_hidden_id")
+	private Long serverId;
 
 	public String getId() {
 		return id;
@@ -87,19 +97,19 @@ public class Camera implements Serializable {
 		this.birth = birth;
 	}
 
-	public String getWindowId() {
+	public Long getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(String windowId) {
+	public void setWindowId(Long windowId) {
 		this.windowId = windowId;
 	}
 
-	public String getServerId() {
+	public Long getServerId() {
 		return serverId;
 	}
 
-	public void setServerId(String serverId) {
+	public void setServerId(Long serverId) {
 		this.serverId = serverId;
 	}
 }

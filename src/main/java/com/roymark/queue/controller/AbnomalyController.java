@@ -30,18 +30,21 @@ public class AbnomalyController {
 
             jsonObject.put("abnomalies", abnomalies);
             jsonObject.put("result", "ok");
+            jsonObject.put("msg", "获取成功");
             return jsonObject;
         } catch (Exception e) {
             logger.error("/abnomaly/getAllAbnomalies 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
+            jsonObject.put("msg", "获取出现错误");
             return jsonObject;
         }
     }
 
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-    public Object insert(String event, double confidence, String link, String userId, String windowId, String startDate, String endDate) {
+    public Object insert(String abnomalyId, String event, double confidence, String link, Long userId, Long windowId, String startDate, String endDate) {
         JSONObject jsonObject = new JSONObject();
         Abnomaly abnomaly = new Abnomaly();
+        abnomaly.setId(abnomalyId);
         abnomaly.setEvent(event);
         abnomaly.setConfidence(confidence);
         abnomaly.setLink(link);
@@ -49,23 +52,31 @@ public class AbnomalyController {
         abnomaly.setWindowId(windowId);
 
         Timestamp startTime = Timestamp.valueOf(startDate);
-        System.out.println(startTime);
         Timestamp endTime = Timestamp.valueOf(endDate);
 
         abnomaly.setEndDate(endTime);
         abnomaly.setStartDate(startTime);
         try {
+            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getId, abnomalyId));
+            if (queryAbnomaly != null) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "异常ID已存在");
+                return jsonObject;
+            }
             boolean result = abnomalyService.save(abnomaly);
             if (result) {
                 jsonObject.put("result", "ok");
+                jsonObject.put("msg", "添加成功");
                 return jsonObject;
             } else {
                 jsonObject.put("result", "no");
+                jsonObject.put("msg", "添加失败");
                 return jsonObject;
             }
         } catch (Exception e) {
             logger.error("/abnomaly/insert 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
+            jsonObject.put("msg", "添加出现错误");
             return jsonObject;
         }
     }
@@ -75,6 +86,12 @@ public class AbnomalyController {
         JSONObject jsonObject = new JSONObject();
 
         try {
+            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getId, abnomaly.getId()));
+            if (queryAbnomaly != null) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "异常ID已存在");
+                return jsonObject;
+            }
             boolean result = abnomalyService.update(abnomaly, Wrappers.<Abnomaly>lambdaUpdate().eq(Abnomaly::getId, abnomaly.getId()));
             if (result) {
                 jsonObject.put("result", "ok");

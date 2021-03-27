@@ -121,13 +121,12 @@
     <table id="115" parent="2" name="timelist"/>
     <table id="116" parent="2" name="user"/>
     <table id="117" parent="2" name="window"/>
-    <column id="118" parent="8" name="abnomaly__id">
+    <column id="118" parent="8" name="abnomaly_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="119" parent="8" name="abnomaly__event">
+    <column id="119" parent="8" name="abnomaly_event">
       <Position>2</Position>
       <DataType>varchar(255)|0</DataType>
     </column>
@@ -135,21 +134,21 @@
       <Position>3</Position>
       <DataType>timestamp|0</DataType>
     </column>
-    <column id="121" parent="8" name="abnomaly__end_date">
+    <column id="121" parent="8" name="abnomaly_end_date">
       <Position>4</Position>
       <DataType>timestamp|0</DataType>
     </column>
     <column id="122" parent="8" name="abnomaly_confidence">
       <Position>5</Position>
-      <DataType>double(11)|0</DataType>
+      <DataType>double|0</DataType>
     </column>
-    <column id="123" parent="8" name="abnomaly__link">
+    <column id="123" parent="8" name="abnomaly_link">
       <Position>6</Position>
       <DataType>varchar(255)|0</DataType>
     </column>
     <column id="124" parent="8" name="window_id">
       <Position>7</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
     </column>
     <column id="125" parent="8" name="user_id">
       <Position>8</Position>
@@ -157,14 +156,13 @@
     </column>
     <key id="126" parent="8" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>abnomaly__id</ColNames>
+      <ColNames>abnomaly_id</ColNames>
       <Primary>1</Primary>
     </key>
     <column id="127" parent="9" name="cam_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
     <column id="128" parent="9" name="cam_ip">
       <Position>2</Position>
@@ -192,7 +190,7 @@
     </column>
     <column id="134" parent="9" name="window_id">
       <Position>8</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
     </column>
     <key id="135" parent="9" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
@@ -237,9 +235,8 @@
     </column>
     <column id="144" parent="12" name="floor_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
     <column id="145" parent="12" name="floor_name">
       <Position>2</Position>
@@ -618,9 +615,8 @@
     </key>
     <column id="219" parent="19" name="param_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
     <column id="220" parent="19" name="param_name">
       <Position>2</Position>
@@ -2978,9 +2974,8 @@
     </column>
     <column id="717" parent="60" name="server_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
     <column id="718" parent="60" name="server_name">
       <Position>2</Position>
@@ -5642,7 +5637,7 @@ terminalID</ColNames>
     </column>
     <column id="1283" parent="116" name="window_id">
       <Position>8</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
     </column>
     <key id="1284" parent="116" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
@@ -5651,9 +5646,8 @@ terminalID</ColNames>
     </key>
     <column id="1285" parent="117" name="window_id">
       <Position>1</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
     </column>
     <column id="1286" parent="117" name="window_name">
       <Position>2</Position>
@@ -5669,7 +5663,7 @@ terminalID</ColNames>
     </column>
     <column id="1289" parent="117" name="floor_id">
       <Position>5</Position>
-      <DataType>int(11)|0</DataType>
+      <DataType>varchar(255)|0</DataType>
     </column>
     <key id="1290" parent="117" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>

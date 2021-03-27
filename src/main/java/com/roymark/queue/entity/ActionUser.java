@@ -13,8 +13,18 @@ import lombok.Data;
 public class ActionUser implements Serializable {
     
 	private static final long serialVersionUID = 1L;
-	
-	@TableId(value = "user_id")
+
+	@TableId(value = "hidden_id")
+    private Long hiddenId;
+
+    public Long getHiddenId() {
+        return hiddenId;
+    }
+
+    public void setHiddenId(Long hiddenId) {
+        this.hiddenId = hiddenId;
+    }
+	@TableField(value = "user_id")
     private String id;
 
 	@TableField(value = "user_pwd")
@@ -35,8 +45,8 @@ public class ActionUser implements Serializable {
     @TableField(value = "user_photo")
     private String photo;
 
-    @TableField(value = "window_id")
-    private String windowId;
+    @TableField(value = "window_hidden_id")
+    private Long windowId;
 
     public String getId() {
         return id;
@@ -94,11 +104,11 @@ public class ActionUser implements Serializable {
         this.photo = photo;
     }
 
-    public String getWindowId() {
+    public Long getWindowId() {
         return windowId;
     }
 
-    public void setWindowId(String windowId) {
+    public void setWindowId(Long windowId) {
         this.windowId = windowId;
     }
 }

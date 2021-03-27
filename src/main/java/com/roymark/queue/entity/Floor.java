@@ -13,8 +13,19 @@ import lombok.Data;
 public class Floor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-    @TableId(value = "floor_id")
+
+	@TableId(value = "hidden_id")
+	private Long hiddenId;
+
+	public Long getHiddenId() {
+		return hiddenId;
+	}
+
+	public void setHiddenId(Long hiddenId) {
+		this.hiddenId = hiddenId;
+	}
+
+    @TableField(value = "floor_id")
     private String id;
 
     @TableField(value = "floor_name")

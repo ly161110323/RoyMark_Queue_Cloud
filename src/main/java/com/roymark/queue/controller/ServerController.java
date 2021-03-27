@@ -52,8 +52,14 @@ public class ServerController {
 	@RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
 	public Object insert(Server server) {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		try {
+			Server queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getId, server.getId()));
+			if (queryServer != null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "服务器ID重复");
+				return jsonObject;
+			}
 			boolean result = serverSerivce.save(server);
 			if (result) {
 				jsonObject.put("result", "ok");
@@ -76,9 +82,16 @@ public class ServerController {
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
 	public Object update(Server server) {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		try {
-			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getId, server.getId()));
+			Server queryServer = serverSerivce.getById(server.getHiddenId());
+			if (queryServer == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "服务器不存在");
+				return jsonObject;
+			}
+
+			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getHiddenId, server.getHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "修改成功");
@@ -98,22 +111,26 @@ public class ServerController {
 	}
 	
 	@RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
-	public Object delete(String serverId) {
+	public Object delete(String deleteLss) {
 		JSONObject jsonObject = new JSONObject();
-		
+
+
 		try {
-			boolean delCamRes = cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerId, serverId));
-			boolean result = serverSerivce.removeById(serverId);
-			if (delCamRes && result) {
-				jsonObject.put("result", "ok");
-				jsonObject.put("msg", "删除成功");
-				return jsonObject;
-			}
-			else {
+			String[] deletes = deleteLss.split(",");
+			if (deletes.length <= 0)
+			{
 				jsonObject.put("result", "no");
-				jsonObject.put("msg", "删除失败");
+				jsonObject.put("msg", "无选中删除项");
 				return jsonObject;
 			}
+			for (int i = 0; i < deletes.length; i++) {
+				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerId, Long.valueOf(deletes[i])));
+				serverSerivce.removeById(deletes[i]);
+			}
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "删除成功");
+			return jsonObject;
+
 		} catch (Exception e) {
 			logger.error("/server/delete 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
@@ -123,11 +140,11 @@ public class ServerController {
 	}
 
 	@RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
-	public Object getOne(Long serverId) {
+	public Object getOne(Long serverHiddenId) {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Server server = serverSerivce.getById(serverId);
+			Server server = serverSerivce.getById(serverHiddenId);
 			if (server != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("server", server);

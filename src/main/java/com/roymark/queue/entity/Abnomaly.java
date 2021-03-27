@@ -14,8 +14,19 @@ import java.sql.Timestamp;
 public class Abnomaly  implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-    @TableId(value = "abnomaly_id")
+
+	@TableId(value = "hidden_id")
+	private Long hiddenId;
+
+	public Long getHiddenId() {
+		return hiddenId;
+	}
+
+	public void setHiddenId(Long hiddenId) {
+		this.hiddenId = hiddenId;
+	}
+
+	@TableField(value = "abnomaly_id")
     private String id;
 
     @TableField(value = "abnomaly_event")
@@ -33,11 +44,11 @@ public class Abnomaly  implements Serializable {
 	@TableField(value = "abnomaly_link")
     private String link;
 
-    @TableField(value = "window_id")
-    private String windowId;
+    @TableField(value = "window_hidden_id")
+    private Long windowId;
 
-    @TableField(value = "user_id")
-    private String userId;
+    @TableField(value = "user_hidden_id")
+    private Long userId;
 
     @TableField(exist = false)
 	private String windowName;
@@ -94,19 +105,19 @@ public class Abnomaly  implements Serializable {
 		this.link = link;
 	}
 
-	public String getWindowId() {
+	public Long getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(String windowId) {
+	public void setWindowId(Long windowId) {
 		this.windowId = windowId;
 	}
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

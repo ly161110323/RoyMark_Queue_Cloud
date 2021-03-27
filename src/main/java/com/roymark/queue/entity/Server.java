@@ -13,8 +13,19 @@ import lombok.Data;
 public class Server implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-    @TableId(value = "server_id")
+
+	@TableId(value = "hidden_id")
+	private Long hiddenId;
+
+	public Long getHiddenId() {
+		return hiddenId;
+	}
+
+	public void setHiddenId(Long hiddenId) {
+		this.hiddenId = hiddenId;
+	}
+
+    @TableField(value = "server_id")
     private String id;
 
     @TableField(value = "server_name")

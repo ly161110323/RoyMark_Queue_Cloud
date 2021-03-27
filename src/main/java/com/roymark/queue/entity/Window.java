@@ -13,8 +13,19 @@ import lombok.Data;
 public class Window implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-    @TableId(value = "window_id")
+
+	@TableId(value = "hidden_id")
+	private Long hiddenId;
+
+	public Long getHiddenId() {
+		return hiddenId;
+	}
+
+	public void setHiddenId(Long hiddenId) {
+		this.hiddenId = hiddenId;
+	}
+
+    @TableField(value = "window_id")
     private String id;
 
     @TableField(value = "window_name")
@@ -26,8 +37,8 @@ public class Window implements Serializable {
     @TableField(value = "window_event")
     private String event;
 
-    @TableField(value = "floor_id")
-    private String floorId;
+    @TableField(value = "floor_hidden_id")
+    private Long floorId;
 
 	public String getId() {
 		return id;
@@ -61,11 +72,11 @@ public class Window implements Serializable {
 		this.event = event;
 	}
 
-	public String getFloorId() {
+	public Long getFloorId() {
 		return floorId;
 	}
 
-	public void setFloorId(String floorId) {
+	public void setFloorId(Long floorId) {
 		this.floorId = floorId;
 	}
     
