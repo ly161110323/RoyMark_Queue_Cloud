@@ -80,7 +80,7 @@ public class AbnomalyController {
             return jsonObject;
         }
     }
-
+/*
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
     public Object update(Abnomaly abnomaly) {
         JSONObject jsonObject = new JSONObject();
@@ -105,7 +105,7 @@ public class AbnomalyController {
             jsonObject.put("result", "error");
             return jsonObject;
         }
-    }
+    }*/
 
     @RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public Object delete(Long abnomalyId) {

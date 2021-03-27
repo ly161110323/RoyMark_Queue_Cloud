@@ -30,10 +30,12 @@ public class CameraController {
 			List<Camera> cameras = cameraService.list();
 			jsonObject.put("cameras", cameras);
 			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "获取成功");
 			return jsonObject;
 		} catch (Exception e) {
 			logger.error("/camera/getAllCameras 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
 			return jsonObject;
 		}
 	}
@@ -43,6 +45,13 @@ public class CameraController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
+			Camera queryCamera = cameraService.getOne(Wrappers.<Camera>lambdaQuery().eq(Camera::getId, camera.getId()));
+			if (queryCamera != null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "获取出现错误");
+
+				return jsonObject;
+			}
 			boolean result = cameraService.save(camera);
 			if (result) {
 				jsonObject.put("result", "ok");
