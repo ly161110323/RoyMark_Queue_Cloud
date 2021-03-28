@@ -15,40 +15,32 @@ public class Abnomaly  implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-	private Long hiddenId;
-
-	public Long getHiddenId() {
-		return hiddenId;
-	}
-
-	public void setHiddenId(Long hiddenId) {
-		this.hiddenId = hiddenId;
-	}
+	@TableId(value = "abnomaly_hidden_id")
+	private Long abnomalyHiddenId;
 
 	@TableField(value = "abnomaly_id")
-    private String id;
+    private String abnomalyId;
 
     @TableField(value = "abnomaly_event")
-    private String event;
+    private String abnomalyEvent;
 
     @TableField(value = "abnomaly_start_date")
-    private Timestamp startDate;
+    private Timestamp abnomalyStartDate;
     
     @TableField(value = "abnomaly_end_date")
-    private Timestamp endDate;
+    private Timestamp abnomalyEndDate;
 
     @TableField(value = "abnomaly_confidence")
-    private double confidence;
+    private double abnomalyConfidence;
 
 	@TableField(value = "abnomaly_link")
-    private String link;
+    private String abnomalyLink;
 
-    @TableField(value = "window_hidden_id")
-    private Long windowId;
+    @TableField(value = "window_id")
+    private String windowId;
 
-    @TableField(value = "user_hidden_id")
-    private Long userId;
+    @TableField(value = "user_id")
+    private String userId;
 
     @TableField(exist = false)
 	private String windowName;
@@ -56,68 +48,75 @@ public class Abnomaly  implements Serializable {
     @TableField(exist = false)
 	private String userName;
 
-	public String getId() {
-		return id;
+	public Long getAbnomalyHiddenId() {
+		return abnomalyHiddenId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setAbnomalyHiddenId(Long abnomalyHiddenId) {
+		this.abnomalyHiddenId = abnomalyHiddenId;
 	}
 
-	public String getEvent() {
-		return event;
+	public String getAbnomalyId() {
+		return abnomalyId;
 	}
 
-	public void setEvent(String event) {
-		this.event = event;
+	public void setAbnomalyId(String abnomalyId) {
+		this.abnomalyId = abnomalyId;
 	}
 
-
-	public Timestamp getStartDate() {
-		return startDate;
+	public String getAbnomalyEvent() {
+		return abnomalyEvent;
 	}
 
-	public void setStartDate(Timestamp startDate) {
-		this.startDate = startDate;
+	public void setAbnomalyEvent(String abnomalyEvent) {
+		this.abnomalyEvent = abnomalyEvent;
 	}
 
-	public Timestamp getEndDate() {
-		return endDate;
+	public Timestamp getAbnomalyStartDate() {
+		return abnomalyStartDate;
 	}
 
-	public void setEndDate(Timestamp endDate) {
-		this.endDate = endDate;
+	public void setAbnomalyStartDate(Timestamp abnomalyStartDate) {
+		this.abnomalyStartDate = abnomalyStartDate;
 	}
 
-	public double getConfidence() {
-		return confidence;
+	public Timestamp getAbnomalyEndDate() {
+		return abnomalyEndDate;
 	}
 
-	public void setConfidence(double confidence) {
-		this.confidence = confidence;
+	public void setAbnomalyEndDate(Timestamp abnomalyEndDate) {
+		this.abnomalyEndDate = abnomalyEndDate;
 	}
 
-	public String getLink() {
-		return link;
+	public double getAbnomalyConfidence() {
+		return abnomalyConfidence;
 	}
 
-	public void setLink(String link) {
-		this.link = link;
+	public void setAbnomalyConfidence(double abnomalyConfidence) {
+		this.abnomalyConfidence = abnomalyConfidence;
 	}
 
-	public Long getWindowId() {
+	public String getAbnomalyLink() {
+		return abnomalyLink;
+	}
+
+	public void setAbnomalyLink(String abnomalyLink) {
+		this.abnomalyLink = abnomalyLink;
+	}
+
+	public String getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(Long windowId) {
+	public void setWindowId(String windowId) {
 		this.windowId = windowId;
 	}
 
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

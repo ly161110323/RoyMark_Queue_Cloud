@@ -41,23 +41,23 @@ public class AbnomalyController {
     }
 
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-    public Object insert(String abnomalyId, String event, double confidence, String link, Long userId, Long windowId, String startDate, String endDate) {
+    public Object insert(String abnomalyId, String abnomalyEvent, double abnomalyConfidence, String abnomalyLink, String userId, String windowId, String abnomalyStartDate, String abnomalyEndDate) {
         JSONObject jsonObject = new JSONObject();
         Abnomaly abnomaly = new Abnomaly();
-        abnomaly.setId(abnomalyId);
-        abnomaly.setEvent(event);
-        abnomaly.setConfidence(confidence);
-        abnomaly.setLink(link);
+        abnomaly.setAbnomalyId(abnomalyId);
+        abnomaly.setAbnomalyEvent(abnomalyEvent);
+        abnomaly.setAbnomalyConfidence(abnomalyConfidence);
+        abnomaly.setAbnomalyLink(abnomalyLink);
         abnomaly.setUserId(userId);
         abnomaly.setWindowId(windowId);
 
-        Timestamp startTime = Timestamp.valueOf(startDate);
-        Timestamp endTime = Timestamp.valueOf(endDate);
+        Timestamp startTime = Timestamp.valueOf(abnomalyStartDate);
+        Timestamp endTime = Timestamp.valueOf(abnomalyEndDate);
 
-        abnomaly.setEndDate(endTime);
-        abnomaly.setStartDate(startTime);
+        abnomaly.setAbnomalyEndDate(endTime);
+        abnomaly.setAbnomalyStartDate(startTime);
         try {
-            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getId, abnomalyId));
+            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getAbnomalyId, abnomalyId));
             if (queryAbnomaly != null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "异常ID已存在");

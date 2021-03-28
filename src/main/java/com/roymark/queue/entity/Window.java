@@ -14,70 +14,69 @@ public class Window implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-	private Long hiddenId;
-
-	public Long getHiddenId() {
-		return hiddenId;
-	}
-
-	public void setHiddenId(Long hiddenId) {
-		this.hiddenId = hiddenId;
-	}
+	@TableId(value = "window_hidden_id")
+	private Long windowHiddenId;
 
     @TableField(value = "window_id")
-    private String id;
+    private String windowId;
 
     @TableField(value = "window_name")
-    private String name;
+    private String windowName;
 
     @TableField(value = "window_department")
-    private String department;
+    private String windowDepartment;
 
     @TableField(value = "window_event")
-    private String event;
+    private String windowEvent;
 
-    @TableField(value = "floor_hidden_id")
-    private Long floorId;
+    @TableField(value = "floor_id")
+    private String floorId;
 
-	public String getId() {
-		return id;
+	public Long getWindowHiddenId() {
+		return windowHiddenId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setWindowHiddenId(Long windowHiddenId) {
+		this.windowHiddenId = windowHiddenId;
 	}
 
-	public String getName() {
-		return name;
+	public String getWindowId() {
+		return windowId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setWindowId(String windowId) {
+		this.windowId = windowId;
 	}
 
-	public String getDepartment() {
-		return department;
+	public String getWindowName() {
+		return windowName;
 	}
 
-	public void setDepartment(String department) {
-		this.department = department;
+	public void setWindowName(String windowName) {
+		this.windowName = windowName;
 	}
 
-	public String getEvent() {
-		return event;
+	public String getWindowDepartment() {
+		return windowDepartment;
 	}
 
-	public void setEvent(String event) {
-		this.event = event;
+	public void setWindowDepartment(String windowDepartment) {
+		this.windowDepartment = windowDepartment;
 	}
 
-	public Long getFloorId() {
+	public String getWindowEvent() {
+		return windowEvent;
+	}
+
+	public void setWindowEvent(String windowEvent) {
+		this.windowEvent = windowEvent;
+	}
+
+	public String getFloorId() {
 		return floorId;
 	}
 
-	public void setFloorId(Long floorId) {
+	public void setFloorId(String floorId) {
 		this.floorId = floorId;
 	}
-    
 }

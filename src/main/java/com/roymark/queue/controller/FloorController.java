@@ -63,7 +63,7 @@ public class FloorController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            boolean result = floorService.update(floor, Wrappers.<Floor>lambdaUpdate().eq(Floor::getId, floor.getId()));
+            boolean result = floorService.update(floor, Wrappers.<Floor>lambdaUpdate().eq(Floor::getFloorHiddenId, floor.getFloorHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
                 return jsonObject;

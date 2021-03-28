@@ -33,6 +33,11 @@ public class ServerController {
 	
 		try {
 			List<Server> servers = serverSerivce.list();
+			if (servers.size() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "暂无服务器");
+				return jsonObject;
+			}
 			for (Server server: servers) {
 				server.setServerStatus("离线");
 				server.setProgramStatus("未启动");
@@ -54,10 +59,10 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			Server queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getId, server.getId()));
+			Server queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
 			if (queryServer != null) {
 				jsonObject.put("result", "no");
-				jsonObject.put("msg", "服务器ID重复");
+				jsonObject.put("msg", "服务器ID已存在");
 				return jsonObject;
 			}
 			boolean result = serverSerivce.save(server);
@@ -84,14 +89,23 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			Server queryServer = serverSerivce.getById(server.getHiddenId());
+			Server queryServer = serverSerivce.getById(server.getServerHiddenId());
 			if (queryServer == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "服务器不存在");
 				return jsonObject;
 			}
 
-			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getHiddenId, server.getHiddenId()));
+			queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
+
+			// 如果根据服务器名查询到的非空且其hiddenId与传入的hiddenId不一致，则表明服务器名已存在于另一项
+			if (queryServer != null && !queryServer.getServerHiddenId().equals(server.getServerHiddenId())) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "服务器名已存在");
+				return jsonObject;
+			}
+
+			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getServerHiddenId, server.getServerHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "修改成功");
@@ -111,20 +125,21 @@ public class ServerController {
 	}
 	
 	@RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
-	public Object delete(String deleteLss) {
+	public Object delete(String deleteId) {
 		JSONObject jsonObject = new JSONObject();
 
 
 		try {
-			String[] deletes = deleteLss.split(",");
+			String[] deletes = deleteId.split(",");
 			if (deletes.length <= 0)
 			{
 				jsonObject.put("result", "no");
-				jsonObject.put("msg", "无选中删除项");
+				jsonObject.put("msg", "没有选中的删除项");
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerId, Long.valueOf(deletes[i])));
+				Server queryServer = serverSerivce.getById(deletes[i]);
+				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerId, queryServer.getServerId()));
 				serverSerivce.removeById(deletes[i]);
 			}
 			jsonObject.put("result", "ok");

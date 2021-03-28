@@ -69,7 +69,7 @@ public class WindowController {
 		
 		try {
 			// boolean result = windowSerivce.update(window, new UpdateWrapper<Window>().eq("window_id", window.getId()));
-			boolean result = windowSerivce.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getId, window.getId()));
+			boolean result = windowSerivce.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
 
 			if (result) {
 				jsonObject.put("result", "ok");

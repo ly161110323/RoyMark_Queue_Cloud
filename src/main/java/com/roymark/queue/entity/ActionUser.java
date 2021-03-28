@@ -14,101 +14,102 @@ public class ActionUser implements Serializable {
     
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-    private Long hiddenId;
+	@TableId(value = "user_hidden_id")
+    private Long userHiddenId;
 
-    public Long getHiddenId() {
-        return hiddenId;
-    }
-
-    public void setHiddenId(Long hiddenId) {
-        this.hiddenId = hiddenId;
-    }
 	@TableField(value = "user_id")
-    private String id;
+    private String userId;
 
 	@TableField(value = "user_pwd")
-	private String pwd;
+	private String userPwd;
 	
     @TableField(value = "user_name")
-    private String name;
+    private String userName;
 
     @TableField(value = "user_sex")
-    private String sex;
+    private String userSex;
 
     @TableField(value = "user_department")
-    private String department;
+    private String userDepartment;
 
     @TableField(value = "user_post")
-    private String post;
+    private String userPost;
 
     @TableField(value = "user_photo")
-    private String photo;
+    private String userPhoto;
 
-    @TableField(value = "window_hidden_id")
-    private Long windowId;
+    @TableField(value = "window_id")
+    private String windowId;
 
-    public String getId() {
-        return id;
+    public Long getUserHiddenId() {
+        return userHiddenId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserHiddenId(Long userHiddenId) {
+        this.userHiddenId = userHiddenId;
     }
 
-    public String getPwd() {
-		return pwd;
-	}
-
-	public void setPwd(String pwd) {
-		this.pwd = pwd;
-	}
-
-	public String getName() {
-        return name;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getSex() {
-        return sex;
+    public String getUserPwd() {
+        return userPwd;
     }
 
-    public void setSex(String sex) {
-        this.sex = sex;
+    public void setUserPwd(String userPwd) {
+        this.userPwd = userPwd;
     }
 
-    public String getDepartment() {
-        return department;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getPost() {
-        return post;
+    public String getUserSex() {
+        return userSex;
     }
 
-    public void setPost(String post) {
-        this.post = post;
+    public void setUserSex(String userSex) {
+        this.userSex = userSex;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getUserDepartment() {
+        return userDepartment;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setUserDepartment(String userDepartment) {
+        this.userDepartment = userDepartment;
     }
 
-    public Long getWindowId() {
+    public String getUserPost() {
+        return userPost;
+    }
+
+    public void setUserPost(String userPost) {
+        this.userPost = userPost;
+    }
+
+    public String getUserPhoto() {
+        return userPhoto;
+    }
+
+    public void setUserPhoto(String userPhoto) {
+        this.userPhoto = userPhoto;
+    }
+
+    public String getWindowId() {
         return windowId;
     }
 
-    public void setWindowId(Long windowId) {
+    public void setWindowId(String windowId) {
         this.windowId = windowId;
     }
 }

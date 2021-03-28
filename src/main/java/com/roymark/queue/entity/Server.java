@@ -14,28 +14,21 @@ public class Server implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-	private Long hiddenId;
+	@TableId(value = "server_hidden_id")
+	private Long serverHiddenId;
 
-	public Long getHiddenId() {
-		return hiddenId;
-	}
-
-	public void setHiddenId(Long hiddenId) {
-		this.hiddenId = hiddenId;
-	}
 
     @TableField(value = "server_id")
-    private String id;
+    private String serverId;
 
     @TableField(value = "server_name")
-    private String name;
+    private String serverName;
 
     @TableField(value = "server_ip")
-    private String ip;
+    private String serverIp;
 
     @TableField(value = "server_port")
-    private Long port;
+    private Long serverPort;
 
     @TableField(exist = false)
 	private String serverStatus;
@@ -43,37 +36,44 @@ public class Server implements Serializable {
 	@TableField(exist = false)
 	private String programStatus;
 
-
-	public String getId() {
-		return id;
+	public Long getServerHiddenId() {
+		return serverHiddenId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setServerHiddenId(Long serverHiddenId) {
+		this.serverHiddenId = serverHiddenId;
 	}
 
-	public String getName() {
-		return name;
+	public String getServerId() {
+		return serverId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setServerId(String serverId) {
+		this.serverId = serverId;
 	}
 
-	public String getIp() {
-		return ip;
+	public String getServerName() {
+		return serverName;
 	}
 
-	public void setIp(String ip) {
-		this.ip = ip;
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
 	}
 
-	public Long getPort() {
-		return port;
+	public String getServerIp() {
+		return serverIp;
 	}
 
-	public void setPort(Long port) {
-		this.port = port;
+	public void setServerIp(String serverIp) {
+		this.serverIp = serverIp;
+	}
+
+	public Long getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(Long serverPort) {
+		this.serverPort = serverPort;
 	}
 
 	public String getServerStatus() {

@@ -4,12 +4,13 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.roymark.queue.entity.Abnomaly">
-        <id column="abnomaly_id" property="id" />
-        <result column="abnomaly_event" property="event" />
-        <result column="abnomaly_start_date" property="startDate" />
-        <result column="abnomaly_end_date" property="endDate" />
-        <result column="abnomaly_confidence" property="confidence" />
-        <result column="abnomaly_link" property="link" />
+        <id column="abnomaly_hidden_id" property="abnomalyHiddenId" />
+        <result column="abnomaly_id" property="abnomalyId" />
+        <result column="abnomaly_event" property="abnomalyEvent" />
+        <result column="abnomaly_start_date" property="abnomalyStartDate" />
+        <result column="abnomaly_end_date" property="abnomalyEndDate" />
+        <result column="abnomaly_confidence" property="abnomalyConfidence" />
+        <result column="abnomaly_link" property="abnomalyLink" />
         <result column="window_id" property="windowId" />
         <result column="user_id" property="userId" />
         <result column="window_name" property="windowName" />

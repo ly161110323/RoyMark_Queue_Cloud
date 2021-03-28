@@ -14,70 +14,69 @@ public class Parameter implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-	private Long hiddenId;
-
-	public Long getHiddenId() {
-		return hiddenId;
-	}
-
-	public void setHiddenId(Long hiddenId) {
-		this.hiddenId = hiddenId;
-	}
+	@TableId(value = "param_hidden_id")
+	private Long paramHiddenId;
 
     @TableField(value = "param_id")
-    private String id;
+    private String paramId;
 
     @TableField(value = "param_name")
-    private String name;
+    private String paramName;
 
     @TableField(value = "param_value")
-    private String value;
+    private String paramValue;
 
     @TableField(value = "param_default")
-    private String defalutValue;
+    private String paramDefault;
 
     @TableField(value = "param_remark")
-    private String remark;
+    private String paramRemark;
 
-	public String getId() {
-		return id;
+	public Long getParamHiddenId() {
+		return paramHiddenId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setParamHiddenId(Long paramHiddenId) {
+		this.paramHiddenId = paramHiddenId;
 	}
 
-	public String getName() {
-		return name;
+	public String getParamId() {
+		return paramId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setParamId(String paramId) {
+		this.paramId = paramId;
 	}
 
-	public String getValue() {
-		return value;
+	public String getParamName() {
+		return paramName;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setParamName(String paramName) {
+		this.paramName = paramName;
 	}
 
-	public String getDefalutValue() {
-		return defalutValue;
+	public String getParamValue() {
+		return paramValue;
 	}
 
-	public void setDefalutValue(String defalutValue) {
-		this.defalutValue = defalutValue;
+	public void setParamValue(String paramValue) {
+		this.paramValue = paramValue;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getParamDefault() {
+		return paramDefault;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setParamDefault(String paramDefault) {
+		this.paramDefault = paramDefault;
 	}
 
+	public String getParamRemark() {
+		return paramRemark;
+	}
+
+	public void setParamRemark(String paramRemark) {
+		this.paramRemark = paramRemark;
+	}
 }

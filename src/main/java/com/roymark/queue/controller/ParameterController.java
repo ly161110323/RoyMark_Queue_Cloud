@@ -63,7 +63,7 @@ public class ParameterController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            boolean result = parameterService.update(parameter, Wrappers.<Parameter>lambdaUpdate().eq(Parameter::getId, parameter.getId()));
+            boolean result = parameterService.update(parameter, Wrappers.<Parameter>lambdaUpdate().eq(Parameter::getParamHiddenId, parameter.getParamHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
                 return jsonObject;

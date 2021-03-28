@@ -47,13 +47,13 @@ public class UserController {
 				String uploadPath = "/RemoteQueue/upload/user/";
 				filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 			}
-			tempActionUser.setPhoto(filePath);
+			tempActionUser.setUserPhoto(filePath);
 			
 			// 对密码进行MD5加密
-			if (tempActionUser.getPwd() != null) {
-				tempActionUser.setPwd(Md5Util.EncoderByMd5(tempActionUser.getPwd()));
+			if (tempActionUser.getUserPwd() != null) {
+				tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
 			}
-			boolean result = userSerivce.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getId, tempActionUser.getId()));
+			boolean result = userSerivce.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 			} else {
@@ -80,7 +80,7 @@ public class UserController {
 					
 			int repeatId = 0;
 				for (ActionUser actionUser : existActionUsers) {
-					if (actionUser.getId().equals(tempActionUser.getId())) {
+					if (actionUser.getUserId().equals(tempActionUser.getUserId())) {
 						repeatId++;
 					}
 				}
@@ -94,11 +94,11 @@ public class UserController {
 						String uploadPath = "/RemoteQueue/upload/user/";
 						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 					}
-					tempActionUser.setPhoto(filePath);
+					tempActionUser.setUserPhoto(filePath);
 					
 					// 对密码进行MD5加密
-					if (tempActionUser.getPwd() != null) {
-						tempActionUser.setPwd(Md5Util.EncoderByMd5(tempActionUser.getPwd()));
+					if (tempActionUser.getUserPwd() != null) {
+						tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
 					}
 
 					boolean result = userSerivce.save(tempActionUser);
@@ -137,7 +137,7 @@ public class UserController {
 	public Object delete(ActionUser tempActionUser) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			boolean result = userSerivce.removeById(tempActionUser.getId());
+			boolean result = userSerivce.removeById(tempActionUser.getUserHiddenId());
 			if (result) {
 				jsonObject.put("result", "ok");
 				return jsonObject;

@@ -32,7 +32,7 @@ public class MenuDemo {
         List <Window> windows =windowService.list();
         for(Window window : windows)
         {
-            System.out.println("window name: "+window.getName());
+            System.out.println("window name: "+window.getWindowName());
         }
     System.out.println("****************************************");
     }

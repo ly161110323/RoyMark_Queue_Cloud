@@ -15,101 +15,113 @@ public class Camera implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@TableId(value = "hidden_id")
-	private Long hiddenId;
+	@TableId(value = "cam_hidden_id")
+	private Long camHiddenId;
 
-	public Long getHiddenId() {
-		return hiddenId;
-	}
-
-	public void setHiddenId(Long hiddenId) {
-		this.hiddenId = hiddenId;
-	}
     @TableField(value = "cam_id")
-    private String id;
+    private String camId;
 
     @TableField(value = "cam_video_addr")
-    private String videoAddr;
+    private String camVideoAddr;
 
     @TableField(value = "cam_mac_addr")
-    private String macAddr;
+    private String camMacAddr;
 
     @TableField(value = "cam_brand")
-    private String brand;
+    private String camBrand;
 
     @TableField(value = "cam_type")
-    private String type;
+    private String camType;
 
     @TableField(value = "cam_birth")
-    private Date birth;
+    private Date camBirth;
 
-    @TableField(value = "window_hidden_id")
-    private Long windowId;
+    @TableField(value = "window_id")
+    private String windowId;
 
-    @TableField(value = "server_hidden_id")
-	private Long serverId;
+    @TableField(value = "server_id")
+	private String serverId;
 
-	public String getId() {
-		return id;
+    @TableField(exist = false)
+	private String camStatus;
+
+	public Long getCamHiddenId() {
+		return camHiddenId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setCamHiddenId(Long camHiddenId) {
+		this.camHiddenId = camHiddenId;
 	}
 
-	public String getVideoAddr() {
-		return videoAddr;
+	public String getCamId() {
+		return camId;
 	}
 
-	public void setVideoAddr(String videoAddr) {
-		this.videoAddr = videoAddr;
+	public void setCamId(String camId) {
+		this.camId = camId;
 	}
 
-	public String getMacAddr() {
-		return macAddr;
+	public String getCamVideoAddr() {
+		return camVideoAddr;
 	}
 
-	public void setMacAddr(String macAddr) {
-		this.macAddr = macAddr;
+	public void setCamVideoAddr(String camVideoAddr) {
+		this.camVideoAddr = camVideoAddr;
 	}
 
-	public String getBrand() {
-		return brand;
+	public String getCamMacAddr() {
+		return camMacAddr;
 	}
 
-	public void setBrand(String brand) {
-		this.brand = brand;
+	public void setCamMacAddr(String camMacAddr) {
+		this.camMacAddr = camMacAddr;
 	}
 
-	public String getType() {
-		return type;
+	public String getCamBrand() {
+		return camBrand;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setCamBrand(String camBrand) {
+		this.camBrand = camBrand;
 	}
 
-	public Date getBirth() {
-		return birth;
+	public String getCamType() {
+		return camType;
 	}
 
-	public void setBirth(Date birth) {
-		this.birth = birth;
+	public void setCamType(String camType) {
+		this.camType = camType;
 	}
 
-	public Long getWindowId() {
+	public Date getCamBirth() {
+		return camBirth;
+	}
+
+	public void setCamBirth(Date camBirth) {
+		this.camBirth = camBirth;
+	}
+
+	public String getWindowId() {
 		return windowId;
 	}
 
-	public void setWindowId(Long windowId) {
+	public void setWindowId(String windowId) {
 		this.windowId = windowId;
 	}
 
-	public Long getServerId() {
+	public String getServerId() {
 		return serverId;
 	}
 
-	public void setServerId(Long serverId) {
+	public void setServerId(String serverId) {
 		this.serverId = serverId;
+	}
+
+	public String getCamStatus() {
+		return camStatus;
+	}
+
+	public void setCamStatus(String camStatus) {
+		this.camStatus = camStatus;
 	}
 }
