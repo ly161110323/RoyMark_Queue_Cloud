@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
@@ -21,6 +22,9 @@ public class Camera implements Serializable {
     @TableField(value = "cam_id")
     private String camId;
 
+    @TableField(value = "cam_ip")
+	private String camIp;
+
     @TableField(value = "cam_video_addr")
     private String camVideoAddr;
 
@@ -34,6 +38,7 @@ public class Camera implements Serializable {
     private String camType;
 
     @TableField(value = "cam_birth")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date camBirth;
 
     @TableField(value = "window_id")
@@ -123,5 +128,13 @@ public class Camera implements Serializable {
 
 	public void setCamStatus(String camStatus) {
 		this.camStatus = camStatus;
+	}
+
+	public String getCamIp() {
+		return camIp;
+	}
+
+	public void setCamIp(String camIp) {
+		this.camIp = camIp;
 	}
 }

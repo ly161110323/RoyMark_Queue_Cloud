@@ -1,5 +1,7 @@
 package com.roymark.queue.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -49,10 +51,14 @@ public class CameraController {
 	}
 	
 	@RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-	public Object insert(Camera camera) {
+	public Object insert(Camera camera, String cameraBirthStr) {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		try {
+			camera.setCamHiddenId(Long.valueOf(0));
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
+			camera.setCamBirth(cameraBirth);
 			if (camera.getWindowId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置窗口");
@@ -84,10 +90,13 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-	public Object update(Camera camera) {
+	public Object update(Camera camera, String cameraBirthStr) {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
+			camera.setCamBirth(cameraBirth);
 			if (camera.getWindowId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置窗口");

@@ -32,6 +32,12 @@ public class Window implements Serializable {
     @TableField(value = "floor_id")
     private String floorId;
 
+    @TableField(value = "window_action_analysis")
+	private Boolean windowActionAnalysis;
+
+    @TableField(value = "window_nine_palaces")
+	private Boolean windowNinePalaces;
+
 	public Long getWindowHiddenId() {
 		return windowHiddenId;
 	}
@@ -78,5 +84,21 @@ public class Window implements Serializable {
 
 	public void setFloorId(String floorId) {
 		this.floorId = floorId;
+	}
+
+	public Boolean getWindowActionAnalysis() {
+		return windowActionAnalysis;
+	}
+
+	public void setWindowActionAnalysis(Boolean windowActionAnalysis) {
+		this.windowActionAnalysis = windowActionAnalysis;
+	}
+
+	public Boolean getWindowNinePalaces() {
+		return windowNinePalaces;
+	}
+
+	public void setWindowNinePalaces(Boolean windowNinePalaces) {
+		this.windowNinePalaces = windowNinePalaces;
 	}
 }
