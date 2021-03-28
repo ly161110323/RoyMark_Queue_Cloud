@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.roymark.queue.entity.Floor;
+import com.roymark.queue.service.FloorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +25,16 @@ public class WindowController {
 	private static final Logger logger = LogManager.getLogger(WindowController.class);
     
 	@Autowired
-    private WindowService windowSerivce;
+    private WindowService windowService;
+	@Autowired
+	private FloorService floorService;
 	
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllWindows() {
-		System.out.println("fuck");
 		JSONObject jsonObject = new JSONObject();
 	
 		try {
-			List<Window> windows = windowSerivce.list();
+			List<Window> windows = windowService.getAllWindow();
 			if (windows.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无窗口");
@@ -54,13 +57,25 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Window queryWindow = windowSerivce.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
+			window.setWindowHiddenId(Long.valueOf(0));
+			if (window.getFloorId() == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "未设置楼层");
+				return jsonObject;
+			}
+			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, window.getFloorId())) == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "设置的楼层不存在");
+				return jsonObject;
+			}
+
+			Window queryWindow = windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
 			if (queryWindow != null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "窗口ID已存在");
 				return jsonObject;
 			}
-			boolean result = windowSerivce.save(window);
+			boolean result = windowService.save(window);
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "添加成功");
@@ -84,13 +99,24 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Window queryWindow = windowSerivce.getById(window.getWindowHiddenId());
+			if (window.getFloorId() == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "未设置楼层");
+				return jsonObject;
+			}
+			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, window.getFloorId())) == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "设置的楼层不存在");
+				return jsonObject;
+			}
+
+			Window queryWindow = windowService.getById(window.getWindowHiddenId());
 			if (queryWindow == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "窗口不存在");
 				return jsonObject;
 			}
-			queryWindow = windowSerivce.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
+			queryWindow = windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
 
 			// 如果根据服务器名查询到的非空且其hiddenId与传入的hiddenId不一致，则表明服务器名已存在于另一项
 			if (queryWindow != null && !queryWindow.getWindowHiddenId().equals(window.getWindowHiddenId())) {
@@ -99,7 +125,7 @@ public class WindowController {
 				return jsonObject;
 			}
 
-			boolean result = windowSerivce.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+			boolean result = windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
 
 			if (result) {
 				jsonObject.put("result", "ok");
@@ -133,7 +159,7 @@ public class WindowController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				windowSerivce.removeById(deletes[i]);
+				windowService.deleteByWindowHiddenId(Long.valueOf(deletes[i]));
 			}
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "删除成功");
@@ -152,7 +178,7 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Window window = windowSerivce.getById(windowHiddenId);
+			Window window = windowService.getById(windowHiddenId);
 			if (window != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("window", window);

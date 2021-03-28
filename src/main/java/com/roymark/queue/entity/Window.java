@@ -38,6 +38,17 @@ public class Window implements Serializable {
     @TableField(value = "window_nine_palaces")
 	private Boolean windowNinePalaces;
 
+    @TableField(exist = false)
+	private String floorName;
+
+	public String getFloorName() {
+		return floorName;
+	}
+
+	public void setFloorName(String floorName) {
+		this.floorName = floorName;
+	}
+
 	public Long getWindowHiddenId() {
 		return windowHiddenId;
 	}

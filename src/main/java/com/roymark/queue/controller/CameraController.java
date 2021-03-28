@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.roymark.queue.entity.Window;
+import com.roymark.queue.service.WindowService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class CameraController {
     
 	@Autowired
     private CameraService cameraService;
+
+	@Autowired
+	private WindowService windowService;
 	
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -64,6 +69,11 @@ public class CameraController {
 				jsonObject.put("msg", "未设置窗口");
 				return jsonObject;
 			}
+			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, camera.getWindowId())) == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "设置的窗口不存在");
+				return jsonObject;
+			}
 			Camera queryCamera = cameraService.getOne(Wrappers.<Camera>lambdaQuery().eq(Camera::getCamId, camera.getCamId()));
 			if (queryCamera != null) {
 				jsonObject.put("result", "no");
@@ -100,6 +110,11 @@ public class CameraController {
 			if (camera.getWindowId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置窗口");
+				return jsonObject;
+			}
+			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, camera.getWindowId())) == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "设置的窗口不存在");
 				return jsonObject;
 			}
 			Camera queryCamera = cameraService.getById(camera.getCamHiddenId());
