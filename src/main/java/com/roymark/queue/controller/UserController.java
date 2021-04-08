@@ -4,8 +4,15 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.Abnomaly;
 import com.roymark.queue.entity.ActionUser;
+import com.roymark.queue.service.AbnomalyService;
+import com.roymark.queue.service.WindowService;
+import org.apache.ibatis.annotations.Param;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +36,13 @@ public class UserController {
 	private static final Logger logger = LogManager.getLogger(UserController.class);
     
 	@Autowired
-    private UserService userSerivce;
+    private UserService userService;
 
+	@Autowired
+	private WindowService windowService;
+
+	@Autowired
+	private AbnomalyService abnomalyService;
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
 	public Object update(ActionUser tempActionUser,
@@ -40,29 +52,53 @@ public class UserController {
 		HttpServletRequest request = attributes.getRequest();
 		// 进行修改操作
 		try {
-			
+			if (tempActionUser.getUserHiddenId() == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "用户不存在");
+				return jsonObject;
+			}
+			else if (tempActionUser.getWindowHiddenId()==null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "未设置窗口");
+				return jsonObject;
+			}
+			else if (windowService.getById(tempActionUser.getWindowHiddenId()) == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "设置的窗口不存在");
+				return jsonObject;
+			}
+			ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
+			if (queryUser != null && !queryUser.getUserHiddenId().equals(tempActionUser.getUserHiddenId())) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "修改的用户ID已存在");
+				return jsonObject;
+			}
+
 			String filePath = "";
 			if (uploadinfo != null) {
 				// 上传文件
 				String uploadPath = "/RemoteQueue/upload/user/";
 				filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+				tempActionUser.setUserPhoto(filePath);
 			}
-			tempActionUser.setUserPhoto(filePath);
 			
 			// 对密码进行MD5加密
 			if (tempActionUser.getUserPwd() != null) {
 				tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
 			}
-			boolean result = userSerivce.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
+			boolean result = userService.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "修改成功");
 			} else {
 				jsonObject.put("result", "no");
+				jsonObject.put("msg", "修改失败");
 			}
 			
 		} catch (Exception e) {
 			logger.error("/user/update错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "修改出现错误");
 		}
 		return jsonObject;
 
@@ -76,7 +112,7 @@ public class UserController {
 		HttpServletRequest request = attributes.getRequest();
 		
 		try {
-			List<ActionUser> existActionUsers = userSerivce.list();
+			List<ActionUser> existActionUsers = userService.getAllUser();
 					
 			int repeatId = 0;
 				for (ActionUser actionUser : existActionUsers) {
@@ -85,28 +121,43 @@ public class UserController {
 					}
 				}
 				if (repeatId > 0) {
-					jsonObject.put("result", "repeat");
+					jsonObject.put("result", "no");
+					jsonObject.put("msg", "用户ID已存在");
 					return jsonObject;
 				} else {
+					if (tempActionUser.getWindowHiddenId() == null) {
+						jsonObject.put("result", "no");
+						jsonObject.put("msg", "未设置窗口");
+						return jsonObject;
+					}
+					else if (windowService.getById(tempActionUser.getWindowHiddenId()) == null) {
+						jsonObject.put("result", "no");
+						jsonObject.put("msg", "设置的窗口不存在");
+						return jsonObject;
+					}
+					tempActionUser.setUserHiddenId(Long.valueOf(0));
 					String filePath = "";
 					if (uploadinfo != null) {
 						// 上传文件
 						String uploadPath = "/RemoteQueue/upload/user/";
 						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+						tempActionUser.setUserPhoto(filePath);
+						// System.out.println(filePath);
 					}
-					tempActionUser.setUserPhoto(filePath);
 					
 					// 对密码进行MD5加密
 					if (tempActionUser.getUserPwd() != null) {
 						tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
 					}
 
-					boolean result = userSerivce.save(tempActionUser);
+					boolean result = userService.save(tempActionUser);
 					if (result) {
 						jsonObject.put("result", "ok");
+						jsonObject.put("msg", "添加成功");
 						return jsonObject;
 					} else {
 						jsonObject.put("result", "no");
+						jsonObject.put("msg", "添加失败");
 						return jsonObject;
 					}
 				}
@@ -114,64 +165,121 @@ public class UserController {
 		} catch (Exception e) {
 			logger.error("/user/insert 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "添加出现错误");
 			return jsonObject;
 		}
 	}
 	
-	@RequestMapping(value = "/getUsers", produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllUsers() {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			List<ActionUser> actionUsers = userSerivce.list();
-			jsonObject.put("actionUsers", actionUsers);
+			List<ActionUser> actionUsers = userService.getAllUser();
+			if (actionUsers.size() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "获取结果为空");
+				return jsonObject;
+			}
+			jsonObject.put("users", actionUsers);
 			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "获取成功");
 			return jsonObject;
 		} catch (Exception e) {
 			logger.error("/user/getUsers 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
 			return jsonObject;
 		}
 	}
-	
+
 	@RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
-	public Object delete(ActionUser tempActionUser) {
+	public Object delete(String deleteId) {
 		JSONObject jsonObject = new JSONObject();
+
 		try {
-			boolean result = userSerivce.removeById(tempActionUser.getUserHiddenId());
-			if (result) {
-				jsonObject.put("result", "ok");
-				return jsonObject;
-			} else {
+			String[] deletes = deleteId.split(",");
+			if (deletes.length <= 0)
+			{
 				jsonObject.put("result", "no");
+				jsonObject.put("msg", "没有选中的删除项");
 				return jsonObject;
 			}
+			for (int i = 0; i < deletes.length; i++) {
+				abnomalyService.remove(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getUserHiddenId, Long.valueOf(deletes[i])));
+				userService.removeById(Long.valueOf(deletes[i]));
+			}
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "删除成功");
+			return jsonObject;
+
 		} catch (Exception e) {
-			logger.error("/user/getUsers 错误:" + e.getMessage(), e);
+			logger.error("/camera/delete 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "删除出现错误");
 			return jsonObject;
 		}
 	}
 
 	@RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
-	public Object getOne(Long userId) {
+	public Object getOne(Long userHiddenId) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			ActionUser user = userSerivce.getById(userId);
+			ActionUser user = userService.getUserByHiddenId(userHiddenId);
 			if (user != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("user", user);
+				jsonObject.put("msg", "获取成功");
 				return jsonObject;
 			}
 			else {
 				jsonObject.put("result", "no");
+				jsonObject.put("msg", "获取失败");
 				return jsonObject;
 			}
 		} catch (Exception e) {
 			logger.error("/user/getOne 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
 			return jsonObject;
 		}
 	}
+
+	@RequestMapping(value = "/searchByNameAndWindow", produces = "application/json;charset=utf-8")
+	public Object searchByName(@RequestParam(required = false) String userName, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			// 分页构造器
+			Page<ActionUser> page = new Page<ActionUser>(pageNo, pageSize);
+			QueryWrapper<ActionUser> queryWrapper = new QueryWrapper<ActionUser>();
+			if (userName != null) {
+				queryWrapper.like ("user_name",userName);
+			}
+			if (windowId != null) {
+				queryWrapper.like("window_id", windowId);
+			}
+			// 执行分页
+			IPage<ActionUser> pageList = userService.page(page, queryWrapper);
+			// 返回结果
+			if (pageList.getTotal() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "搜素结果为空");
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("pageList", pageList);
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "搜索成功");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/user/searchByName 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "搜索出现错误");
+			return jsonObject;
+		}
+	}
+
 }
 
