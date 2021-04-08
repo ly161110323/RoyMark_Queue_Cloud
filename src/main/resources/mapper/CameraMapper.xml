@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roymark.queue.dao.CameraMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.roymark.queue.entity.Camera">
+        <id column="cam_hidden_id" property="camHiddenId" />
+        <result column="cam_id" property="camId" />
+        <result column="cam_ip" property="camIp" />
+        <result column="cam_video_addr" property="camVideoAddr" />
+        <result column="cam_mac_addr" property="camMacAddr" />
+        <result column="cam_brand" property="camBrand" />
+        <result column="cam_type" property="camType" />
+        <result column="cam_birth" property="camBirth" />
+        <result column="window_hidden_id" property="windowHiddenId" />
+        <result column="server_hidden_id" property="serverHiddenId" />
+        <result column="window_id" property="windowId" />
+        <result column="server_id" property="serverId" />
+
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <select id="getAllCamera" resultMap="BaseResultMap">
+        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server
+    </select>
+
+    <select id="getCameraByHiddenId" parameterType="long" resultMap="BaseResultMap">
+        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server WHERE cam_hidden_id = #{VALUE }
+    </select>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server ${ew.customSqlSegment}
+    </select>
+</mapper>

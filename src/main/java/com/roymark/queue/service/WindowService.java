@@ -8,4 +8,5 @@ public interface WindowService  extends IService<Window> {
 
     List<Window> getAllWindow();
     boolean deleteByWindowHiddenId(Long windowHiddenId);
+    Window getWindowByHiddenId(Long windowHiddenId);
 }

@@ -3,8 +3,11 @@ package com.roymark.queue.controller;
 import java.sql.Wrapper;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Floor;
 import com.roymark.queue.service.FloorService;
 import org.apache.logging.log4j.LogManager;
@@ -58,12 +61,12 @@ public class WindowController {
 		
 		try {
 			window.setWindowHiddenId(Long.valueOf(0));
-			if (window.getFloorId() == null) {
+			if (window.getFloorHiddenId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置楼层");
 				return jsonObject;
 			}
-			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, window.getFloorId())) == null) {
+			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorHiddenId, window.getFloorHiddenId())) == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "设置的楼层不存在");
 				return jsonObject;
@@ -99,12 +102,12 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			if (window.getFloorId() == null) {
+			if (window.getFloorHiddenId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置楼层");
 				return jsonObject;
 			}
-			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, window.getFloorId())) == null) {
+			if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorHiddenId, window.getFloorHiddenId())) == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "设置的楼层不存在");
 				return jsonObject;
@@ -166,7 +169,7 @@ public class WindowController {
 			return jsonObject;
 
 		} catch (Exception e) {
-			logger.error("/server/delete 错误:" + e.getMessage(), e);
+			logger.error("/window/delete 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "删除出现错误");
 			return jsonObject;
@@ -178,7 +181,7 @@ public class WindowController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Window window = windowService.getById(windowHiddenId);
+			Window window = windowService.getWindowByHiddenId(windowHiddenId);
 			if (window != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("window", window);
@@ -194,6 +197,38 @@ public class WindowController {
 			logger.error("/window/getOne 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "获取出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
+	public Object searchById(String windowId, int pageNo, int pageSize) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			// 分页构造器
+			Page<Window> page = new Page<Window>(pageNo, pageSize);
+			QueryWrapper<Window> queryWrapper = new QueryWrapper<Window>();
+
+			queryWrapper.like ("window_id",windowId);
+			// 执行分页
+			IPage<Window> pageList = windowService.page(page, queryWrapper);
+			// 返回结果
+			if (pageList.getTotal() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "搜素结果为空");
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("pageList", pageList);
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "搜索成功");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/window/searchById 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
 		}
 	}

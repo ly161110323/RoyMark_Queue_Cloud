@@ -1,5 +1,7 @@
 package com.roymark.queue.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.roymark.queue.dao.AbnomalyMapper;
 import com.roymark.queue.dao.CameraMapper;
@@ -40,10 +42,20 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
     @Override
     public boolean deleteByWindowHiddenId(Long windowHiddenId) {
 
-        String windowId = windowMapper.selectOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowHiddenId, windowHiddenId)).getWindowId();
-        abnomalyMapper.delete(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getWindowId, windowId));
-        cameraMapper.delete(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowId, windowId));
-        userMapper.delete(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowId, windowId));
+
+        abnomalyMapper.delete(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getWindowHiddenId, windowHiddenId));
+        cameraMapper.delete(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowHiddenId, windowHiddenId));
+        userMapper.delete(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, windowHiddenId));
         return windowMapper.deleteById(windowHiddenId)>0;
+    }
+
+    @Override
+    public Window getWindowByHiddenId(Long windowHiddenId) {
+        return windowMapper.getWindowByHiddenId(windowHiddenId);
+    }
+
+    @Override
+    public IPage<Window> page(IPage<Window> page, Wrapper<Window> queryWrapper) {
+        return page.setRecords(this.baseMapper.page(page, queryWrapper));
     }
 }

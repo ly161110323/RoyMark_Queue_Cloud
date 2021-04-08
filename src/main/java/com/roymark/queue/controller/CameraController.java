@@ -4,7 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.WindowService;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +37,7 @@ public class CameraController {
 		JSONObject jsonObject = new JSONObject();
 	
 		try {
-			List<Camera> cameras = cameraService.list();
+			List<Camera> cameras = cameraService.getAllCamera();
 			if (cameras.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无摄像头");
@@ -64,12 +67,12 @@ public class CameraController {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
 			camera.setCamBirth(cameraBirth);
-			if (camera.getWindowId() == null) {
+			if (camera.getWindowHiddenId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置窗口");
 				return jsonObject;
 			}
-			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, camera.getWindowId())) == null) {
+			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowHiddenId, camera.getWindowHiddenId())) == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "设置的窗口不存在");
 				return jsonObject;
@@ -107,12 +110,12 @@ public class CameraController {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
 			camera.setCamBirth(cameraBirth);
-			if (camera.getWindowId() == null) {
+			if (camera.getWindowHiddenId() == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "未设置窗口");
 				return jsonObject;
 			}
-			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, camera.getWindowId())) == null) {
+			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowHiddenId, camera.getWindowHiddenId())) == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "设置的窗口不存在");
 				return jsonObject;
@@ -152,7 +155,6 @@ public class CameraController {
 	public Object delete(String deleteId) {
 		JSONObject jsonObject = new JSONObject();
 
-
 		try {
 			String[] deletes = deleteId.split(",");
 			if (deletes.length <= 0)
@@ -169,7 +171,7 @@ public class CameraController {
 			return jsonObject;
 
 		} catch (Exception e) {
-			logger.error("/server/delete 错误:" + e.getMessage(), e);
+			logger.error("/camera/delete 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "删除出现错误");
 			return jsonObject;
@@ -181,7 +183,7 @@ public class CameraController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Camera camera = cameraService.getById(cameraHiddenId);
+			Camera camera = cameraService.getCameraByHiddenId(cameraHiddenId);
 			if (camera != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("camera", camera);
@@ -197,6 +199,70 @@ public class CameraController {
 			logger.error("/camera/getOne 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "获取出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
+	public Object searchById(String cameraId, int pageNo, int pageSize) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			// 分页构造器
+			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
+			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
+
+			queryWrapper.like ("cam_id",cameraId);
+			// 执行分页
+			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
+			// 返回结果
+			if (pageList.getTotal() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "搜素结果为空");
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("pageList", pageList);
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "搜索成功");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/camera/searchById 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "搜索出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/searchByWindowId", produces = "application/json;charset=utf-8")
+	public Object searchByWindowId(String windowId, int pageNo, int pageSize) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			// 分页构造器
+			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
+			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
+
+			queryWrapper.like ("window_id",windowId);
+			// 执行分页
+			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
+			// 返回结果
+			if (pageList.getTotal() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "搜素结果为空");
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("pageList", pageList);
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "搜索成功");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/camera/searchById 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
 		}
 	}

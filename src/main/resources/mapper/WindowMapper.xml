@@ -9,6 +9,7 @@
         <result column="window_name" property="windowName" />
         <result column="window_department" property="windowDepartment" />
         <result column="window_event" property="windowEvent" />
+        <result column="floor_hidden_id" property="floorHiddenId" />
         <result column="floor_id" property="floorId" />
         <result column="window_action_analysis" property="windowActionAnalysis" />
         <result column="window_nine_palaces" property="windowNinePalaces" />
@@ -18,7 +19,14 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllWindow" resultMap="BaseResultMap">
-        SELECT window.*, floor.floor_name FROM window NATURAL JOIN floor
+        SELECT * FROM window NATURAL JOIN floor
     </select>
 
+    <select id="getWindowByHiddenId" parameterType="long" resultMap="BaseResultMap">
+        SELECT * FROM window NATURAL JOIN floor WHERE window_hidden_id = #{VALUE }
+    </select>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT * FROM window NATURAL JOIN floor ${ew.customSqlSegment}
+    </select>
 </mapper>

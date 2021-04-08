@@ -38,8 +38,19 @@ public class ActionUser implements Serializable {
     @TableField(value = "user_photo")
     private String userPhoto;
 
-    @TableField(value = "window_id")
+    @TableField(value = "window_hidden_id")
+    private Long windowHiddenId;
+
+    @TableField(exist = false)
     private String windowId;
+
+    public String getWindowId() {
+        return windowId;
+    }
+
+    public void setWindowId(String windowId) {
+        this.windowId = windowId;
+    }
 
     public Long getUserHiddenId() {
         return userHiddenId;
@@ -105,11 +116,11 @@ public class ActionUser implements Serializable {
         this.userPhoto = userPhoto;
     }
 
-    public String getWindowId() {
-        return windowId;
+    public Long getWindowHiddenId() {
+        return windowHiddenId;
     }
 
-    public void setWindowId(String windowId) {
-        this.windowId = windowId;
+    public void setWindowHiddenId(Long windowHiddenId) {
+        this.windowHiddenId = windowHiddenId;
     }
 }

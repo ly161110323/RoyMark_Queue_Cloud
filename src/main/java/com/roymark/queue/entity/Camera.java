@@ -41,13 +41,20 @@ public class Camera implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date camBirth;
 
-    @TableField(value = "window_id")
-    private String windowId;
+    @TableField(value = "window_hidden_id")
+    private Long windowHiddenId;
 
-    @TableField(value = "server_id")
-	private String serverId;
+    @TableField(value = "server_hidden_id")
+	private Long serverHiddenId;
 
     @TableField(exist = false)
+	private String windowId;
+
+	@TableField(exist = false)
+	private String serverId;
+
+
+	@TableField(exist = false)
 	private String camStatus;
 
 	public Long getCamHiddenId() {
@@ -136,5 +143,21 @@ public class Camera implements Serializable {
 
 	public void setCamIp(String camIp) {
 		this.camIp = camIp;
+	}
+
+	public Long getWindowHiddenId() {
+		return windowHiddenId;
+	}
+
+	public void setWindowHiddenId(Long windowHiddenId) {
+		this.windowHiddenId = windowHiddenId;
+	}
+
+	public Long getServerHiddenId() {
+		return serverHiddenId;
+	}
+
+	public void setServerHiddenId(Long serverHiddenId) {
+		this.serverHiddenId = serverHiddenId;
 	}
 }

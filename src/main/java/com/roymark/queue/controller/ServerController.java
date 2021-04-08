@@ -2,7 +2,10 @@ package com.roymark.queue.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +25,7 @@ public class ServerController {
 	private static final Logger logger = LogManager.getLogger(ServerController.class);
     
 	@Autowired
-    private ServerService serverSerivce;
+    private ServerService serverService;
 
 	@Autowired
 	private CameraService cameraService;
@@ -32,7 +35,7 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 	
 		try {
-			List<Server> servers = serverSerivce.list();
+			List<Server> servers = serverService.list();
 			if (servers.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无服务器");
@@ -59,13 +62,14 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			Server queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
+			server.setServerHiddenId(Long.valueOf(0));
+			Server queryServer = serverService.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
 			if (queryServer != null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "服务器ID已存在");
 				return jsonObject;
 			}
-			boolean result = serverSerivce.save(server);
+			boolean result = serverService.save(server);
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "添加成功");
@@ -89,14 +93,14 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			Server queryServer = serverSerivce.getById(server.getServerHiddenId());
+			Server queryServer = serverService.getById(server.getServerHiddenId());
 			if (queryServer == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "服务器不存在");
 				return jsonObject;
 			}
 
-			queryServer = serverSerivce.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
+			queryServer = serverService.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
 
 			// 如果根据服务器名查询到的非空且其hiddenId与传入的hiddenId不一致，则表明服务器名已存在于另一项
 			if (queryServer != null && !queryServer.getServerHiddenId().equals(server.getServerHiddenId())) {
@@ -105,7 +109,7 @@ public class ServerController {
 				return jsonObject;
 			}
 
-			boolean result = serverSerivce.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getServerHiddenId, server.getServerHiddenId()));
+			boolean result = serverService.update(server, Wrappers.<Server>lambdaUpdate().eq(Server::getServerHiddenId, server.getServerHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "修改成功");
@@ -138,9 +142,8 @@ public class ServerController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				Server queryServer = serverSerivce.getById(deletes[i]);
-				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerId, queryServer.getServerId()));
-				serverSerivce.removeById(deletes[i]);
+				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, Long.valueOf(deletes[i])));
+				serverService.removeById(deletes[i]);
 			}
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "删除成功");
@@ -159,7 +162,7 @@ public class ServerController {
 		JSONObject jsonObject = new JSONObject();
 		
 		try {
-			Server server = serverSerivce.getById(serverHiddenId);
+			Server server = serverService.getById(serverHiddenId);
 			if (server != null) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("server", server);
@@ -175,6 +178,38 @@ public class ServerController {
 			logger.error("/server/getOne 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "获取出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
+	public Object searchByServerId(String serverId, int pageNo, int pageSize) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			// 分页构造器
+			Page<Server> page = new Page<Server>(pageNo, pageSize);
+			QueryWrapper<Server> queryWrapper = new QueryWrapper<Server>();
+
+			queryWrapper.like ("server_id",serverId);
+			// 执行分页
+			IPage<Server> pageList = serverService.page(page, queryWrapper);
+			// 返回结果
+			if (pageList.getTotal() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "搜素结果为空");
+				return jsonObject;
+			}
+			else {
+				jsonObject.put("pageList", pageList);
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "搜索成功");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/server/searchById 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
 		}
 	}
