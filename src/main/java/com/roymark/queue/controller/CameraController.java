@@ -213,8 +213,10 @@ public class CameraController {
 			// 分页构造器
 			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
 			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
-
-			queryWrapper.like ("cam_id",cameraId);
+			if (cameraId != null)
+				queryWrapper.like ("cam_id",cameraId);
+			if (windowId != null)
+				queryWrapper.like ("window_id",windowId);
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
 			// 返回结果

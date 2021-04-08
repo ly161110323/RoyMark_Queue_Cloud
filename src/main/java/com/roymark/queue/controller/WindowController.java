@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roymark.queue.entity.Window;
@@ -203,7 +204,7 @@ public class WindowController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object searchById(String windowId, int pageNo, int pageSize) {
+	public Object search(@RequestParam(required = false) String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {

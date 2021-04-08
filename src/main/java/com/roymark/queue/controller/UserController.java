@@ -247,7 +247,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object searchByName(@RequestParam(required = false) String userName, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+	public Object search(@RequestParam(required = false) String userName, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
