@@ -41,6 +41,7 @@ public class WindowController {
 			if (windows.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无窗口");
+				jsonObject.put("windows", windows);
 				return jsonObject;
 			}
 			jsonObject.put("windows", windows);
@@ -201,7 +202,7 @@ public class WindowController {
 		}
 	}
 
-	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
 	public Object searchById(String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
@@ -217,6 +218,7 @@ public class WindowController {
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "搜素结果为空");
+				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
 			else {
@@ -226,7 +228,7 @@ public class WindowController {
 				return jsonObject;
 			}
 		} catch (Exception e) {
-			logger.error("/window/searchById 错误:" + e.getMessage(), e);
+			logger.error("/window/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roymark.queue.entity.Camera;
@@ -41,6 +42,7 @@ public class CameraController {
 			if (cameras.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无摄像头");
+				jsonObject.put("cameras", cameras);
 				return jsonObject;
 			}
 			for (Camera camera: cameras) {
@@ -203,8 +205,8 @@ public class CameraController {
 		}
 	}
 
-	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
-	public Object searchById(String cameraId, int pageNo, int pageSize) {
+	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
+	public Object search(@RequestParam(required = false) String cameraId, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
@@ -219,6 +221,7 @@ public class CameraController {
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "搜素结果为空");
+				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
 			else {
@@ -228,42 +231,11 @@ public class CameraController {
 				return jsonObject;
 			}
 		} catch (Exception e) {
-			logger.error("/camera/searchById 错误:" + e.getMessage(), e);
+			logger.error("/camera/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
 		}
 	}
 
-	@RequestMapping(value = "/searchByWindowId", produces = "application/json;charset=utf-8")
-	public Object searchByWindowId(String windowId, int pageNo, int pageSize) {
-		JSONObject jsonObject = new JSONObject();
-
-		try {
-			// 分页构造器
-			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
-			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
-
-			queryWrapper.like ("window_id",windowId);
-			// 执行分页
-			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
-			// 返回结果
-			if (pageList.getTotal() <= 0) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "搜素结果为空");
-				return jsonObject;
-			}
-			else {
-				jsonObject.put("pageList", pageList);
-				jsonObject.put("result", "ok");
-				jsonObject.put("msg", "搜索成功");
-				return jsonObject;
-			}
-		} catch (Exception e) {
-			logger.error("/camera/searchById 错误:" + e.getMessage(), e);
-			jsonObject.put("result", "error");
-			jsonObject.put("msg", "搜索出现错误");
-			return jsonObject;
-		}
-	}
 }

@@ -178,6 +178,7 @@ public class UserController {
 			if (actionUsers.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "获取结果为空");
+				jsonObject.put("users", actionUsers);
 				return jsonObject;
 			}
 			jsonObject.put("users", actionUsers);
@@ -245,7 +246,7 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping(value = "/searchByNameAndWindow", produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
 	public Object searchByName(@RequestParam(required = false) String userName, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
@@ -265,6 +266,7 @@ public class UserController {
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "搜素结果为空");
+				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
 			else {
@@ -274,7 +276,7 @@ public class UserController {
 				return jsonObject;
 			}
 		} catch (Exception e) {
-			logger.error("/user/searchByName 错误:" + e.getMessage(), e);
+			logger.error("/user/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;

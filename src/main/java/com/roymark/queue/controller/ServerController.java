@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roymark.queue.entity.Server;
@@ -29,16 +30,17 @@ public class ServerController {
 
 	@Autowired
 	private CameraService cameraService;
-	
+
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllServers() {
 		JSONObject jsonObject = new JSONObject();
-	
+
 		try {
 			List<Server> servers = serverService.list();
 			if (servers.size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "暂无服务器");
+				jsonObject.put("servers", servers);
 				return jsonObject;
 			}
 			for (Server server: servers) {
@@ -182,22 +184,25 @@ public class ServerController {
 		}
 	}
 
-	@RequestMapping(value = "/searchById", produces = "application/json;charset=utf-8")
-	public Object searchByServerId(String serverId, int pageNo, int pageSize) {
+	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
+	public Object search(@RequestParam(required = false) String serverId, @RequestParam(required = false) String serverName, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
 			// 分页构造器
 			Page<Server> page = new Page<Server>(pageNo, pageSize);
 			QueryWrapper<Server> queryWrapper = new QueryWrapper<Server>();
-
-			queryWrapper.like ("server_id",serverId);
+			if (serverId != null)
+				queryWrapper.like ("server_id",serverId);
+			if (serverName != null)
+				queryWrapper.like("server_name", serverName);
 			// 执行分页
 			IPage<Server> pageList = serverService.page(page, queryWrapper);
 			// 返回结果
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "搜素结果为空");
+				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
 			else {
@@ -207,7 +212,7 @@ public class ServerController {
 				return jsonObject;
 			}
 		} catch (Exception e) {
-			logger.error("/server/searchById 错误:" + e.getMessage(), e);
+			logger.error("/server/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;

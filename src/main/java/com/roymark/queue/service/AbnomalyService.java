@@ -7,5 +7,5 @@ import java.util.List;
 public interface AbnomalyService extends IService<Abnomaly> {
 
     List<Abnomaly> getAllAbnomalies();
-    List<Abnomaly> getByWindowId(String windowId);
+    Abnomaly getByHiddenId(Long hiddenId);
 }

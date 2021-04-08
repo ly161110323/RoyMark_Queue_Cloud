@@ -11,19 +11,29 @@
         <result column="abnomaly_end_date" property="abnomalyEndDate" />
         <result column="abnomaly_confidence" property="abnomalyConfidence" />
         <result column="abnomaly_link" property="abnomalyLink" />
+        <result column="window_hidden_id" property="windowHiddenId" />
+        <result column="user_hidden_id" property="userHiddenId" />
         <result column="window_id" property="windowId" />
-        <result column="user_id" property="userId" />
         <result column="window_name" property="windowName" />
         <result column="user_name" property="userName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <select id="getAllAbnomaly" resultMap="BaseResultMap">
-        SELECT abnomaly.*, window.window_name, user.user_name FROM abnomaly NATURAL JOIN window NATURAL JOIN user
+        SELECT abnomaly.*, user.user_id, user.user_name, window.window_id, window.window_name FROM (abnomaly INNER JOIN user ON abnomaly.user_hidden_id=user.user_hidden_id)
+            INNER JOIN window ON abnomaly.window_hidden_id=window.window_hidden_id
     </select>
 
-    <select id="getByWindowId" parameterType="String" resultMap="BaseResultMap">
-        SELECT abnomaly.*, window.window_name, user.user_name FROM abnomaly NATURAL JOIN window NATURAL JOIN user WHERE window_id = #{VALUE }
+    <select id="getAbnomalyByHiddenId" parameterType="long" resultMap="BaseResultMap">
+        SELECT abnomaly.*, user.user_id, user.user_name, window.window_id, window.window_name FROM (abnomaly INNER JOIN user ON abnomaly.user_hidden_id=user.user_hidden_id)
+            INNER JOIN window ON abnomaly.window_hidden_id=window.window_hidden_id
+        WHERE abnomaly.abnomaly_hidden_id=#{VALUE }
+    </select>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT abnomaly.*, user.user_id, user.user_name, window.window_id, window.window_name FROM (abnomaly INNER JOIN user ON abnomaly.user_hidden_id=user.user_hidden_id)
+            INNER JOIN window ON abnomaly.window_hidden_id=window.window_hidden_id
+        ${ew.customSqlSegment}
     </select>
 
 </mapper>

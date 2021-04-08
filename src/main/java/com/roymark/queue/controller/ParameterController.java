@@ -33,6 +33,7 @@ public class ParameterController {
             if (params.size() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "获取结果为空");
+                jsonObject.put("params", params);
                 return jsonObject;
             }
             jsonObject.put("params", params);
@@ -170,7 +171,7 @@ public class ParameterController {
         }
     }
 
-    @RequestMapping(value = "/searchByName", produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
     public Object searchByServerId(String paramName, int pageNo, int pageSize) {
         JSONObject jsonObject = new JSONObject();
 
@@ -186,6 +187,7 @@ public class ParameterController {
             if (pageList.getTotal() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "搜素结果为空");
+                jsonObject.put("pageList", pageList);
                 return jsonObject;
             }
             else {
@@ -195,7 +197,7 @@ public class ParameterController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/param/searchByName 错误:" + e.getMessage(), e);
+            logger.error("/param/queryData 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "搜索出现错误");
             return jsonObject;
