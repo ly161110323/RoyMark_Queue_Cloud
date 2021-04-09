@@ -9,8 +9,5 @@
         <module name="RoyMark_Queue_Cloud" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="RoyMark_Queue_Cloud" target="8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

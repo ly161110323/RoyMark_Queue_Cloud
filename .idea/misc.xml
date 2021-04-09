@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://D:/../医院后台新版svn/Hospital_New_201910" />
     <file type="web" url="file://$PROJECT_DIR$" />
+    <file type="web" url="file://D:/医院后台新版svn/Hospital_New_201910" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
