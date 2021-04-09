@@ -206,15 +206,15 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object search(@RequestParam(required = false) String cameraId, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+	public Object search(@RequestParam(required = false) String camId, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
 			// 分页构造器
 			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
 			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
-			if (cameraId != null)
-				queryWrapper.like ("cam_id",cameraId);
+			if (camId != null)
+				queryWrapper.like ("cam_id",camId);
 			if (windowId != null)
 				queryWrapper.like ("window_id",windowId);
 			// 执行分页
