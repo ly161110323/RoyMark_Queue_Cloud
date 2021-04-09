@@ -371,6 +371,8 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
+        $('#inputCommitServerId').val("");
+        $('#inputCommitServerName').val("");
     });
 
 }

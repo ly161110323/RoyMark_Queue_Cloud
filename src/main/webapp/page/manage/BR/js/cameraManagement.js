@@ -131,7 +131,7 @@ function trClick() {
             "color": "white"
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
-        selectServerHiddenId = $(this).find("td:eq(12)").text();
+        ServerHiddenId = $(this).find("td:eq(12)").text();
         windowHieednId = $(this).find("td:eq(13)").text();
         $("#camId").val($(this).find("td:eq(2)").text());
 
@@ -432,6 +432,10 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         table.draw(false);
+        $('#inputCommitCamId').val("");
+
+        queryWindowList();
+        queryServerList();
     });
 
 }

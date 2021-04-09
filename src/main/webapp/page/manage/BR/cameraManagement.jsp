@@ -29,7 +29,7 @@
         var table;
         var dataId = "";
         var windowHieednId = "";
-        var selectServerHiddenId = ""
+        var serverHiddenId = "";
         var isSearch = "0";
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
@@ -161,8 +161,8 @@
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
             var inputCamId = $("#inputCommitCamId").val();
-            var selectServerHiddenId = $("#selectCommitServerId").val();
-            var selectWindowHiddenId = $("#selectCommitWindowId").val();
+            var selectServerId = $("#selectCommitServerId").find("option:selected").text();
+            var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
             var params;
             params = {
 
@@ -170,12 +170,12 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(selectServerHiddenId != ""){
-                    params["selectServerHiddenId"] = selectServerHiddenId;
+                if(selectServerId != "请选择绑定服务器ID"){
+                    params["serverId"] = selectServerId;
 
                 }
-                if(selectWindowHiddenId !=""){
-                    params["windowHieednId"] = selectWindowHiddenId;
+                if(selectWindowId !="请选择绑定窗口ID"){
+                    params["windowId"] = selectWindowId;
 
                 }
                 if(inputCamId !=""){

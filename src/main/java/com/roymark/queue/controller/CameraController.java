@@ -26,17 +26,17 @@ import net.sf.json.JSONObject;
 @RequestMapping("/camera")
 public class CameraController {
 	private static final Logger logger = LogManager.getLogger(CameraController.class);
-    
+
 	@Autowired
-    private CameraService cameraService;
+	private CameraService cameraService;
 
 	@Autowired
 	private WindowService windowService;
-	
+
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
 		JSONObject jsonObject = new JSONObject();
-	
+
 		try {
 			List<Camera> cameras = cameraService.getAllCamera();
 			if (cameras.size() <= 0) {
@@ -59,7 +59,7 @@ public class CameraController {
 			return jsonObject;
 		}
 	}
-	
+
 	@RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
 	public Object insert(Camera camera, String cameraBirthStr) {
 		JSONObject jsonObject = new JSONObject();
@@ -107,7 +107,7 @@ public class CameraController {
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
 	public Object update(Camera camera, String cameraBirthStr) {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		try {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
@@ -183,7 +183,7 @@ public class CameraController {
 	@RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
 	public Object getOne(Long cameraHiddenId) {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		try {
 			Camera camera = cameraService.getCameraByHiddenId(cameraHiddenId);
 			if (camera != null) {
@@ -206,7 +206,8 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object search(@RequestParam(required = false) String camId, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+	public Object search(@RequestParam(required = false) String camId, @RequestParam(required = false) String windowId,
+						 @RequestParam(required = false) String serverId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
@@ -217,6 +218,8 @@ public class CameraController {
 				queryWrapper.like ("cam_id",camId);
 			if (windowId != null)
 				queryWrapper.like ("window_id",windowId);
+			if (serverId != null)
+				queryWrapper.like("server_id", serverId);
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
 			// 返回结果
