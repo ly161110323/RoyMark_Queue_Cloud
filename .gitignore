@@ -14,3 +14,7 @@ target/
 .DS_Store
 *.log
 tmp/
+
+.settings
+
+out/
