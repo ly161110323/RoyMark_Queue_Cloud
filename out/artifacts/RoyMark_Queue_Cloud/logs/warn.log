@@ -1,4 +1,0 @@
-[2020-01-10 17:19:08] WARN  com.baomidou.mybatisplus.core.toolkit.TableInfoHelper 250 initTableFields - Warn: Could not find @TableId in Class: com.roymark.hospital.entity.HospitalqueueLisqueuedataHistory.
-[2020-01-10 17:19:08] WARN  com.baomidou.mybatisplus.core.toolkit.TableInfoHelper 250 initTableFields - Warn: Could not find @TableId in Class: com.roymark.hospital.entity.HospitalqueueLisqueuedata.
-[2020-01-10 17:19:09] WARN  com.baomidou.mybatisplus.core.toolkit.TableInfoHelper 250 initTableFields - Warn: Could not find @TableId in Class: com.roymark.hospital.entity.HospitalqueuePharmacyqueuedataHistory.
-[2020-01-10 17:19:09] WARN  com.baomidou.mybatisplus.core.toolkit.TableInfoHelper 250 initTableFields - Warn: Could not find @TableId in Class: com.roymark.hospital.entity.HospitalqueuePharmacyqueuedata.
