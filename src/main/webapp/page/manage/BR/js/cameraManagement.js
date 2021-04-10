@@ -210,19 +210,7 @@ function validateData(isAdd) {
         layer.alert("摄像头ID不能为空！");
         return;
     }
-    // if($("#serverIP").val().trim()==""){
-    //     layer.alert("服务器IP不能为空！");
-    //     return;
-    // }
-    //
-    // if($("#serverPort").val().trim()==""){
-    //     layer.alert("服务器端口不能为空！");
-    //     return;
-    // }
-    // if($("#serverID").val().trim()==""){
-    //     layer.alert("服务器ID不能为空！");
-    //     return;
-    // }
+
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
     var chooseId = $("#camId").val();
@@ -231,19 +219,7 @@ function validateData(isAdd) {
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function (index, element) {
         var objLs = $(element).find("td:eq(0)>input").val();
-        // if($(element).find("td:eq(2)").text() == chooseName){
-        //     if(isAdd){
-        //         isExit=true;
-        //         layer.alert("该委办局名称已存在！");
-        //         return false;
-        //     }else{
-        //         if(objLs!=dataId){
-        //             isExit=true;
-        //             layer.alert("该委办局名称已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
+
         if ($(element).find("td:eq(2)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;

@@ -6,22 +6,22 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<%@ include file="/page/common/includewithnewztreestyle.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+         pageEncoding="UTF-8" %>
+<%@ include file="/page/common/includewithnewztreestyle.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <title>禾麦智能大厅管理系统</title>
     <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
-          type="image/x-icon" />
+          type="image/x-icon"/>
     <script type="text/javascript" src="./js/windowManagement.js">
     </script>
 
@@ -29,10 +29,10 @@
         var table;
         var dataId = "";
         var isSearch = "0";
-        var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";
-        var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";
+        var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
+        var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             //加载表格
             loadTable();
             trClick();
@@ -42,7 +42,7 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/window/getAll";
+            var tableUrl = "${ctx}/window/queryData";
             table = $('#itemResultTable')
                 .DataTable(
                     {
@@ -56,65 +56,66 @@
                         "displayLength": 10,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
-                        "sAjaxSource":tableUrl,
+                        "sAjaxSource": tableUrl,
                         "fnServerData": loadData,
                         "bLengthChange": false,
-                        "aoColumns" : [
+                        "aoColumns": [
                             {'mData': 'windowHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'windowHiddenId', 'sClass': 'center'},
                             {'mData': 'windowHiddenId', 'sTitle': '序号', 'sName': 'windowHiddenId', 'sClass': 'center'},
                             {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
                             {'mData': 'windowName', 'sTitle': '名称', 'sName': 'windowName', 'sClass': 'center'},
                             {'mData': 'windowDepartment', 'sTitle': '部门', 'sName': 'windowDepartment', 'sClass': 'center'},
                             {'mData': 'windowEvent', 'sTitle': '事项', 'sName': 'windowEvent', 'sClass': 'center'},
-                            {'mData': 'floorId', 'sTitle': '楼层', 'sName': 'floorId', 'sClass': 'center'},
-                            {'mData': 'windowDepartment', 'sTitle': '九宫格监控', 'sName': 'windowDepartment', 'sClass': 'center'},
-                            {'mData': 'windowEvent', 'sTitle': '行为分析', 'sName': 'windowEvent', 'sClass': 'center'},
+                            {'mData': 'floorName', 'sTitle': '楼层', 'sName': 'floorName', 'sClass': 'center'},
+                            {'mData': 'windowNinePalaces', 'sTitle': '九宫格监控', 'sName': 'windowNinePalaces', 'sClass': 'center'},
+                            {'mData': 'windowActionAnalysis', 'sTitle': '行为分析', 'sName': 'windowActionAnalysis', 'sClass': 'center'},
+                            {'mData': 'floorHiddenId', 'sTitle': '楼层', 'sName': 'floorHiddenId', 'sClass': 'hidden'},
+
 
 
                         ],
-                        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
+                        "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
                             let startIndex = api.context[0]._iDisplayStart;//获取本页开始的条数
-                            $("td:nth-child(2)", nRow).html(iDisplayIndex+startIndex+1);//设置序号位于第一列，并顺次加一
+                            $("td:nth-child(2)", nRow).html(iDisplayIndex + startIndex + 1);//设置序号位于第一列，并顺次加一
                             return nRow;
                         },
-                        "initComplete": function( settings, json ) {
-                            $(".dataTables_scrollHeadInner").css({width:"100%"});
-                            $(".dataTables_scrollHeadInner table").css({width:"100%"});
-                            $(".dataTables_scrollBody").attr('id','scrollBodyDiv');
-                            $(".dataTables_scrollBody").css({"overflow-y":"auto","overflow-x":"hidden"});
-                            var obj=document.getElementById("scrollBodyDiv");
+                        "initComplete": function (settings, json) {
+                            $(".dataTables_scrollHeadInner").css({width: "100%"});
+                            $(".dataTables_scrollHeadInner table").css({width: "100%"});
+                            $(".dataTables_scrollBody").attr('id', 'scrollBodyDiv');
+                            $(".dataTables_scrollBody").css({"overflow-y": "auto", "overflow-x": "hidden"});
+                            var obj = document.getElementById("scrollBodyDiv");
                             //如果数据DIV有滚动条，则标题头也需要增加滚动条，以保持一致
-                            if(obj)
-                            {
-                                if(obj.scrollHeight>obj.clientHeight||obj.offsetHeight>obj.clientHeight){
-                                    $(".dataTables_scrollHead").css({overflow:"scroll","overflow-x":"hidden"});
-                                }else{
-                                    $(".dataTables_scrollHead").css({overflow:"auto","overflow-x":"hidden"});
+                            if (obj) {
+                                if (obj.scrollHeight > obj.clientHeight || obj.offsetHeight > obj.clientHeight) {
+                                    $(".dataTables_scrollHead").css({overflow: "scroll", "overflow-x": "hidden"});
+                                } else {
+                                    $(".dataTables_scrollHead").css({overflow: "auto", "overflow-x": "hidden"});
                                 }
                             }
                         },
-                        "drawCallback": function( settings ) {
-                            $(".dataTables_scrollHeadInner").css({width:"100%"});
-                            $(".dataTables_scrollHeadInner table").css({width:"100%"});
-                            $(".dataTables_scrollBody").attr('id','scrollBodyDiv');
-                            $(".dataTables_scrollBody").css({"overflow-y":"auto","overflow-x":"hidden"});
-                            var obj=document.getElementById("scrollBodyDiv");
+                        "drawCallback": function (settings) {
+                            $(".dataTables_scrollHeadInner").css({width: "100%"});
+                            $(".dataTables_scrollHeadInner table").css({width: "100%"});
+                            $(".dataTables_scrollBody").attr('id', 'scrollBodyDiv');
+                            $(".dataTables_scrollBody").css({"overflow-y": "auto", "overflow-x": "hidden"});
+                            var obj = document.getElementById("scrollBodyDiv");
                             //如果数据DIV有滚动条，则标题头也需要增加滚动条，以保持一致
-                            if(obj)
-                            {
-                                if(obj.scrollHeight>obj.clientHeight||obj.offsetHeight>obj.clientHeight){
-                                    $(".dataTables_scrollHead").css({overflow:"scroll","overflow-x":"hidden"});
-                                }else{
-                                    $(".dataTables_scrollHead").css({overflow:"auto","overflow-x":"hidden"});
+                            if (obj) {
+                                if (obj.scrollHeight > obj.clientHeight || obj.offsetHeight > obj.clientHeight) {
+                                    $(".dataTables_scrollHead").css({overflow: "scroll", "overflow-x": "hidden"});
+                                } else {
+                                    $(".dataTables_scrollHead").css({overflow: "auto", "overflow-x": "hidden"});
                                 }
                             }
                         },
                         "columnDefs": [
-                            {targets: 0,data: "windowHiddenId",title: "操作",
+                            {
+                                targets: 0, data: "windowHiddenId", title: "操作",
                                 render: function (data, type, row, meta) {
-                                    var html = "<input type='checkbox' value="+row.windowHiddenId+" class='lsCheck' name='choice' />";
-                                    html+="<input type='hidden' name='deptImagepath' value="+row.deptImagepath+"></input>";
+                                    var html = "<input type='checkbox' value=" + row.windowHiddenId + " class='lsCheck' name='choice' />";
+                                    html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
                                 }
                             },
@@ -140,21 +141,26 @@
 
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
-            var serverName = $("#inputCommitServerName").val();
-            var serverId = $("#inputCommitServerId").val();
+            var windowId = $("#inputCommitWindowId").val();
+            var windowName = $("#inputCommitWindowName").val();
+            var windowDepartment = $("#inputCommitWindowDepartment").val();
             var params;
             params = {
 
-                "pageSize":pageSize,
-                "pageNo":pageNo,
+                "pageSize": pageSize,
+                "pageNo": pageNo,
             };
-            if(isSearch=="1"){
-                if(serverName != ""){
-                    params["serverName"] = serverName;
+            if (isSearch == "1") {
+                if (windowId != "") {
+                    params["windowId"] = windowId;
 
                 }
-                if(serverId !=""){
-                    params["serverId"] = serverId;
+                if (windowName != "") {
+                    params["windowName"] = windowName;
+
+                }
+                if (windowDepartment != "") {
+                    params["windowDepartment"] = windowDepartment;
 
                 }
 
@@ -162,27 +168,30 @@
             dataId = "";
 
             $.ajax({
-                type : 'POST',
-                url : sSource,
-                cache:false,
-                async:true,
-                dataType : 'json',
-                data : params,
-                success : function(result) {
+                type: 'POST',
+                url: sSource,
+                cache: false,
+                async: true,
+                dataType: 'json',
+                data: params,
+                success: function (result) {
                     isSearch = "0";
-                    var suData = result.windows;
-                    var datainfo = suData
+                    var pageList = result.pageList;
+                    var datainfos = pageList.records
                     var obj = {};
-                    obj['data'] = datainfo;
-                    console.log(obj)
-                    if(typeof(datainfo)!="undefined"&&datainfo.length>0){
-                        obj.iTotalRecords = datainfo.length;
-                        obj.iTotalDisplayRecords = datainfo.length;
+                    obj['data'] = datainfos;
+                    obj['data'].forEach(function (item) {
+                        item['windowActionAnalysis'] = item["windowActionAnalysis"]?"开":"关";
+                        item['windowNinePalaces'] = item["windowNinePalaces"]?"开":"关";
+                    })
+                    if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
+                        obj.iTotalRecords = pageList.total;
+                        obj.iTotalDisplayRecords = pageList.total;
                         fnCallback(obj);
-                    }else if((typeof(datainfo)=="undefined")&&pageNo>1){
+                    } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();
                         oTable.fnPageChange(0);
-                    }else{
+                    } else {
                         obj['data'] = [];
                         obj.iTotalRecords = 0;
                         obj.iTotalDisplayRecords = 0;
@@ -191,8 +200,6 @@
                 }
             });
         }
-
-
 
 
     </script>
@@ -216,7 +223,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptId" id="winId">
+                                                   name="windowId" id="windowId">
                                         </div>
 
                                     </div>
@@ -230,7 +237,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptId" id="winName">
+                                                   name="windowName" id="windowName">
                                         </div>
 
                                     </div>
@@ -244,7 +251,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptId" id="winDept">
+                                                   name="windowDepartment" id="windowDepartment">
                                         </div>
                                         <%--                                                                        <input type="hidden" name="queueDept.deptLs" id="txtDeptLs" />--%>
                                     </div>
@@ -258,7 +265,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
-                                                   name="queueDept.deptName" id="winEvent">
+                                                   name="windowEvent" id="windowEvent">
                                         </div>
                                     </div>
                                 </td>
@@ -270,9 +277,12 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">楼层：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptPrint" id="winFloor">
+                                            <select
+                                                    class="form-control m-b table_content_zd"
+                                                    id="floorName">
+                                                <option value="">请选择楼层</option>
+
+                                            </select>
                                         </div>
 
                                     </div>
@@ -282,11 +292,13 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>监控：</label>
+                                                style="color: red;">*</span>九宫格监控：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptMaxtakeno" id="winMonitor">
+                                            <select class="form-control m-b table_content_zd" id="windowNinePalaces">
+                                                <option value="">请选择开启或关闭</option>
+                                                <option value="true">开</option>
+                                                <option value="false">关</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -316,9 +328,13 @@
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
                                                 style="color: red;">*</span>行为分析：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="queueDept.deptOrderno" id="winBR">
+                                            <select
+                                                    class="form-control m-b table_content_zd"
+                                                    id="windowActionAnalysis">
+                                                <option value="">请选择开启或关闭</option>
+                                                <option value="true">开</option>
+                                                <option value="false">关</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -353,46 +369,75 @@
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
-                            <tr class="table_menu_tr_zd" >
-                                <%--                                                                <td class="table_menu_tr_td_left_zd" colspan="2">--%>
-                                <%--                                                                    <select--%>
-                                <%--                                                                            class="form-control table_content_zd" name="selectCaseLs"--%>
-                                <%--                                                                            id="selectCaseLs"--%>
-                                <%--                                                                            style="width: 35%; float: left; margin-right: 10px">--%>
-                                <%--                                                                        <option value="">请选择区域</option>--%>
-                                <%--                                                                    </select> <input type="text" placeholder="委办局名称" autocomplete="off"--%>
-                                <%--                                                                                     spellcheck="false" placeholder="" style="width: 35%;"--%>
-                                <%--                                                                                     class="form-control input_btn_input table_content_zd"--%>
-                                <%--                                                                                     name="selectCommitOfficeName" id="selectCommitOfficeName">--%>
+                            <tr class="table_menu_tr_zd">
+                                <td class="table_menu_tr_td_left_zd"
+                                    colspan="2">
+                                    <input
+                                            type="text"
+                                            placeholder="请输入窗口ID"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitWindowId"
+                                            id="inputCommitWindowId">
+                                    <input
+                                            type="text"
+                                            placeholder="请输入窗口名称"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitWindowName"
+                                            id="inputCommitWindowName">
+                                    <input
+                                            type="text"
+                                            placeholder="请输入窗口所属部门"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitWindowDepartment"
+                                            id="inputCommitWindowDepartment">
 
-                                <%--                                                                    <button type="button"--%>
-                                <%--                                                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"--%>
-                                <%--                                                                            style="margin-top: 2.5px; margin-bottom: 2px;"--%>
-                                <%--                                                                            id="btnCommitOfficeSelect">查询</button>--%>
-                                <%--                                                                </td>--%>
+                                    <button type="button"
+                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
+                                            style="margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="queCommit">
+                                        查询
+                                    </button>
+                                </td>
 
                                 <td class="table_menu_tr_td_right_zd" colspan="2">
                                     <div style="float: right;">
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="addCommitServer">新增</button>
+                                                id="addCommit">新增
+                                        </button>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="modifyCommitServer">修改</button>
+                                                id="modifyCommit">修改
+                                        </button>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="clearData">清除</button>
+                                                id="clearData">清除
+                                        </button>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="deleteCommitServer">删除</button>
+                                                id="deleteCommit">删除
+                                        </button>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="configWindow">显示配置按钮</button>
+                                                id="configWindow">显示配置按钮
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -406,11 +451,13 @@
                             <button type="button"
                                     class="btn btn-primary btn-sm input_btn_btn list_btn"
                                     style="float: left; margin-bottom: 2px;"
-                                    id="caseArea_administration">办事区域管理</button>
+                                    id="caseArea_administration">办事区域管理
+                            </button>
                             <button type="button"
                                     class="btn btn-primary btn-sm input_btn_btn list_btn"
                                     style="float: left; margin-bottom: 2px;"
-                                    id="selectArea_administration">行政区域管理</button>
+                                    id="selectArea_administration">行政区域管理
+                            </button>
                         </div>
                     </div>
                     <table id="itemResultTable" class="table table-bordered"></table>

@@ -199,14 +199,14 @@
                     var datainfos = pageList.records
                     var obj = {};
                     obj['data'] = datainfos;
-                    // console.log(obj['data'])
+
                     obj['data'].forEach(function (item) {
                         item['camBirth'] = formatDate(new Date(item["camBirth"]["time"]), "yyyy-MM-dd")
                     })
 
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
-                        obj.iTotalRecords = datainfos.length;
-                        obj.iTotalDisplayRecords = datainfos.length;
+                        obj.iTotalRecords = pageList.total;
+                        obj.iTotalDisplayRecords = pageList.total;
                         fnCallback(obj);
                     } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();

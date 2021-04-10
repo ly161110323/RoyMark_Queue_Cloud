@@ -46,12 +46,12 @@
             table = $('#itemResultTable')
                 .DataTable(
                     {
-                        "bPaginate": false, //开关，是否显示分页器
-                        "paging": false,
+                        "bPaginate": true, //开关，是否显示分页器
+                        "paging": true,
                         "lengthChange": true,
                         "searching": false,
                         "ordering": false,
-                        "info": false,
+                        "info": true,
                         "autoWidth": false,
                         "displayLength": 10,
                         "sAjaxDataProp": "data",

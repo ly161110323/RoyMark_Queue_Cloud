@@ -7,8 +7,8 @@ $(document).ready(function () {
     clearClick();
     configClick();
     init_areaInfo();
-    queryCaseAreaList();
-    querySelectAreaList();
+    queryFloorList();
+    // querySelectAreaList();
 
     icon_operate();//部门图标处理
 
@@ -33,11 +33,11 @@ function init_areaInfo() {
     $("#Area_Name").val(defaultAreaName);
 
 }
-function queryCaseAreaList()
+function queryFloorList()
 {
 
     var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueCasearea/listall"
+    var url=rootPath+"/floor/getAll"
 //获取问卷调查
     $.ajax({
         type: 'POST',
@@ -48,17 +48,16 @@ function queryCaseAreaList()
         success: function (data) {
 //调用成功时对返回的值进行解析
 
-            var list = data.returnObject;
+            var list = data.floors;
 //若未出错，则获取信息设置到控件中
             var str ="";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].caseareaLs + "'>" + list[i].caseareaName + "</option>";
+                str += "<option value='" + list[i].floorHiddenId + "'>" + list[i].floorName + "</option>";
             }
-            $("#formCaseAreaLs").empty();
-            $("#formCaseAreaLs").append(str);
-            $("#selectCaseLs").empty();
-            $("#selectCaseLs").append("<option value=''>请选择办事区域</option>");
-            $("#selectCaseLs").append(str);
+
+            $("#floorName").empty();
+            $("#floorName").append("<option value=''>请选择楼层</option>");
+            $("#floorName").append(str);
         }
     });
 }
@@ -107,23 +106,23 @@ function trClick() {
             "color": "white"
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
-        $("#txtDeptLs").val(dataId);
-        $("#serverName").val($(this).find("td:eq(2)").text());
-        console.log($(this).find("td:eq(2)").text())
-        $("#serverID").val($(this).find("td:eq(3)").text());
-        $("#serverIP").val($(this).find("td:eq(4)").text());
-        $("#serverPort").val($(this).find("td:eq(5)").text());
-        $("#txtDeptMaxappointment").val($(this).find("td:eq(6)").text());
-        var tempValue=$(this).find("td:eq(0) input[name='deptImagepath']").val();
+        // $("#txtDeptLs").val(dataId);
+        $("#windowId").val($(this).find("td:eq(2)").text());
 
-        if(tempValue!="null" && tempValue!='' && typeof(tempValue)!='undefined')
-        {
-            $("#departmentIconFileName").val(tempValue);
-        }
-        $("#txtDeptId").val($(this).find("td:eq(8)").text());
-        $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
-        $("#adjSelectArea").val($(this).find("td:eq(12)").text());
-        $("#otherId").val($(this).find("td:eq(13)").text());
+        $("#windowName").val($(this).find("td:eq(3)").text());
+        $("#windowDepartment").val($(this).find("td:eq(4)").text());
+        $("#windowEvent").val($(this).find("td:eq(5)").text());
+        $('#floorName').val($(this).find("td:eq(9)").text())
+
+
+        ninePalaces = $(this).find("td:eq(7)").text()
+        actionAnalysis = $(this).find("td:eq(8)").text()
+
+        $("#windowNinePalaces").val(val=(ninePalaces==="开").toString())
+        $("#windowActionAnalysis").val(val=(actionAnalysis==="开").toString())
+        // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
+        // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
+        // $("#otherId").val($(this).find("td:eq(13)").text());
     });
 
 }
@@ -157,53 +156,53 @@ function checkBoxStyle_Control()
 }
 //页面数据合法性验证
 function validateData(isAdd) {
-    if($("#serverName").val().trim()==""){
-        layer.alert("服务器名称不能为空！");
+    if($("#windowId").val().trim()==""){
+        layer.alert("窗口ID不能为空！");
         return;
     }
-    if($("#serverIP").val().trim()==""){
-        layer.alert("服务器IP不能为空！");
+    if($("#windowName").val().trim()==""){
+        layer.alert("窗口名称不能为空！");
         return;
     }
 
-    if($("#serverPort").val().trim()==""){
-        layer.alert("服务器端口不能为空！");
+    if($("#windowActionAnalysis").val().trim()==""){
+        layer.alert("请选择行为分析开启或关闭！");
         return;
     }
-    if($("#serverID").val().trim()==""){
-        layer.alert("服务器ID不能为空！");
+    if($("#windowNinePalaces").val().trim()==""){
+        layer.alert("请选择监控开启或关闭！");
         return;
     }
     var trs = $("#itemResultTable tr:gt(0)");
-    // var chooseName = $("#txtDeptName").val();
-    var chooseId = $("#serverID").val();
+    var chooseName = $("#windowName").val();
+    var chooseId = $("#windowId").val();
     var isExit = false;
 
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function(index,element){
         var objLs = $(element).find("td:eq(0)>input").val();
-        // if($(element).find("td:eq(2)").text() == chooseName){
-        //     if(isAdd){
-        //         isExit=true;
-        //         layer.alert("该委办局名称已存在！");
-        //         return false;
-        //     }else{
-        //         if(objLs!=dataId){
-        //             isExit=true;
-        //             layer.alert("该委办局名称已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
-        if($(element).find("td:eq(3)").text() == chooseId){
+        if($(element).find("td:eq(2)").text() == chooseName){
             if(isAdd){
                 isExit=true;
-                layer.alert("该委办局编号已存在！");
+                layer.alert("该窗口名称已存在！");
                 return false;
             }else{
                 if(objLs!=dataId){
                     isExit=true;
-                    layer.alert("该委办局编号已存在！");
+                    layer.alert("该窗口名称已存在！");
+                    return false;
+                }
+            }
+        }
+        if($(element).find("td:eq(2)").text() == chooseId){
+            if(isAdd){
+                isExit=true;
+                layer.alert("该窗口ID已存在！");
+                return false;
+            }else{
+                if(objLs!=dataId){
+                    isExit=true;
+                    layer.alert("该窗口ID已存在！");
                     return false;
                 }
             }
@@ -219,35 +218,34 @@ function validateData(isAdd) {
 //清除数据
 function clearData(){
 
-    var $file = $("#departmentIcon");
-    $file.after($file.clone().val(""));
-    $file.remove();
-    $("#serverName").val("");
-    $("#serverIP").val("");
-    $("#serverPort").val("")
-    $("#serverID").val("")
-    // $("#txtDeptMaxtakeno").val("");
-    // $("#txtDeptMaxappointment").val("");
-    // $("#departmentIconFileName").val("");
+
+    $("#windowId").val("");
+    $("#windowName").val("");
+    $("#windowDepartment").val("")
+    $("#windowEvent").val("")
+    $("#floorName").val("");
+    $("#windowActionAnalysis").val("");
+    $("#windowNinePalaces").val("");
     // $("#txtDeptId").val("");
     // $("#otherId").val("");
 }
 
 function addClick() {
-    $(document).on('click','#addCommitServer',function(){
+    $(document).on('click','#addCommit',function(){
         if(!validateData(true))
         {
             return;
         }
-
-
         var formData = new FormData();
-        formData.append("name", $('#serverName').val());
-        formData.append("ip",$("#serverIP").val());
-        formData.append("port",$("#serverPort").val());
-        // formData.append("deptPrint",$("#serverID").val());
+        formData.append("windowId", $('#windowId').val());
+        formData.append("windowName",$("#windowName").val());
+        formData.append("windowDepartment",$("#windowDepartment").val());
+        formData.append("windowEvent",$("#windowEvent").val());
+        formData.append("floorHiddenId",$("#floorName").val());
+        formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
+        formData.append("windowNinePalaces",$("#windowNinePalaces").val());
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/insert";
+        var url=rootPath+"/window/insert";
         $.ajax({
             type: 'POST',
             url:  url,
@@ -275,7 +273,7 @@ function addClick() {
 
 function updateClick() {
 //为修改绑定点击事件
-    $(document).on('click', '#modifyCommitServer', function () {
+    $(document).on('click', '#modifyCommit', function () {
         if (dataId=='') {
             layer.alert("请选择要修改的数据！");
             return;
@@ -285,14 +283,18 @@ function updateClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("name", $('#serverName').val());
-        formData.append("ip",$("#serverIP").val());
-        formData.append("port",$("#serverPort").val());
-        formData.append("id",$("#serverID").val());
+        formData.append("windowHiddenId", dataId);
+        formData.append("windowId", $('#windowId').val());
+        formData.append("windowName",$("#windowName").val());
+        formData.append("windowDepartment",$("#windowDepartment").val());
+        formData.append("windowEvent",$("#windowEvent").val());
+        formData.append("floorHiddenId",$("#floorName").val());
+        formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
+        formData.append("windowNinePalaces",$("#windowNinePalaces").val());
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/server/update";
+        var url = rootPath + "/window/update";
 
         $.ajax({
             url: url,
@@ -319,9 +321,9 @@ function updateClick() {
 }
 function deleteClick() {
 //为删除按钮绑定点击事件
-    $(document).on('click','#deleteCommitServer',function() {
+    $(document).on('click','#deleteCommit',function() {
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/delete";
+        var url=rootPath+"/window/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {
@@ -366,9 +368,12 @@ function searchClick()
 {
 
     //为查询按钮绑定点击事件
-    $(document).on('click','#btnCommitOfficeSelect',function(){
+    $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
+        $('#inputCommitWindowId').val("");
+        $('#inputCommitWindowName').val("");
+        $('#inputCommitWindowDepartment').val("");
     });
 
 }

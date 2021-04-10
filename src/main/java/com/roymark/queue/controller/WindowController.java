@@ -85,7 +85,8 @@ public class WindowController {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "添加成功");
                 return jsonObject;
-            } else {
+            }
+            else {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "添加失败");
                 return jsonObject;
@@ -135,7 +136,8 @@ public class WindowController {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");
                 return jsonObject;
-            } else {
+            }
+            else {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "修改失败");
                 return jsonObject;
@@ -155,7 +157,8 @@ public class WindowController {
 
         try {
             String[] deletes = deleteId.split(",");
-            if (deletes.length <= 0) {
+            if (deletes.length <= 0)
+            {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
@@ -186,7 +189,8 @@ public class WindowController {
                 jsonObject.put("window", window);
                 jsonObject.put("msg", "获取成功");
                 return jsonObject;
-            } else {
+            }
+            else {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "获取失败");
                 return jsonObject;
@@ -200,7 +204,9 @@ public class WindowController {
     }
 
     @RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-    public Object search(@RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+    public Object search(@RequestParam(required = false) String windowId,
+                         @RequestParam(required = false) String windowName,
+                         @RequestParam(required = false) String windowDepartment, int pageNo, int pageSize) {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -208,7 +214,12 @@ public class WindowController {
             Page<Window> page = new Page<Window>(pageNo, pageSize);
             QueryWrapper<Window> queryWrapper = new QueryWrapper<Window>();
             if (windowId != null)
-                queryWrapper.like("window_id", windowId);
+                queryWrapper.like ("window_id",windowId);
+            if (windowName != null)
+                queryWrapper.like ("window_name",windowName);
+            if (windowDepartment != null)
+                queryWrapper.like ("window_department",windowDepartment);
+
             // 执行分页
             IPage<Window> pageList = windowService.page(page, queryWrapper);
             // 返回结果
@@ -217,7 +228,8 @@ public class WindowController {
                 jsonObject.put("msg", "搜素结果为空");
                 jsonObject.put("pageList", pageList);
                 return jsonObject;
-            } else {
+            }
+            else {
                 jsonObject.put("pageList", pageList);
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "搜索成功");
