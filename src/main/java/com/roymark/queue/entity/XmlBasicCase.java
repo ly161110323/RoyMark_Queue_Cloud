@@ -1,9 +1,13 @@
 package com.roymark.queue.entity;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class XmlBasicCase {
 
     private Integer Terminal_Ls;

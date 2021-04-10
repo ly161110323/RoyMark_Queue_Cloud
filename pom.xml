@@ -27,6 +27,7 @@
 		<jstl.version>1.2</jstl.version>
 		<log4j.version>2.11.0</log4j.version>
 		<slf4j.version>1.7.25</slf4j.version>
+		<javacv.version>1.5.1</javacv.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
@@ -34,6 +35,20 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+		<groupId>org.bytedeco</groupId>
+		<artifactId>javacv-platform</artifactId>
+		<version>${javacv.version}</version>
+		<type>pom</type>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
+	<dependency>
+		<groupId>javax.websocket</groupId>
+		<artifactId>javax.websocket-api</artifactId>
+		<version>1.1</version>
+		<scope>provided</scope>
+	</dependency>
+
 		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
