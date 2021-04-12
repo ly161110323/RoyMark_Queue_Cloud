@@ -81,11 +81,7 @@ public class UserController {
 				filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 				tempActionUser.setUserPhoto(filePath);
 			}
-			
-			// 对密码进行MD5加密
-			if (tempActionUser.getUserPwd() != null) {
-				tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
-			}
+
 			boolean result = userService.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
 			if (result) {
 				jsonObject.put("result", "ok");
@@ -143,11 +139,6 @@ public class UserController {
 						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 						tempActionUser.setUserPhoto(filePath);
 						// System.out.println(filePath);
-					}
-					
-					// 对密码进行MD5加密
-					if (tempActionUser.getUserPwd() != null) {
-						tempActionUser.setUserPwd(Md5Util.EncoderByMd5(tempActionUser.getUserPwd()));
 					}
 
 					boolean result = userService.save(tempActionUser);

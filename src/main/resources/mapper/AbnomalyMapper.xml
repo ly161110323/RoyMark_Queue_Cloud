@@ -31,7 +31,7 @@
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT br_abnomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (abnomaly INNER JOIN br_user ON br_abnomaly.user_hidden_id=br_user.user_hidden_id)
+        SELECT br_abnomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (br_abnomaly INNER JOIN br_user ON br_abnomaly.user_hidden_id=br_user.user_hidden_id)
             INNER JOIN br_window ON br_abnomaly.window_hidden_id=br_window.window_hidden_id
         ${ew.customSqlSegment}
     </select>

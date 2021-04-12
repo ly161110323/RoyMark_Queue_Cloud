@@ -7,7 +7,6 @@
         <id column="user_hidden_id" property="userHiddenId" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
-        <result column="user_pwd" property="userPwd" />
         <result column="user_sex" property="userSex" />
         <result column="user_department" property="userDepartment" />
         <result column="user_post" property="userPost" />
@@ -27,7 +26,7 @@
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT user.* , br_window.window_id FROM br_user NATURAL JOIN br_window ${ew.customSqlSegment}
+        SELECT br_user.* , br_window.window_id FROM br_user NATURAL JOIN br_window ${ew.customSqlSegment}
     </select>
 
 </mapper>

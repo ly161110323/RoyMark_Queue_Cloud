@@ -19,9 +19,6 @@ public class ActionUser implements Serializable {
 
 	@TableField(value = "user_id")
     private String userId;
-
-	@TableField(value = "user_pwd")
-	private String userPwd;
 	
     @TableField(value = "user_name")
     private String userName;
@@ -66,14 +63,6 @@ public class ActionUser implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getUserPwd() {
-        return userPwd;
-    }
-
-    public void setUserPwd(String userPwd) {
-        this.userPwd = userPwd;
     }
 
     public String getUserName() {
