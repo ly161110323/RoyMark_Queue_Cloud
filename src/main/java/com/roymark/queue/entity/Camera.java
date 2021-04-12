@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
-@TableName(value = "cam")
+@TableName(value = "br_cam")
 public class Camera implements Serializable {
 
 	private static final long serialVersionUID = 1L;

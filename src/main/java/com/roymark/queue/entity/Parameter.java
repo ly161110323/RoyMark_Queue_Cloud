@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "param")
+@TableName(value = "br_param")
 public class Parameter implements Serializable {
 
 	private static final long serialVersionUID = 1L;

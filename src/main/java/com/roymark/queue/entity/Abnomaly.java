@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
-@TableName(value = "abnomaly")
+@TableName(value = "br_abnomaly")
 public class Abnomaly  implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

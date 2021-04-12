@@ -19,15 +19,15 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllUser" resultMap="BaseResultMap">
-        SELECT * FROM user NATURAL JOIN window
+        SELECT * FROM br_user NATURAL JOIN br_window
     </select>
 
     <select id="getUserByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM user NATURAL JOIN window WHERE user_hidden_id = #{VALUE }
+        SELECT * FROM br_user NATURAL JOIN br_window WHERE user_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT user.* , window.window_id FROM user NATURAL JOIN window ${ew.customSqlSegment}
+        SELECT user.* , br_window.window_id FROM br_user NATURAL JOIN br_window ${ew.customSqlSegment}
     </select>
 
 </mapper>

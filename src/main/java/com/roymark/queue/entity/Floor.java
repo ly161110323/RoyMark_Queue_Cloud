@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "floor")
+@TableName(value = "br_floor")
 public class Floor implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -22,14 +22,14 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllCamera" resultMap="BaseResultMap">
-        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server
+        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server
     </select>
 
     <select id="getCameraByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server WHERE cam_hidden_id = #{VALUE }
+        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server WHERE cam_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT * FROM cam NATURAL JOIN window NATURAL JOIN server ${ew.customSqlSegment}
+        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server ${ew.customSqlSegment}
     </select>
 </mapper>

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "user")
+@TableName(value = "br_user")
 public class ActionUser implements Serializable {
     
 	private static final long serialVersionUID = 1L;

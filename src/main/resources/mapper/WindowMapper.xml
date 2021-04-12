@@ -19,14 +19,14 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllWindow" resultMap="BaseResultMap">
-        SELECT * FROM window NATURAL JOIN floor
+        SELECT * FROM br_window NATURAL JOIN br_floor
     </select>
 
     <select id="getWindowByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM window NATURAL JOIN floor WHERE window_hidden_id = #{VALUE }
+        SELECT * FROM br_window NATURAL JOIN br_floor WHERE window_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT * FROM window NATURAL JOIN floor ${ew.customSqlSegment}
+        SELECT * FROM br_window NATURAL JOIN br_floor ${ew.customSqlSegment}
     </select>
 </mapper>
