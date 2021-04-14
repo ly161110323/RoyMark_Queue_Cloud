@@ -82,12 +82,6 @@ public class AnomalyController {
                 return jsonObject;
             }
 
-            Anomaly queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyId, anomaly.getAnomalyId()));
-            if (queryAnomaly != null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "异常ID已存在");
-                return jsonObject;
-            }
             boolean result = anomalyService.save(anomaly);
             if (result) {
                 jsonObject.put("result", "ok");

@@ -5,7 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.roymark.queue.entity.Anomaly">
         <id column="anomaly_hidden_id" property="anomalyHiddenId" />
-        <result column="anomaly_id" property="anomalyId" />
         <result column="anomaly_event" property="anomalyEvent" />
         <result column="anomaly_start_date" property="anomalyStartDate" />
         <result column="anomaly_end_date" property="anomalyEndDate" />

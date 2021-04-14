@@ -18,9 +18,6 @@ public class Anomaly implements Serializable {
 	@TableId(value = "anomaly_hidden_id")
 	private Long anomalyHiddenId;
 
-	@TableField(value = "anomaly_id")
-    private String anomalyId;
-
     @TableField(value = "anomaly_event")
     private String anomalyEvent;
 
@@ -57,14 +54,6 @@ public class Anomaly implements Serializable {
 
 	public void setAnomalyHiddenId(Long anomalyHiddenId) {
 		this.anomalyHiddenId = anomalyHiddenId;
-	}
-
-	public String getAnomalyId() {
-		return anomalyId;
-	}
-
-	public void setAnomalyId(String anomalyId) {
-		this.anomalyId = anomalyId;
 	}
 
 	public String getAnomalyEvent() {
