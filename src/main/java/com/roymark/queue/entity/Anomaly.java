@@ -22,11 +22,11 @@ public class Anomaly implements Serializable {
     private String anomalyEvent;
 
     @TableField(value = "anomaly_start_date")
-	@JsonFormat(pattern = "yyyy-MM-dd:hh:mm:ss", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyStartDate;
     
     @TableField(value = "anomaly_end_date")
-	@JsonFormat(pattern = "yyyy-MM-dd:hh:mm:ss", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyEndDate;
 
     @TableField(value = "anomaly_confidence")
