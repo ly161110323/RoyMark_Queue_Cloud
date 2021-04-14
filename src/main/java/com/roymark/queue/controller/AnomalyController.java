@@ -2,6 +2,7 @@ package com.roymark.queue.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.service.AnomalyService;
@@ -81,32 +82,40 @@ public class AnomalyController {
             return jsonObject;
         }
     }
-/*
+
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-    public Object update(Anomaly anomaly) {
+    public Object update(Anomaly anomaly, String anomalyStartTime, String anomalyEndTime) {
         JSONObject jsonObject = new JSONObject();
 
+        Timestamp startTime = Timestamp.valueOf(anomalyStartTime);
+        Timestamp endTime = Timestamp.valueOf(anomalyEndTime);
+
+        anomaly.setAnomalyEndDate(endTime);
+        anomaly.setAnomalyStartDate(startTime);
         try {
-            Anomaly queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getId, anomaly.getId()));
-            if (queryAnomaly != null) {
+
+            if (anomalyService.getById(anomaly.getAnomalyHiddenId()) == null) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "异常ID已存在");
+                jsonObject.put("msg", "异常记录不存在");
                 return jsonObject;
             }
-            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getId, anomaly.getId()));
+            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
+                jsonObject.put("msg", "修改成功");
                 return jsonObject;
             } else {
                 jsonObject.put("result", "no");
+                jsonObject.put("msg", "修改失败");
                 return jsonObject;
             }
         } catch (Exception e) {
             logger.error("/anomaly/update 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
+            jsonObject.put("msg", "修改出现错误");
             return jsonObject;
         }
-    }*/
+    }
 
     @RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
     public Object delete(String deleteId) {
