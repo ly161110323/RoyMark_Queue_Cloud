@@ -3,6 +3,7 @@ package com.roymark.queue.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -21,9 +22,11 @@ public class Anomaly implements Serializable {
     private String anomalyEvent;
 
     @TableField(value = "anomaly_start_date")
+	@JsonFormat(pattern = "yyyy-MM-dd:hh:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyStartDate;
     
     @TableField(value = "anomaly_end_date")
+	@JsonFormat(pattern = "yyyy-MM-dd:hh:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyEndDate;
 
     @TableField(value = "anomaly_confidence")
