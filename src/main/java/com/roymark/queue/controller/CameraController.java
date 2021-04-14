@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 @RestController
 @RequestMapping("/camera")

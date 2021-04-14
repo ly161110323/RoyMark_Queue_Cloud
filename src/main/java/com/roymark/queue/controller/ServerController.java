@@ -2,7 +2,6 @@ package com.roymark.queue.controller;
 
 import java.util.List;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.roymark.queue.entity.Server;
 import com.roymark.queue.service.ServerService;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 @RestController
 @RequestMapping("/server")

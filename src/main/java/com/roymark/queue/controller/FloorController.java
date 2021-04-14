@@ -5,7 +5,7 @@ import com.roymark.queue.entity.Floor;
 import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.FloorService;
 import com.roymark.queue.service.WindowService;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

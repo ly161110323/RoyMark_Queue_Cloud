@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.roymark.queue.service.UserService;
 import com.roymark.queue.util.UploadUtil;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 @RestController
 @RequestMapping("/user")
