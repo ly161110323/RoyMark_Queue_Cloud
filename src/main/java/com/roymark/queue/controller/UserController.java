@@ -37,9 +37,6 @@ public class UserController {
     private UserService userService;
 
 	@Autowired
-	private WindowService windowService;
-
-	@Autowired
 	private AnomalyService anomalyService;
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
@@ -55,16 +52,7 @@ public class UserController {
 				jsonObject.put("msg", "用户不存在");
 				return jsonObject;
 			}
-			else if (tempActionUser.getWindowHiddenId()==null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "未设置窗口");
-				return jsonObject;
-			}
-			else if (windowService.getById(tempActionUser.getWindowHiddenId()) == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "设置的窗口不存在");
-				return jsonObject;
-			}
+
 			ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
 			if (queryUser != null && !queryUser.getUserHiddenId().equals(tempActionUser.getUserHiddenId())) {
 				jsonObject.put("result", "no");
@@ -119,16 +107,6 @@ public class UserController {
 					jsonObject.put("msg", "用户ID已存在");
 					return jsonObject;
 				} else {
-					if (tempActionUser.getWindowHiddenId() == null) {
-						jsonObject.put("result", "no");
-						jsonObject.put("msg", "未设置窗口");
-						return jsonObject;
-					}
-					else if (windowService.getById(tempActionUser.getWindowHiddenId()) == null) {
-						jsonObject.put("result", "no");
-						jsonObject.put("msg", "设置的窗口不存在");
-						return jsonObject;
-					}
 					tempActionUser.setUserHiddenId(Long.valueOf(0));
 					String filePath = "";
 					if (uploadinfo != null) {

@@ -28,8 +28,6 @@ public class WindowController {
 
     @Autowired
     private WindowService windowService;
-    @Autowired
-    private FloorService floorService;
 
     @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllWindows() {
@@ -61,16 +59,6 @@ public class WindowController {
 
         try {
             window.setWindowHiddenId(Long.valueOf(0));
-            if (window.getFloorHiddenId() == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "未设置楼层");
-                return jsonObject;
-            }
-            if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorHiddenId, window.getFloorHiddenId())) == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "设置的楼层不存在");
-                return jsonObject;
-            }
 
             Window queryWindow = windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
             if (queryWindow != null) {
@@ -102,16 +90,6 @@ public class WindowController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            if (window.getFloorHiddenId() == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "未设置楼层");
-                return jsonObject;
-            }
-            if (floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorHiddenId, window.getFloorHiddenId())) == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "设置的楼层不存在");
-                return jsonObject;
-            }
 
             Window queryWindow = windowService.getById(window.getWindowHiddenId());
             if (queryWindow == null) {

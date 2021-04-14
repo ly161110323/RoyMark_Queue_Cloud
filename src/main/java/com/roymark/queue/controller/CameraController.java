@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.WindowService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,9 +28,6 @@ public class CameraController {
 
 	@Autowired
 	private CameraService cameraService;
-
-	@Autowired
-	private WindowService windowService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -69,16 +65,7 @@ public class CameraController {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
 			camera.setCamBirth(cameraBirth);
-			if (camera.getWindowHiddenId() == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "未设置窗口");
-				return jsonObject;
-			}
-			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowHiddenId, camera.getWindowHiddenId())) == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "设置的窗口不存在");
-				return jsonObject;
-			}
+
 			Camera queryCamera = cameraService.getOne(Wrappers.<Camera>lambdaQuery().eq(Camera::getCamId, camera.getCamId()));
 			if (queryCamera != null) {
 				jsonObject.put("result", "no");
@@ -112,16 +99,7 @@ public class CameraController {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
 			camera.setCamBirth(cameraBirth);
-			if (camera.getWindowHiddenId() == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "未设置窗口");
-				return jsonObject;
-			}
-			if (windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowHiddenId, camera.getWindowHiddenId())) == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "设置的窗口不存在");
-				return jsonObject;
-			}
+
 			Camera queryCamera = cameraService.getById(camera.getCamHiddenId());
 			if (queryCamera == null) {
 				jsonObject.put("result", "no");

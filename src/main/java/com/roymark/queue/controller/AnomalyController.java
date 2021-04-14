@@ -26,12 +26,6 @@ public class AnomalyController {
     @Autowired
     private AnomalyService anomalyService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private WindowService windowService;
-
     @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllAnomalies() {
         JSONObject jsonObject = new JSONObject();
@@ -69,17 +63,6 @@ public class AnomalyController {
         anomaly.setAnomalyEndDate(endTime);
         anomaly.setAnomalyStartDate(startTime);
         try {
-            if (anomaly.getUserHiddenId() == null || userService.getById(anomaly.getUserHiddenId()) == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "用户不存在");
-                return jsonObject;
-            }
-
-            if (anomaly.getWindowHiddenId() == null || windowService.getById(anomaly.getWindowHiddenId()) == null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "窗口不存在");
-                return jsonObject;
-            }
 
             boolean result = anomalyService.save(anomaly);
             if (result) {
