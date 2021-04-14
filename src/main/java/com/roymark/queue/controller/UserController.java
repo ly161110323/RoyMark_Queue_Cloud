@@ -8,11 +8,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Abnomaly;
+import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
-import com.roymark.queue.service.AbnomalyService;
+import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.WindowService;
-import org.apache.ibatis.annotations.Param;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.roymark.queue.service.UserService;
-import com.roymark.queue.util.Md5Util;
 import com.roymark.queue.util.UploadUtil;
 
 import net.sf.json.JSONObject;
@@ -42,7 +40,7 @@ public class UserController {
 	private WindowService windowService;
 
 	@Autowired
-	private AbnomalyService abnomalyService;
+	private AnomalyService anomalyService;
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
 	public Object update(ActionUser tempActionUser,
@@ -197,10 +195,10 @@ public class UserController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				List<Abnomaly> abnomalyList = abnomalyService.list(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getUserHiddenId, Long.valueOf(deletes[i])));
-				for (Abnomaly abnomaly : abnomalyList) {
-					abnomalyService.update(null, Wrappers.<Abnomaly>lambdaUpdate().set(Abnomaly::getUserHiddenId, null)
-							.eq(Abnomaly::getAbnomalyHiddenId, abnomaly.getAbnomalyHiddenId()));
+				List<Anomaly> anomalyList = anomalyService.list(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getUserHiddenId, Long.valueOf(deletes[i])));
+				for (Anomaly anomaly : anomalyList) {
+					anomalyService.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
+							.eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
 				}
 				userService.removeById(Long.valueOf(deletes[i]));
 			}

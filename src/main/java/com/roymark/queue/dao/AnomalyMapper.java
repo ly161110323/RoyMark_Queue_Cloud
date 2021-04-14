@@ -5,18 +5,18 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.roymark.queue.entity.Anomaly;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.roymark.queue.entity.Abnomaly;
 
 @Repository
-public interface AbnomalyMapper extends BaseMapper<Abnomaly> {
+public interface AnomalyMapper extends BaseMapper<Anomaly> {
 
-    List<Abnomaly> getAllAbnomaly();
+    List<Anomaly> getAllAnomaly();
 
-    Abnomaly getAbnomalyByHiddenId(Long hiddenId);
+    Anomaly getAnomalyByHiddenId(Long hiddenId);
 
-    List<Abnomaly> page(@Param("page")IPage<Abnomaly> page, @Param(Constants.WRAPPER)Wrapper<Abnomaly> queryWrapper);
+    List<Anomaly> page(@Param("page")IPage<Anomaly> page, @Param(Constants.WRAPPER)Wrapper<Anomaly> queryWrapper);
 }

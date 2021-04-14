@@ -3,10 +3,10 @@ package com.roymark.queue.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.roymark.queue.dao.AbnomalyMapper;
+import com.roymark.queue.dao.AnomalyMapper;
 import com.roymark.queue.dao.CameraMapper;
 import com.roymark.queue.dao.UserMapper;
-import com.roymark.queue.entity.Abnomaly;
+import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
     private WindowMapper windowMapper;
 
     @Autowired
-    private AbnomalyMapper abnomalyMapper;
+    private AnomalyMapper anomalyMapper;
 
     @Autowired
     private CameraMapper cameraMapper;
@@ -42,10 +42,10 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
     @Override
     public void deletePreHiddenId(Long windowHiddenId) {
 
-        List<Abnomaly> abnomalyList = abnomalyMapper.selectList(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getWindowHiddenId, windowHiddenId));
-        for (Abnomaly abnomaly : abnomalyList) {
-            abnomalyMapper.update(null, Wrappers.<Abnomaly>lambdaUpdate().set(Abnomaly::getWindowHiddenId, null)
-                    .eq(Abnomaly::getAbnomalyHiddenId, abnomaly.getAbnomalyHiddenId()));
+        List<Anomaly> anomalyList = anomalyMapper.selectList(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getWindowHiddenId, windowHiddenId));
+        for (Anomaly anomaly : anomalyList) {
+            anomalyMapper.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getWindowHiddenId, null)
+                    .eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
         }
 
         List<Camera> cameraList = cameraMapper.selectList(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowHiddenId, windowHiddenId));

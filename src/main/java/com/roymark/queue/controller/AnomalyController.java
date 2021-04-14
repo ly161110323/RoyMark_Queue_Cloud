@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Abnomaly;
-import com.roymark.queue.service.AbnomalyService;
+import com.roymark.queue.entity.Anomaly;
+import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.UserService;
 import com.roymark.queue.service.WindowService;
 import net.sf.json.JSONObject;
@@ -17,17 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/abnomaly")
-public class AbnomalyController {
-    private static final Logger logger = LogManager.getLogger(AbnomalyController.class);
+@RequestMapping("/anomaly")
+public class AnomalyController {
+    private static final Logger logger = LogManager.getLogger(AnomalyController.class);
 
     @Autowired
-    private AbnomalyService abnomalyService;
+    private AnomalyService anomalyService;
 
     @Autowired
     private UserService userService;
@@ -36,24 +34,24 @@ public class AbnomalyController {
     private WindowService windowService;
 
     @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
-    public Object getAllAbnomalies() {
+    public Object getAllAnomalies() {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            List<Abnomaly> abnomalies = abnomalyService.getAllAbnomalies();
+            List<Anomaly> anomalies = anomalyService.getAllAnomalies();
 
-            if (abnomalies.size() <= 0) {
+            if (anomalies.size() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "获取结果为空");
-                jsonObject.put("abnomalies", abnomalies);
+                jsonObject.put("anomalies", anomalies);
                 return jsonObject;
             }
-            jsonObject.put("abnomalies", abnomalies);
+            jsonObject.put("anomalies", anomalies);
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
             return jsonObject;
         } catch (Exception e) {
-            logger.error("/abnomaly/getAll 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/getAll 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
@@ -61,35 +59,36 @@ public class AbnomalyController {
     }
 
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-    public Object insert(Abnomaly abnomaly, String abnomalyStartTime, String abnomalyEndTime) {
+    public Object insert(Anomaly anomaly, String anomalyStartTime, String anomalyEndTime) {
         JSONObject jsonObject = new JSONObject();
 
-        abnomaly.setAbnomalyHiddenId(Long.valueOf(0));
+        anomaly.setAnomalyHiddenId(Long.valueOf(0));
 
-        Timestamp startTime = Timestamp.valueOf(abnomalyStartTime);
-        Timestamp endTime = Timestamp.valueOf(abnomalyEndTime);
+        Timestamp startTime = Timestamp.valueOf(anomalyStartTime);
+        Timestamp endTime = Timestamp.valueOf(anomalyEndTime);
 
-        abnomaly.setAbnomalyEndDate(endTime);
-        abnomaly.setAbnomalyStartDate(startTime);
+        anomaly.setAnomalyEndDate(endTime);
+        anomaly.setAnomalyStartDate(startTime);
         try {
-            if (abnomaly.getUserHiddenId() == null || userService.getById(abnomaly.getUserHiddenId()) == null) {
+            if (anomaly.getUserHiddenId() == null || userService.getById(anomaly.getUserHiddenId()) == null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "用户不存在");
                 return jsonObject;
             }
 
-            if (abnomaly.getWindowHiddenId() == null || windowService.getById(abnomaly.getWindowHiddenId()) == null) {
+            if (anomaly.getWindowHiddenId() == null || windowService.getById(anomaly.getWindowHiddenId()) == null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "窗口不存在");
                 return jsonObject;
             }
-            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getAbnomalyId, abnomaly.getAbnomalyId()));
-            if (queryAbnomaly != null) {
+
+            Anomaly queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyId, anomaly.getAnomalyId()));
+            if (queryAnomaly != null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "异常ID已存在");
                 return jsonObject;
             }
-            boolean result = abnomalyService.save(abnomaly);
+            boolean result = anomalyService.save(anomaly);
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "添加成功");
@@ -100,7 +99,7 @@ public class AbnomalyController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/abnomaly/insert 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/insert 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "添加出现错误");
             return jsonObject;
@@ -108,17 +107,17 @@ public class AbnomalyController {
     }
 /*
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-    public Object update(Abnomaly abnomaly) {
+    public Object update(Anomaly anomaly) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            Abnomaly queryAbnomaly = abnomalyService.getOne(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getId, abnomaly.getId()));
-            if (queryAbnomaly != null) {
+            Anomaly queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getId, anomaly.getId()));
+            if (queryAnomaly != null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "异常ID已存在");
                 return jsonObject;
             }
-            boolean result = abnomalyService.update(abnomaly, Wrappers.<Abnomaly>lambdaUpdate().eq(Abnomaly::getId, abnomaly.getId()));
+            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getId, anomaly.getId()));
             if (result) {
                 jsonObject.put("result", "ok");
                 return jsonObject;
@@ -127,7 +126,7 @@ public class AbnomalyController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/abnomaly/update 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/update 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             return jsonObject;
         }
@@ -146,14 +145,14 @@ public class AbnomalyController {
                 return jsonObject;
             }
             for (int i = 0; i < deletes.length; i++) {
-                abnomalyService.removeById(Long.valueOf(deletes[i]));
+                anomalyService.removeById(Long.valueOf(deletes[i]));
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");
             return jsonObject;
 
         } catch (Exception e) {
-            logger.error("/abnomaly/delete 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/delete 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "删除出现错误");
             return jsonObject;
@@ -161,14 +160,14 @@ public class AbnomalyController {
     }
 
     @RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
-    public Object getOne(Long abnomalyHiddenId) {
+    public Object getOne(Long anomalyHiddenId) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            Abnomaly abnomaly = abnomalyService.getByHiddenId(abnomalyHiddenId);
-            if (abnomaly != null) {
+            Anomaly anomaly = anomalyService.getByHiddenId(anomalyHiddenId);
+            if (anomaly != null) {
                 jsonObject.put("result", "ok");
-                jsonObject.put("abnomaly", abnomaly);
+                jsonObject.put("anomaly", anomaly);
                 jsonObject.put("msg", "获取成功");
                 return jsonObject;
             } else {
@@ -177,7 +176,7 @@ public class AbnomalyController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/abnomaly/getOne 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/getOne 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
@@ -191,10 +190,10 @@ public class AbnomalyController {
 
         try {
             // 分页构造器
-            Page<Abnomaly> page = new Page<Abnomaly>(pageNo, pageSize);
-            QueryWrapper<Abnomaly> queryWrapper = new QueryWrapper<Abnomaly>();
+            Page<Anomaly> page = new Page<Anomaly>(pageNo, pageSize);
+            QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<Anomaly>();
             if (event != null)
-                queryWrapper.like ("abnomaly_event",event);
+                queryWrapper.like ("anomaly_event",event);
             if (windowId != null)
                 queryWrapper.like("window_id", windowId);
             if (date != null) {
@@ -203,10 +202,10 @@ public class AbnomalyController {
                 // System.out.println(end);
                 Timestamp startTime = Timestamp.valueOf(start);
                 Timestamp endTime = Timestamp.valueOf(end);
-                queryWrapper.between("abnomaly_start_date", start, end);
+                queryWrapper.between("anomaly_start_date", start, end);
             }
             // 执行分页
-            IPage<Abnomaly> pageList = abnomalyService.page(page, queryWrapper);
+            IPage<Anomaly> pageList = anomalyService.page(page, queryWrapper);
             // 返回结果
             if (pageList.getTotal() <= 0) {
                 jsonObject.put("result", "no");
@@ -220,7 +219,7 @@ public class AbnomalyController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/abnomaly/queryData 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/queryData 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "搜索出现错误");
             return jsonObject;
