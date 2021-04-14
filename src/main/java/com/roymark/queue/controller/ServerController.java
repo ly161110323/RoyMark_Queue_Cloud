@@ -2,6 +2,7 @@ package com.roymark.queue.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -144,7 +145,12 @@ public class ServerController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				cameraService.remove(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, Long.valueOf(deletes[i])));
+				// 将对应Camera的serverHiddenId置空
+				List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, Long.valueOf(deletes[i])));
+				for (Camera camera : cameras) {
+					cameraService.update(null, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null)
+							.eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+				}
 				serverService.removeById(deletes[i]);
 			}
 			jsonObject.put("result", "ok");

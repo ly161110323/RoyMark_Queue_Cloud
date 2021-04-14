@@ -40,13 +40,26 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
     }
 
     @Override
-    public boolean deleteByWindowHiddenId(Long windowHiddenId) {
+    public void deletePreHiddenId(Long windowHiddenId) {
 
+        List<Abnomaly> abnomalyList = abnomalyMapper.selectList(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getWindowHiddenId, windowHiddenId));
+        for (Abnomaly abnomaly : abnomalyList) {
+            abnomalyMapper.update(null, Wrappers.<Abnomaly>lambdaUpdate().set(Abnomaly::getWindowHiddenId, null)
+                    .eq(Abnomaly::getAbnomalyHiddenId, abnomaly.getAbnomalyHiddenId()));
+        }
 
-        abnomalyMapper.delete(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getWindowHiddenId, windowHiddenId));
-        cameraMapper.delete(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowHiddenId, windowHiddenId));
-        userMapper.delete(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, windowHiddenId));
-        return windowMapper.deleteById(windowHiddenId)>0;
+        List<Camera> cameraList = cameraMapper.selectList(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowHiddenId, windowHiddenId));
+        for (Camera camera : cameraList) {
+            cameraMapper.update(null, Wrappers.<Camera>lambdaUpdate().set(Camera::getWindowHiddenId, null)
+                    .eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+        }
+
+        List<ActionUser> actionUserList = userMapper.selectList(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, windowHiddenId));
+        for (ActionUser user : actionUserList) {
+            userMapper.update(null, Wrappers.<ActionUser>lambdaUpdate().set(ActionUser::getWindowHiddenId, null)
+                    .eq(ActionUser::getUserHiddenId, user.getUserHiddenId()));
+        }
+
     }
 
     @Override

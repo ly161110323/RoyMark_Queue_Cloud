@@ -164,7 +164,9 @@ public class WindowController {
                 return jsonObject;
             }
             for (int i = 0; i < deletes.length; i++) {
-                windowService.deleteByWindowHiddenId(Long.valueOf(deletes[i]));
+                windowService.deletePreHiddenId(Long.valueOf(deletes[i]));
+                windowService.removeById(Long.valueOf(deletes[i]));
+
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");

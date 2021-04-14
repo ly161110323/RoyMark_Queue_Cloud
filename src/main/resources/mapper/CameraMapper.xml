@@ -22,14 +22,19 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllCamera" resultMap="BaseResultMap">
-        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server
+        SELECT * FROM (br_cam LEFT JOIN br_window ON br_cam.window_hidden_id=br_window.window_hidden_id)
+            LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id
     </select>
 
     <select id="getCameraByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server WHERE cam_hidden_id = #{VALUE }
+        SELECT * FROM (br_cam LEFT JOIN br_window ON br_cam.window_hidden_id=br_window.window_hidden_id)
+            LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id
+        WHERE cam_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT * FROM br_cam NATURAL JOIN br_window NATURAL JOIN br_server ${ew.customSqlSegment}
+        SELECT * FROM (br_cam LEFT JOIN br_window ON br_cam.window_hidden_id=br_window.window_hidden_id)
+            LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id
+        ${ew.customSqlSegment}
     </select>
 </mapper>

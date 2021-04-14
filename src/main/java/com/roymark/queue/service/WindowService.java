@@ -7,6 +7,6 @@ import com.roymark.queue.entity.Window;
 public interface WindowService  extends IService<Window> {
 
     List<Window> getAllWindow();
-    boolean deleteByWindowHiddenId(Long windowHiddenId);
+    void deletePreHiddenId(Long windowHiddenId);
     Window getWindowByHiddenId(Long windowHiddenId);
 }

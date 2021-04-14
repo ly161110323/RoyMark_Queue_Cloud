@@ -197,7 +197,11 @@ public class UserController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				abnomalyService.remove(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getUserHiddenId, Long.valueOf(deletes[i])));
+				List<Abnomaly> abnomalyList = abnomalyService.list(Wrappers.<Abnomaly>lambdaQuery().eq(Abnomaly::getUserHiddenId, Long.valueOf(deletes[i])));
+				for (Abnomaly abnomaly : abnomalyList) {
+					abnomalyService.update(null, Wrappers.<Abnomaly>lambdaUpdate().set(Abnomaly::getUserHiddenId, null)
+							.eq(Abnomaly::getAbnomalyHiddenId, abnomaly.getAbnomalyHiddenId()));
+				}
 				userService.removeById(Long.valueOf(deletes[i]));
 			}
 			jsonObject.put("result", "ok");
@@ -238,7 +242,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object search(@RequestParam(required = false) String userName, @RequestParam(required = false) String windowId, int pageNo, int pageSize) {
+	public Object search(@RequestParam(required = false) String userName, @RequestParam(required = false) String userId,
+			@RequestParam(required = false) String userDepartment, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
@@ -248,8 +253,11 @@ public class UserController {
 			if (userName != null) {
 				queryWrapper.like ("user_name",userName);
 			}
-			if (windowId != null) {
-				queryWrapper.like("window_id", windowId);
+			if (userId != null) {
+				queryWrapper.like("user_id", userId);
+			}
+			if (userDepartment != null) {
+				queryWrapper.like("user_department", userDepartment);
 			}
 			// 执行分页
 			IPage<ActionUser> pageList = userService.page(page, queryWrapper);

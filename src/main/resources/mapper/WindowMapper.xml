@@ -19,14 +19,16 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllWindow" resultMap="BaseResultMap">
-        SELECT * FROM br_window NATURAL JOIN br_floor
+        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
     </select>
 
     <select id="getWindowByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM br_window NATURAL JOIN br_floor WHERE window_hidden_id = #{VALUE }
+        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
+        WHERE window_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT * FROM br_window NATURAL JOIN br_floor ${ew.customSqlSegment}
+        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
+        ${ew.customSqlSegment}
     </select>
 </mapper>

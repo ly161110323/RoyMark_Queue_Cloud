@@ -134,7 +134,9 @@ public class FloorController {
                 Long deleteFloorHiddenId = Long.valueOf(deletes[i]);
                 List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getFloorHiddenId, deleteFloorHiddenId));
                 for (Window window : windows) {
-                    windowService.deleteByWindowHiddenId(window.getWindowHiddenId());
+                    windowService.deletePreHiddenId(window.getWindowHiddenId());
+                    windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getFloorHiddenId, null)
+                            .eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
                 }
                 floorService.removeById(deleteFloorHiddenId);
             }
