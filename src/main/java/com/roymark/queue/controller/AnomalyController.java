@@ -99,7 +99,7 @@ public class AnomalyController {
                 jsonObject.put("msg", "异常记录不存在");
                 return jsonObject;
             }
-            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");
@@ -195,6 +195,7 @@ public class AnomalyController {
             if (pageList.getTotal() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "搜素结果为空");
+                jsonObject.put("pageList", pageList);
                 return jsonObject;
             }
             else {
