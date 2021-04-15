@@ -97,28 +97,14 @@
             	layer.alert("所属大厅不能为空!");
             	return false;
             }
-            var url="${ctx}/anomaly/update";
-            //封装数据
-            var formData = new FormData();
-            formData.append("anomalyHiddenId", 4);
-            formData.append("anomalyId", "test");
-            formData.append("anomalyEvent", "睡觉");
-            formData.append("anomalyStartTime", "2009-11-12 11:20:10");
-            formData.append("anomalyEndTime", "2009-12-1 11:04:36");
-            formData.append("anomalyConfidence", 0.8);
-            formData.append("anomalyLink", "/test");
-            formData.append("windowHiddenId", 1);
-            formData.append("userHiddenId", 4);
+		    var url="${ctx}/webaccount/login";
             $.ajax({
 
                 type:"POST",
                 //提交的网址
                 url:url,
-                processData : false, // 使数据不做处理				// 以下两行仅在formData使用
-                contentType : false, // 不要设置Content-Type请求头
-
                 //提交的数据   该参数为属性值类型的参数
-                data:formData,
+                data:{loginId:username,passWord:pwd,"areaLs":areaLs},
                 //返回数据的格式
                 dataType: "json",
 
