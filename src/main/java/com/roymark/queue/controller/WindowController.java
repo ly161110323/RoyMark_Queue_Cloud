@@ -105,8 +105,14 @@ public class WindowController {
                 jsonObject.put("msg", "窗口名已存在");
                 return jsonObject;
             }
+            boolean result;
+            if (window.getFloorHiddenId() != null) {
+                result = windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+            }
+            else {
+                result = windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getFloorHiddenId, null).eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+            }
 
-            boolean result = windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
 
             if (result) {
                 jsonObject.put("result", "ok");

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Anomaly;
+import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.UserService;
 import com.roymark.queue.service.WindowService;
@@ -99,7 +100,19 @@ public class AnomalyController {
                 jsonObject.put("msg", "异常记录不存在");
                 return jsonObject;
             }
-            boolean result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+            boolean result;
+            if (anomaly.getUserHiddenId() != null && anomaly.getWindowHiddenId() != null) {
+                result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+            }
+            else if (anomaly.getUserHiddenId() != null) {
+                result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+                }
+            else if (anomaly.getWindowHiddenId() != null) {
+               result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+            }
+            else {
+                result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+            }
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");

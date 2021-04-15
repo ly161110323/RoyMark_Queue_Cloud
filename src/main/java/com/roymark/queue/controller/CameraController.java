@@ -113,7 +113,20 @@ public class CameraController {
 				jsonObject.put("msg", "摄像头ID已存在");
 				return jsonObject;
 			}
-			boolean result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+			boolean result;
+			if (camera.getWindowHiddenId() != null && camera.getServerHiddenId() != null) {
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+			}
+			else if (camera.getWindowHiddenId() != null) {
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+			}
+			else if (camera.getServerHiddenId() != null) {
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+			}
+			else {
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+			}
+
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "修改成功");

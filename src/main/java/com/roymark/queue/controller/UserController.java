@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.service.AnomalyService;
-import com.roymark.queue.service.WindowService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +66,13 @@ public class UserController {
 				filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 				tempActionUser.setUserPhoto(filePath);
 			}
-
-			boolean result = userService.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
+			boolean result;
+			if (tempActionUser.getWindowHiddenId() != null) {
+				result = userService.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
+			}
+			else {
+				result = userService.update(tempActionUser, Wrappers.<ActionUser>lambdaUpdate().set(ActionUser::getWindowHiddenId, null).eq(ActionUser::getUserHiddenId, tempActionUser.getUserHiddenId()));
+			}
 			if (result) {
 				jsonObject.put("result", "ok");
 				jsonObject.put("msg", "修改成功");
