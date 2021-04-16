@@ -54,6 +54,10 @@ public class AnomalyController {
 
             // 根据windowHiddenId查询userHiddenId
             ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
+            if (user == null) {
+                logger.info("该窗口id无对应的用户");
+                return;
+            }
             anomaly.setUserHiddenId(user.getUserHiddenId());
 
             // 首先检查是否有与开始时间完全相同的一项
