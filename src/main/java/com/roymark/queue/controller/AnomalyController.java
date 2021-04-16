@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.entity.Anomaly;
-import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.AnomalyService;
-import com.roymark.queue.service.UserService;
-import com.roymark.queue.service.WindowService;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/anomaly")
@@ -28,7 +30,69 @@ public class AnomalyController {
     @Autowired
     private AnomalyService anomalyService;
 
-    @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
+    public void updateAnomalyFromServer(Anomaly anomaly) {
+        try {
+            if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
+                logger.info("回传格式有误");
+                return;
+            }
+            //申明线程池
+            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            Callable<Object> callable = new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("code", 200);
+                    return jsonObject;
+                }
+            };
+            threadPool.submit(callable).get();
+
+            // 根据windowHiddenId查询userHiddenId
+            ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
+            anomaly.setUserHiddenId(user.getUserHiddenId());
+
+            // 首先检查是否有与开始时间完全相同的一项
+            Timestamp startTime = anomaly.getAnomalyStartDate();
+
+            Anomaly queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyStartDate, startTime)
+                    .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
+                    .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
+
+            if (queryAnomaly != null && queryAnomaly.equals(anomaly)) {     // 如果与该项完全相同，不做处理
+                return;
+            }
+            else if (queryAnomaly != null) {         // 如果存在且不同，则对该项进行更新
+                anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
+                anomalyService.updateById(anomaly);
+            }
+            else {
+                // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
+                Timestamp endTimeThreshold = new Timestamp(startTime.getTime() - 60 * 1000);
+                queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTime)
+                        .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
+                        .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
+                if (queryAnomaly != null) {                 // 如果差值<1分钟，更新该项
+                    anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
+                    anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
+                    anomalyService.updateById(anomaly);
+                }
+                else {
+                    anomaly.setAnomalyHiddenId(Long.valueOf(0));
+                    anomalyService.save(anomaly);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+        @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllAnomalies() {
         JSONObject jsonObject = new JSONObject();
 

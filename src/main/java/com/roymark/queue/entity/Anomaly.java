@@ -35,6 +35,9 @@ public class Anomaly implements Serializable {
 	@TableField(value = "anomaly_link")
     private String anomalyLink;
 
+	@TableField(value = "cam_hidden_id")
+	private Long camHiddenId;
+
     @TableField(value = "window_hidden_id")
     private Long windowHiddenId;
 
@@ -136,5 +139,13 @@ public class Anomaly implements Serializable {
 
 	public void setWindowId(String windowId) {
 		this.windowId = windowId;
+	}
+
+	public Long getCamHiddenId() {
+		return camHiddenId;
+	}
+
+	public void setCamHiddenId(Long camHiddenId) {
+		this.camHiddenId = camHiddenId;
 	}
 }

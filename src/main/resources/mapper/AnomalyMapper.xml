@@ -10,6 +10,7 @@
         <result column="anomaly_end_date" property="anomalyEndDate" />
         <result column="anomaly_confidence" property="anomalyConfidence" />
         <result column="anomaly_link" property="anomalyLink" />
+        <result column="cam_hidden_id" property="camHiddenId" />
         <result column="window_hidden_id" property="windowHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />
         <result column="window_id" property="windowId" />
