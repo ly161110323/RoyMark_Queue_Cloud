@@ -55,12 +55,6 @@ public class ParameterController {
 
         try {
             parameter.setParamHiddenId(Long.valueOf(0));
-            Parameter queryParameter = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamId, parameter.getParamId()));
-
-            if (queryParameter != null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "参数ID已存在");
-            }
 
             boolean result = parameterService.save(parameter);
             if (result) {
@@ -90,13 +84,6 @@ public class ParameterController {
             if (queryParameter == null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "参数不存在");
-                return jsonObject;
-            }
-
-            queryParameter = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamId, parameter.getParamId()));
-            if (queryParameter != null && !queryParameter.getParamHiddenId().equals(parameter.getParamHiddenId())) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "参数ID已存在");
                 return jsonObject;
             }
 
