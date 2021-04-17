@@ -17,9 +17,6 @@ public class Parameter implements Serializable {
 	@TableId(value = "param_hidden_id")
 	private Long paramHiddenId;
 
-    @TableField(value = "param_id")
-    private String paramId;
-
     @TableField(value = "param_name")
     private String paramName;
 
@@ -38,14 +35,6 @@ public class Parameter implements Serializable {
 
 	public void setParamHiddenId(Long paramHiddenId) {
 		this.paramHiddenId = paramHiddenId;
-	}
-
-	public String getParamId() {
-		return paramId;
-	}
-
-	public void setParamId(String paramId) {
-		this.paramId = paramId;
 	}
 
 	public String getParamName() {
