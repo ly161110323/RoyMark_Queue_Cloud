@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -80,10 +81,11 @@ public class AnomalyController {
             }
             else {
                 // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
-                Timestamp endTimeThreshold = new Timestamp(startTime.getTime() - 60 * 1000);
+                Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
                 queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTime)
                         .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
                         .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
+
                 if (queryAnomaly != null) {                 // 如果差值<1分钟，更新该项
                     anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
                     anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
