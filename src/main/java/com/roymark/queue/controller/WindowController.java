@@ -105,11 +105,18 @@ public class WindowController {
                 return jsonObject;
             }
             boolean result;
-            if (window.getFloorHiddenId() != null) {
+            if (window.getFloorHiddenId() != null && window.getCamHiddenId() != null) {
                 result = windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
             }
-            else {
+            else if (window.getCamHiddenId() != null) {
                 result = windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getFloorHiddenId, null).eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+            }
+            else if (window.getFloorHiddenId() != null) {
+                result = windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getCamHiddenId, null).eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+            }
+            else {
+                result = windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getFloorHiddenId, null)
+                        .set(Window::getCamHiddenId, null).eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
             }
 
 

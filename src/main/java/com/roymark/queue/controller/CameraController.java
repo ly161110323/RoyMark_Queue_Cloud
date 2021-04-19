@@ -114,17 +114,11 @@ public class CameraController {
 				return jsonObject;
 			}
 			boolean result;
-			if (camera.getWindowHiddenId() != null && camera.getServerHiddenId() != null) {
+			if (camera.getServerHiddenId() != null) {
 				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
 			}
-			else if (camera.getWindowHiddenId() != null) {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-			}
-			else if (camera.getServerHiddenId() != null) {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-			}
 			else {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
 			}
 
 			if (result) {
@@ -197,7 +191,7 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object search(@RequestParam(required = false) String camId, @RequestParam(required = false) String windowId,
+	public Object search(@RequestParam(required = false) String camId,
 						 @RequestParam(required = false) String serverId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
@@ -207,8 +201,6 @@ public class CameraController {
 			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
 			if (camId != null)
 				queryWrapper.like ("cam_id",camId);
-			if (windowId != null)
-				queryWrapper.like ("window_id",windowId);
 			if (serverId != null)
 				queryWrapper.like("server_id", serverId);
 			// 执行分页

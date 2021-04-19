@@ -40,10 +40,7 @@ public class WebSocketServer{
     // rtsp服务器地址
     private List<String> rtspUrls;
 
-    // 用来标志视频抓取器开启与否
-    private List<Boolean> isStarts;
-
-    private Thread thread = null;
+    private Boolean openFlag;
 
     // 读取帧的宽度
     private int width;
@@ -62,15 +59,73 @@ public class WebSocketServer{
     // y轴上的图片个数
     private int yPicNum;
 
+    // 线程
+    private List<ReadPicThread> readPicThreads;
+
+    static class ReadPicThread implements Runnable {
+        private Thread t;
+        private String threadName;
+        private int picWidth;
+        private int picHeight;
+        private FFmpegFrameGrabber picGrabber;
+        private String picRtspUrl;
+        private BufferedImage image;
+        public volatile boolean flag = true;
+
+        public BufferedImage getImage() {
+            return image;
+        }
+
+        public void start () {
+            System.out.println("Starting " +  threadName );
+            if (t == null) {
+                t = new Thread (this, threadName);
+                t.start ();
+            }
+        }
+
+        public ReadPicThread(String threadName, int picWidth, int picHeight, FFmpegFrameGrabber picGrabber, String picRtspUrl) {
+            this.threadName = threadName;
+            this.picWidth = picWidth;
+            this.picHeight = picHeight;
+            this.picGrabber = picGrabber;
+            this.picRtspUrl = picRtspUrl;
+            image = new BufferedImage(picWidth, picHeight, BufferedImage.TYPE_INT_RGB);
+        }
+
+        @Override
+        public void run() {
+            while (flag) {
+                Java2DFrameConverter java2DFrameConverter = new Java2DFrameConverter();
+                if (picGrabber == null) {
+                    System.out.println("重试连接rtsp："+picRtspUrl+",开始创建grabber");
+                    picGrabber = createGrabber(picRtspUrl, picWidth, picHeight);
+                    System.out.println("创建grabber成功");
+                }
+
+                if (picGrabber != null) {
+                    try {
+                        Frame frame = picGrabber.grabImage();
+                        if (frame == null)
+                            return;
+                        image = java2DFrameConverter.getBufferedImage(frame);
+                    }catch (FrameGrabber.Exception e) {
+                        System.out.println(e.getMessage());
+                        return;
+                    }
+                }
+            }
+        }
+    }
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session){
+        this.openFlag = true;
         width = 960;
         height = 540;
         rtspUrls = new ArrayList<>();
-        isStarts = new ArrayList<>();
         String rtspUrlsStr = "";
         this.session = session;
         Map<String, List<String>> map = session.getRequestParameterMap();
@@ -90,13 +145,9 @@ public class WebSocketServer{
         }
         log.info("rtsp:"+rtspUrlsStr);
         rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
-        if (rtspUrls.size() != xPicNum * yPicNum) {
-            log.info("显示个数与rtsp流个数不匹配");
+        if (rtspUrls.size() > xPicNum * yPicNum) {
+            log.info("显示个数小于rtsp流的个数");
             return ;
-        }
-
-        for (int i=0; i<rtspUrls.size(); i++) {
-            isStarts.add(false);
         }
 
         log.info("用户连接");
@@ -105,12 +156,14 @@ public class WebSocketServer{
         jsonObject.put("code", 0);
         sendMessageByStr(JSON.toJSONString(jsonObject));
 
-        CompletableFuture.supplyAsync(()->{
-            this.thread = Thread.currentThread();
-            return this;
-        }, EXECUTOR_SERVICE).thenAccept(server->{
-            server.live();
-        });
+        this.live();
+//        CompletableFuture.supplyAsync(()->{
+//            this.thread = Thread.currentThread();
+//            System.out.println("start: "+this.thread.getId());
+//            return this;
+//        }, EXECUTOR_SERVICE).thenAccept(server->{
+//            server.live();
+//        });
     }
 
     /**
@@ -118,10 +171,20 @@ public class WebSocketServer{
      */
     @OnClose
     public void onClose() {
-        if(this.thread != null){
-            this.thread.interrupt();
-            log.info("一个连接已关闭！");
+        // 终止进程
+        for (ReadPicThread readPicThread : readPicThreads) {
+            readPicThread.flag = false;
         }
+
+        if (this.openFlag) {
+            this.openFlag = false;
+        }
+//        if(this.thread != null){
+//            this.thread.interrupt();
+//            System.out.println("end: "+this.thread.getId());
+//            System.out.println("On close: " + this.thread.isInterrupted());
+//            log.info("一个连接已关闭！");
+//        }
     }
 
     /**
@@ -178,7 +241,16 @@ public class WebSocketServer{
     public void sendMessageByObject(Object message) {
         if (message != null) {
             try {
-                this.session.getBasicRemote().sendObject(message);
+                if (this.session != null && this.session.isOpen()) {
+                    this.session.getBasicRemote().sendObject(message);
+                }
+//                if (sessions.size() > 0) {
+//                    for (WebSocketServer webSocketServer: sessions) {
+//                        if (webSocketServer != null && webSocketServer.session.isOpen()) {
+//                            webSocketServer.session.getBasicRemote().sendObject(message);
+//                        }
+//                    }
+//                }
             } catch (IOException | EncodeException e) {
                 log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send object msg exception: ", e);
@@ -189,7 +261,8 @@ public class WebSocketServer{
     public void sendBinary(ByteBuffer message) {
         if (message != null) {
             try {
-                this.session.getBasicRemote().sendBinary(message);
+                if (this.session.isOpen())
+                    this.session.getBasicRemote().sendBinary(message);
             } catch (IOException e) {
                 log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send byteBuffer msg exception: ", e);
@@ -205,7 +278,7 @@ public class WebSocketServer{
         List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
         for (String rtspUrl : rtspUrls) {
             log.info("连接rtsp："+rtspUrl+",开始创建grabber");
-            grabbers.add(createGrabber(rtspUrl));
+            grabbers.add(createGrabber(rtspUrl, singleWidth, singleHeight));
         }
 
         if (grabbers.size() > 0) {
@@ -222,7 +295,7 @@ public class WebSocketServer{
      * @param rtsp 拉流地址
      * @return
      */
-    public FFmpegFrameGrabber createGrabber(String rtsp) {
+    static public FFmpegFrameGrabber createGrabber(String rtsp, int width, int height) {
         // 获取视频源
         try {
             System.out.println(rtsp);
@@ -231,9 +304,9 @@ public class WebSocketServer{
             //设置帧率
             grabber.setFrameRate(25);
             //设置获取的视频宽度
-            grabber.setImageWidth(singleWidth);
+            grabber.setImageWidth(width);
             //设置获取的视频高度
-            grabber.setImageHeight(singleHeight);
+            grabber.setImageHeight(height);
             //设置视频bit率
             grabber.setVideoBitrate(3000000);
             return grabber;
@@ -248,48 +321,50 @@ public class WebSocketServer{
      * 推送图片（摄像机直播）
      */
     public void startCameraPush(List<FFmpegFrameGrabber> grabbers) {
-        Java2DFrameConverter java2DFrameConverter = new Java2DFrameConverter();
+        readPicThreads = new ArrayList<>();
+        for (int i=0; i<grabbers.size(); i++) {
+            try {
+                grabbers.get(i).start();
+                ReadPicThread readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
+                readPicThread.start();
+                readPicThreads.add(readPicThread);
+            }catch (Exception e) {
+                log.error("grapper启动失败");
+                return;
+            }
 
-        while (!Thread.currentThread().isInterrupted()) {
+        }
+
+        while (this.openFlag) {
+            // System.out.println(this.openFlag);
+            // System.out.println("push: "+this.thread.getId());
+            // System.out.println(Thread.currentThread().isInterrupted());
             try {
                 BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
                 int induce = 0;             // 当前要写入图片索引0 - XpicNum*yPicNum
 
+                int rtspNum = rtspUrls.size();
                 for (int i=0; i<xPicNum; i++) {
                     for (int j=0; j<yPicNum; j++) {
-                        FFmpegFrameGrabber grabber = grabbers.get(induce);
-                        String rtspUrl = rtspUrls.get(induce);
-                        if (grabber == null) {
-                            log.info("重试连接rtsp："+rtspUrl+",开始创建grabber");
-                            grabber = createGrabber(rtspUrl);
-                            log.info("创建grabber成功");
-                        }
-
-                        if (grabber != null && !this.isStarts.get(induce)) {
-                            grabber.start();
-                            this.isStarts.set(induce, true);
-                            log.info("启动grabber成功");
-                        }
-                        if (grabber != null){
-                            Frame frame = grabber.grabImage();
-                            if (null == frame) {
-                                continue;
-                            }
-                            int[] imageArray = new int[singleWidth * singleHeight];
-                            BufferedImage image = java2DFrameConverter.getBufferedImage(frame);
-                            imageArray = image.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                            returnImg.setRGB(i*singleWidth, j*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                        }
+                        BufferedImage partImage = readPicThreads.get(induce).getImage();
+                        int[] imageArray = new int[width * height];
+                        imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                        returnImg.setRGB(i*singleWidth, j*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                         induce++;
+                        if (induce >= rtspNum) {
+                            break;
+                        }
                     }
+                    if (induce >= rtspNum) {
+                        break;
+                    }
+
                 }
                 byte[] bytes = imageToBytes(returnImg, "jpg");
-
-                //使用websocket发送视频帧数据
                 sendMessageByObject(new Image(bytes));
 
-            } catch (FrameGrabber.Exception | RuntimeException e) {
+            } catch (Exception e) {
                 log.error("因为异常，grabber关闭，rtsp连接断开，尝试重新连接");
                 log.error("exception : " , e);
 
@@ -302,11 +377,7 @@ public class WebSocketServer{
                     }
 
                 break;
-            } catch (Exception e){
-                log.error("当前websocket连接已关闭", e);
-                break;
             }
-
         }
     }
 

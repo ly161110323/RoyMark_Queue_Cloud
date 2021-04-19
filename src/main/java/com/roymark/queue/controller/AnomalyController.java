@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -299,5 +300,8 @@ public class AnomalyController {
         }
     }
 
-
+    @RequestMapping(value = "/photoShow", produces = "application/json;charset=utf-8")
+    public String photoShow(HttpServletRequest request) {
+        return "/manage/BR/photoShow";
+    }
 }

@@ -41,8 +41,30 @@ public class Window implements Serializable {
     @TableField(value = "window_nine_palaces")
 	private Boolean windowNinePalaces;
 
+    @TableField(value = "cam_hidden_id")
+	private Long camHiddenId;
+
+    @TableField(exist = false)
+	private String camId;
+
     @TableField(exist = false)
 	private String floorName;
+
+	public Long getCamHiddenId() {
+		return camHiddenId;
+	}
+
+	public void setCamHiddenId(Long camHiddenId) {
+		this.camHiddenId = camHiddenId;
+	}
+
+	public String getCamId() {
+		return camId;
+	}
+
+	public void setCamId(String camId) {
+		this.camId = camId;
+	}
 
 	public String getFloorName() {
 		return floorName;
