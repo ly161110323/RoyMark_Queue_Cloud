@@ -82,31 +82,29 @@
 
         function doLogin() //用ajax获取登录结果，控制页面跳转或者显示错误.
 		{
-            var url="${ctx}/anomaly/updateAnomalyFromServer";
-            //封装数据
-            var formData = new FormData();
+        	var areaLs = $("#Area_Ls").val();
             var username = document.getElementById("loginId").value;
-
+            if(username == ""){
+                layer.alert("用户名不能为空!");
+                return false;
+            }
             var pwd = document.getElementById("passWord").value;
-            formData.append("anomalyEvent", "离岗");
-            formData.append("anomalyStartDate", username);
-            if (pwd != "")
-            	formData.append("anomalyEndDate", pwd);
-            formData.append("anomalyConfidence", 0.8);
-            formData.append("anomalyLink", "/test");
-
-            formData.append("windowHiddenId", 7);
-            formData.append("camHiddenId", 0);
+            if(pwd == ""){
+            	layer.alert("密码不能为空!");
+                return false;
+            }
+            if(username != "roymarkadmin"&& areaLs == ""){
+            	layer.alert("所属大厅不能为空!");
+            	return false;
+            }
+		    var url="${ctx}/webaccount/login";
             $.ajax({
 
                 type:"POST",
                 //提交的网址
                 url:url,
-                processData : false, // 使数据不做处理				// 以下两行仅在formData使用
-                contentType : false, // 不要设置Content-Type请求头
                 //提交的数据   该参数为属性值类型的参数
-                data: formData,
-
+                data:{loginId:username,passWord:pwd,"areaLs":areaLs},
                 //返回数据的格式
                 dataType: "json",
 
@@ -248,7 +246,9 @@
 				<tr>
 					<td><font size=2 color="#919191"><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密 码：</B></font></td>
 					<td>
-						<input type="text" style="height:22px;width:170px;" size="20" maxlength="20" name="passWord" id="passWord" value="" onchange="checkuser()" />
+						<input style="height:22px;width:170px;" onpaste="return false" oncontextmenu="return false" oncopy="return false" oncut="return false"
+							   onselectstart="return false" size="20" maxlength="16" type="password" value="" id="passWord" name="passWord" class="txt-input"
+							   onchange="checkpwd()" />
 					</td>
 				</tr>
 				<tr><td colspan="2"></td></tr>
