@@ -300,8 +300,4 @@ public class AnomalyController {
         }
     }
 
-    @RequestMapping(value = "/photoShow", produces = "application/json;charset=utf-8")
-    public String photoShow(HttpServletRequest request) {
-        return "/manage/BR/photoShow";
-    }
 }

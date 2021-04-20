@@ -35,15 +35,6 @@
 	</properties>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>com.sun.jna</groupId>
-			<artifactId>test</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/resources/jar/com.sun.jna.jar</systemPath>
-		</dependency>
-
 		<dependency>
 		<groupId>org.bytedeco</groupId>
 		<artifactId>javacv-platform</artifactId>
@@ -393,17 +384,6 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
-					<configuration>
-						<webResources>
-							<resource>
-								<directory>${basedir}/src/main/resources/jar</directory>
-								<targetPath>WEB-INF/lib</targetPath>
-								<includes>
-									<include>**/*.jar</include>
-								</includes>
-							</resource>
-						</webResources>
-					</configuration>
 					<version>3.2.0</version>
 				</plugin>
 				<plugin>
