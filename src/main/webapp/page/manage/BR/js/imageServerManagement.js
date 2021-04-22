@@ -5,15 +5,15 @@ $(document).ready(function () {
     deleteClick();
     searchClick();
     clearClick();
-    configClick();
-    init_areaInfo();
-    queryCaseAreaList();
-    querySelectAreaList();
+    // configClick();
+    // init_areaInfo();
+    // queryCaseAreaList();
+    // querySelectAreaList();
 
-    icon_operate();//部门图标处理
+    // icon_operate();//部门图标处理
 
-    caseAreaClick();
-    selectAreaClick();
+    // caseAreaClick();
+    // selectAreaClick();
 });
 function icon_operate()
 {
@@ -219,9 +219,7 @@ function validateData(isAdd) {
 //清除数据
 function clearData(){
 
-    var $file = $("#departmentIcon");
-    $file.after($file.clone().val(""));
-    $file.remove();
+
     $("#serverName").val("");
     $("#serverIp").val("");
     $("#serverPort").val("")
@@ -232,7 +230,10 @@ function clearData(){
     // $("#txtDeptId").val("");
     // $("#otherId").val("");
 }
-
+function clearSearch(){
+    $('#inputCommitServerId').val("");
+    $('#inputCommitServerName').val("");
+}
 function addClick() {
     $(document).on('click','#addCommit',function(){
         if(!validateData(true))
@@ -319,6 +320,94 @@ function updateClick() {
         });
     });//修改事件处理完毕
 }
+function startClick(){
+    $('#startCommit').click(function (){
+        var rootPath = getWebRootPath();
+        var url=rootPath+"/server/batchStartServers";
+        var items = new Array();
+        var cBox = $("[name=choice]:checked");
+        if (cBox.length == 0) {
+            layer.alert("请勾选您所要启动的服务器！");
+            return;
+        }
+        layer.confirm("您确定要" +"启动" + "这" + cBox.length+ "台服务器吗？",
+            {
+                btn : [ '确定', '取消' ]
+            },
+            function() {
+                for (var i = 0; i < cBox.length; i++) {
+                    items.push(cBox.eq(i).val());
+                }
+                var data = {"startId" : items.toString()};
+
+                $.ajax({
+                    type : 'POST',
+                    url : url,
+                    data : data,
+                    success : function(data) {
+                        if (data.result == "error") {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        if (data.result == "ok") {
+                            layer.alert(data.msg);
+                        }
+                        table.draw(false);
+                        // clearData();
+                    },
+                    error : function(data){
+                        layer.alert("后台错误！");
+                    }
+                });
+            }, function() {
+
+            });
+    })
+}
+function stopClick(){
+    $('#stopCommit').click(function (){
+        var rootPath = getWebRootPath();
+        var url=rootPath+"/server/batchStopServers";
+        var items = new Array();
+        var cBox = $("[name=choice]:checked");
+        if (cBox.length == 0) {
+            layer.alert("请勾选您所要启动的服务器！");
+            return;
+        }
+        layer.confirm("您确定要" +"停止" + "这" + cBox.length+ "台服务器吗？",
+            {
+                btn : [ '确定', '取消' ]
+            },
+            function() {
+                for (var i = 0; i < cBox.length; i++) {
+                    items.push(cBox.eq(i).val());
+                }
+                var data = {"startId" : items.toString()};
+
+                $.ajax({
+                    type : 'POST',
+                    url : url,
+                    data : data,
+                    success : function(data) {
+                        if (data.result == "error") {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        if (data.result == "ok") {
+                            layer.alert(data.msg);
+                        }
+                        table.draw(false);
+                        // clearData();
+                    },
+                    error : function(data){
+                        layer.alert("后台错误！");
+                    }
+                });
+            }, function() {
+
+            });
+    })
+}
 function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click','#deleteCommit',function() {
@@ -371,8 +460,7 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
-        $('#inputCommitServerId').val("");
-        $('#inputCommitServerName').val("");
+        clearSearch();
     });
 
 }

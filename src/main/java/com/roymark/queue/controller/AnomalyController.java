@@ -103,7 +103,7 @@ public class AnomalyController {
         }
     }
 
-        @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllAnomalies() {
         JSONObject jsonObject = new JSONObject();
 
@@ -181,9 +181,9 @@ public class AnomalyController {
             }
             else if (anomaly.getUserHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-                }
+            }
             else if (anomaly.getWindowHiddenId() != null) {
-               result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+                result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
             }
             else {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));

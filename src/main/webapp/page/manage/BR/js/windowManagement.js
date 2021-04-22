@@ -6,14 +6,14 @@ $(document).ready(function () {
     searchClick();
     clearClick();
     configClick();
-    init_areaInfo();
+    // init_areaInfo();
     queryFloorList();
     // querySelectAreaList();
 
-    icon_operate();//部门图标处理
-
-    caseAreaClick();
-    selectAreaClick();
+    // icon_operate();//部门图标处理
+    //
+    // caseAreaClick();
+    // selectAreaClick();
 });
 function icon_operate()
 {
@@ -115,11 +115,9 @@ function trClick() {
         $('#floorName').val($(this).find("td:eq(9)").text())
 
 
-        ninePalaces = $(this).find("td:eq(7)").text()
-        actionAnalysis = $(this).find("td:eq(8)").text()
 
-        $("#windowNinePalaces").val(val=(ninePalaces==="开").toString())
-        $("#windowActionAnalysis").val(val=(actionAnalysis==="开").toString())
+        $("#windowNinePalaces").val(val=($(this).find("td:eq(7)").text()==="开").toString())
+        $("#windowActionAnalysis").val(val=($(this).find("td:eq(8)").text()==="开").toString())
         // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
         // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
         // $("#otherId").val($(this).find("td:eq(13)").text());
@@ -228,6 +226,12 @@ function clearData(){
     $("#windowNinePalaces").val("");
     // $("#txtDeptId").val("");
     // $("#otherId").val("");
+}
+
+function clearSearch(){
+    $('#inputCommitWindowId').val("");
+    $('#inputCommitWindowName').val("");
+    $('#inputCommitWindowDepartment').val("");
 }
 
 function addClick() {
@@ -371,9 +375,7 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
-        $('#inputCommitWindowId').val("");
-        $('#inputCommitWindowName').val("");
-        $('#inputCommitWindowDepartment').val("");
+
     });
 
 }
