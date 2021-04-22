@@ -1,5 +1,8 @@
 package com.roymark.queue.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,6 +11,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
+import com.roymark.queue.util.web.HttpUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,6 +209,7 @@ public class ServerController {
 				queryWrapper.like("server_name", serverName);
 			// 执行分页
 			IPage<Server> pageList = serverService.page(page, queryWrapper);
+
 			// 返回结果
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
@@ -210,18 +217,185 @@ public class ServerController {
 				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
-			else {
-				jsonObject.put("pageList", pageList);
-				jsonObject.put("result", "ok");
-				jsonObject.put("msg", "搜索成功");
-				return jsonObject;
+			StringBuilder msg = new StringBuilder();
+			for (Server server: pageList.getRecords()) {
+				String ip_address = server.getServerIp();
+				Long port = server.getServerPort();
+				if(ip_address==null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")){
+					server.setServerStatus("离线");
+					server.setProgramStatus("无");
+					msg.append(server.getServerName()+ "服务器ip地址不正确;\n");
+				}
+				else if (port == null || port <= 0 || port > 65535) {
+					server.setServerStatus("离线");
+					server.setProgramStatus("无");
+					msg.append(server.getServerName() + "服务器端口不正确;\n");
+				}
+				else {
+					// 判断服务器是否可用
+					String host = "http://" + ip_address + ":" + port;
+					String path = "/status";
+					try {
+						boolean reachable = HttpUtils.isReachable(host);
+						if (!reachable){
+							server.setServerStatus("离线");
+							server.setProgramStatus("无");
+						}
+						HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
+						if(response.getStatusLine().getStatusCode() == 200){
+							if("on".equals(EntityUtils.toString(response.getEntity(),"UTF-8"))){
+								server.setServerStatus("在线");
+								server.setProgramStatus("运行中");
+							}else {
+								server.setServerStatus("在线");
+								server.setProgramStatus("待机");
+							}
+						}else {
+							server.setServerStatus("离线");
+							server.setProgramStatus("无");
+						}
+					} catch (IOException e) {			// 连接异常
+						server.setServerStatus("离线");
+						server.setProgramStatus("无");
+					}
+
+				}
+
 			}
+			if (msg.equals("")){
+				msg.append("搜索成功");
+			}
+			jsonObject.put("pageList", pageList);
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", msg.toString());
+			return jsonObject;
+
 		} catch (Exception e) {
 			logger.error("/server/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
 		}
+	}
+
+	// 批量启动图像服务器的方法
+	@RequestMapping(value = "/batchStartServers",produces = "application/json;charset=utf-8")
+	public Object batchStartServers(String startId){
+		JSONObject jsonObject = new JSONObject();
+		StringBuilder msg = new StringBuilder();
+		// 查询启动服务器的参数
+		String[] startIdList = startId.split(",");
+		if (startIdList.length <= 0) {
+			jsonObject.put("result", "no");
+			jsonObject.put("msg", "没有选中的删除项");
+			return jsonObject;
+		}
+
+		for (int i=0; i<startIdList.length; i++) {
+			Server startServer = serverService.getById(Long.valueOf(startIdList[i]));
+			if (startServer != null) {
+				String ip_address = startServer.getServerIp();
+				Long port = startServer.getServerPort();
+				String serverName = startServer.getServerName();
+				if(ip_address==null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")){
+					msg.append(serverName+ "启动失败，服务器ip地址不正确;\n");
+				}
+				else if (port == null || port <= 0 || port > 65535) {
+					msg.append(serverName + "启动失败，服务器端口不正确;\n");
+				}
+				else {
+					// 处理所有请求数据
+					JSONObject requestData = new JSONObject();
+//					requestData.put("data", collect);
+//					requestData.put("params", params);
+					// 处理发送地址
+					String host = "http://"+ ip_address+":"+ port;// 请求域名或ip
+					String path = "/start";// 请求路径
+					HashMap<String, String> header = new HashMap<>();
+					header.put("Content-Type", "application/json");// 设置请求头信息
+					String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+					try {
+						boolean reachable = HttpUtils.isReachable(host);
+						if (!reachable) {
+							msg.append(serverName + "启动失败,服务器不可用;\n");
+						}else {
+							HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+							if(response.getStatusLine().getStatusCode() == 200){
+								msg.append(serverName+"启动成功;\n");
+							}else {
+								msg.append(serverName+"启动失败,启动响应未正常返回;\n");
+							}
+						}
+					} catch (IOException e) {
+						msg.append(serverName+"启动失败,服务器不可用;\n");
+					} catch (Exception e) {
+						msg.append(serverName+"启动失败,启动过程出现异常;\n");
+						jsonObject.put("result", "error");
+						jsonObject.put("msg", msg);
+						return jsonObject;
+					}
+				}
+			}
+		}
+		jsonObject.put("result", "ok");
+		jsonObject.put("msg", msg);
+		return jsonObject;
+	}
+
+	// 停止服务器的方法
+	@RequestMapping(value = "/batchStopServers",produces = "application/json;charset=utf-8")
+	public Object stopServer(String stopId){
+		JSONObject jsonObject = new JSONObject();
+		StringBuilder msg = new StringBuilder();
+		// 查询启动服务器的参数
+		String[] stopIdList = stopId.split(",");
+		if (stopIdList.length <= 0) {
+			jsonObject.put("result", "no");
+			jsonObject.put("msg", "没有选中的删除项");
+			return jsonObject;
+		}
+
+		for (int i=0; i<stopIdList.length; i++) {
+			Server stopServer = serverService.getById(Long.valueOf(stopIdList[i]));
+			if (stopServer != null) {
+				String ip_address = stopServer.getServerIp();
+				Long port = stopServer.getServerPort();
+				String serverName = stopServer.getServerName();
+				if(ip_address==null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")){
+					msg.append(serverName+ "停止失败，服务器ip地址不正确;\n");
+				}
+				else if (port == null || port <= 0 || port > 65535) {
+					msg.append(serverName + "停止失败，服务器端口不正确;\n");
+				}
+				else {
+					String host = "http://" + ip_address + ":" + port;
+					String path = "/stop";
+					try {
+						boolean reachable = HttpUtils.isReachable(host);
+						if (!reachable) {
+							msg.append(serverName + "停止失败,服务器不可用;\n");
+						}else {
+							HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
+							if(response.getStatusLine().getStatusCode() == 200){
+								msg.append(serverName+"停止成功;\n");
+							}else {
+								msg.append(serverName+"停止失败,停止响应未正常返回;\n");
+							}
+						}
+					} catch (IOException e) {
+						msg.append(serverName+"停止失败,服务器不可用;\n");
+					} catch (Exception e) {
+						msg.append(serverName+"停止失败,停止过程出现异常;\n");
+						jsonObject.put("result", "error");
+						jsonObject.put("msg", msg);
+						return jsonObject;
+					}
+				}
+			}
+		}
+		jsonObject.put("result", "ok");
+		jsonObject.put("msg", msg);
+		return jsonObject;
 	}
 
 }
