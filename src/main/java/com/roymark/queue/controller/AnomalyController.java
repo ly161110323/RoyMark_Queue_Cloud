@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.entity.Anomaly;
+import com.roymark.queue.entity.Camera;
+import com.roymark.queue.entity.Server;
 import com.roymark.queue.service.AnomalyService;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.service.CameraService;
+import com.roymark.queue.service.ServerService;
 import com.roymark.queue.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,8 +39,14 @@ public class AnomalyController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CameraService cameraService;
+
+    @Autowired
+    private ServerService serverService;
+
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
-    public void updateAnomalyFromServer(Anomaly anomaly) {
+    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath) {
         try {
             if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
                 logger.info("回传格式有误");
@@ -54,6 +64,28 @@ public class AnomalyController {
             };
             threadPool.submit(callable).get();
 
+            // 获取服务器信息
+            String[] imagePaths = imagePath.split(",");
+            StringBuilder anomalyImagePath = new StringBuilder();
+            if (anomaly.getCamHiddenId() != null && imagePaths.length > 0) {
+                Camera camera = cameraService.getById(anomaly.getCamHiddenId());
+                if (camera != null) {
+                    Server server = serverService.getById(camera.getServerHiddenId());
+                    if (server != null) {
+                        for (int i=0; i<imagePaths.length; i++) {
+                            StringBuilder str = new StringBuilder();
+                            str.append(server.getServerIp());
+                            str.append(":");
+                            str.append(server.getServerPort());
+                            str.append(imagePaths[i]);
+                            anomalyImagePath.append(str);
+                            anomalyImagePath.append(",");
+                        }
+                    }
+                }
+            }
+            if (imagePaths.length > 0)
+                anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
             // 根据windowHiddenId查询userHiddenId
             ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
             if (user == null) {
