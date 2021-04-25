@@ -31,8 +31,14 @@ public class Anomaly implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyEndDate;
 
+
     @TableField(value = "anomaly_confidence")
     private double anomalyConfidence;
+
+
+	@TableField(value = "anomaly_image_path")
+	private String anomalyImagePath;
+
 
 	@TableField(value = "anomaly_link")
     private String anomalyLink;
@@ -54,6 +60,14 @@ public class Anomaly implements Serializable {
 
     @TableField(exist = false)
 	private String userName;
+
+	public String getAnomalyImagePath() {
+		return anomalyImagePath;
+	}
+
+	public void setAnomalyImagePath(String anomalyImagePath) {
+		this.anomalyImagePath = anomalyImagePath;
+	}
 
 	public Long getAnomalyHiddenId() {
 		return anomalyHiddenId;
