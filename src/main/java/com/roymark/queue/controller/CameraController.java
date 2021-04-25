@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.service.WindowService;
+import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +206,15 @@ public class CameraController {
 				queryWrapper.like("server_id", serverId);
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
+			for (Camera camera: pageList.getRecords()) {
+				boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
+				if (result) {
+					camera.setCamStatus("正常");
+				}
+				else {
+					camera.setCamStatus("异常");
+				}
+			}
 			// 返回结果
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
