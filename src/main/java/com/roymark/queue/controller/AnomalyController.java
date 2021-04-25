@@ -85,7 +85,7 @@ public class AnomalyController {
                     }
                 }
             }
-            if (imagePaths.length > 0)
+            if (anomalyImagePath.length() > 0)
                 anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
             // 根据windowHiddenId查询userHiddenId
             ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
