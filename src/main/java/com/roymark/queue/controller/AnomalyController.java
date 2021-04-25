@@ -73,14 +73,16 @@ public class AnomalyController {
                     Server server = serverService.getById(camera.getServerHiddenId());
                     if (server != null) {
                         for (int i=0; i<imagePaths.length; i++) {
-                            StringBuilder str = new StringBuilder();
-                            str.append("http://");
-                            str.append(server.getServerIp());
-                            str.append(":");
-                            str.append(server.getServerPort());
-                            str.append(imagePaths[i]);
-                            anomalyImagePath.append(str);
-                            anomalyImagePath.append(",");
+                            if (!imagePaths[i].equals("")) {
+                                StringBuilder str = new StringBuilder();
+                                str.append("http://");
+                                str.append(server.getServerIp());
+                                str.append(":");
+                                str.append(server.getServerPort());
+                                str.append(imagePaths[i]);
+                                anomalyImagePath.append(str);
+                                anomalyImagePath.append(",");
+                            }
                         }
                     }
                 }
