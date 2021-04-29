@@ -67,7 +67,7 @@ public class AnomalyController {
             // 获取服务器信息
             String[] imagePaths = imagePath.split(",");
             StringBuilder anomalyImagePath = new StringBuilder();
-            if (anomaly.getCamHiddenId() != null && imagePaths.length > 0) {
+            if (anomaly.getCamHiddenId() != null && imagePaths.length > 0 && imagePaths.length < 6) {       // 最多保存6张
                 Camera camera = cameraService.getById(anomaly.getCamHiddenId());
                 if (camera != null) {
                     Server server = serverService.getById(camera.getServerHiddenId());
@@ -312,6 +312,7 @@ public class AnomalyController {
                 Timestamp endTime = Timestamp.valueOf(end);
                 queryWrapper.between("anomaly_start_date", start, end);
             }
+            queryWrapper.orderByAsc("anomaly_start_date");
             // 执行分页
             IPage<Anomaly> pageList = anomalyService.page(page, queryWrapper);
             // 返回结果

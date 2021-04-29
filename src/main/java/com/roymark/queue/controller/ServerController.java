@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Camera;
+import com.roymark.queue.entity.Parameter;
 import com.roymark.queue.service.CameraService;
+import com.roymark.queue.service.ParameterService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -36,6 +38,9 @@ public class ServerController {
 
 	@Autowired
 	private CameraService cameraService;
+
+	@Autowired
+	private ParameterService parameterService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllServers() {
@@ -291,6 +296,18 @@ public class ServerController {
 			return jsonObject;
 		}
 
+		// 设置参数
+		List<Parameter> parameters = parameterService.list();
+		JSONObject params = new JSONObject();
+		for (Parameter parameter : parameters) {
+			params.put(parameter.getParamName(), parameter.getParamValue());
+		}
+		JSONObject requestData = new JSONObject();
+		requestData.put("params", params);
+		HashMap<String, String> header = new HashMap<>();
+		header.put("Content-Type", "application/json");// 设置请求头信息
+		String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
 		for (int i=0; i<startIdList.length; i++) {
 			Server startServer = serverService.getById(Long.valueOf(startIdList[i]));
 			if (startServer != null) {
@@ -304,16 +321,10 @@ public class ServerController {
 					msg.append(serverName + "启动失败，服务器端口不正确;\n");
 				}
 				else {
-					// 处理所有请求数据
-					JSONObject requestData = new JSONObject();
-//					requestData.put("data", collect);
-//					requestData.put("params", params);
 					// 处理发送地址
 					String host = "http://"+ ip_address+":"+ port;// 请求域名或ip
 					String path = "/start";// 请求路径
-					HashMap<String, String> header = new HashMap<>();
-					header.put("Content-Type", "application/json");// 设置请求头信息
-					String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
 					try {
 						boolean reachable = HttpUtils.isReachable(host);
 						if (!reachable) {
