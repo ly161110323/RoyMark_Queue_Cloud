@@ -105,6 +105,7 @@ public class AnomalyController {
                     }
                 }
             }
+            System.out.println(anomalyVideoPath.toString());
             anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
 
             // 根据windowHiddenId查询userHiddenId
