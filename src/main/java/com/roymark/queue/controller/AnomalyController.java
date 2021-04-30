@@ -46,7 +46,7 @@ public class AnomalyController {
     private ServerService serverService;
 
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
-    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath) {
+    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
         try {
             if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
                 logger.info("回传格式有误");
@@ -89,6 +89,24 @@ public class AnomalyController {
             }
             if (anomalyImagePath.length() > 0)
                 anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
+
+            // 将服务器信息加到视频路径中
+            StringBuilder anomalyVideoPath = new StringBuilder();
+            if (anomaly.getCamHiddenId() != null && !videoPath.equals("")) {
+                Camera camera = cameraService.getById(anomaly.getCamHiddenId());
+                if (camera != null) {
+                    Server server = serverService.getById(camera.getServerHiddenId());
+                    if (server != null) {
+                        anomalyVideoPath.append("http://");
+                        anomalyVideoPath.append(server.getServerIp());
+                        anomalyVideoPath.append(":");
+                        anomalyVideoPath.append(server.getServerPort());
+                        anomalyVideoPath.append(videoPath);
+                    }
+                }
+            }
+            anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
+
             // 根据windowHiddenId查询userHiddenId
             ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
             if (user == null) {
