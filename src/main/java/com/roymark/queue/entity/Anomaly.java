@@ -40,8 +40,8 @@ public class Anomaly implements Serializable {
 	private String anomalyImagePath;
 
 
-	@TableField(value = "anomaly_link")
-    private String anomalyLink;
+	@TableField(value = "anomaly_video_path")
+    private String anomalyVideoPath;
 
 	@TableField(value = "cam_hidden_id")
 	private Long camHiddenId;
@@ -109,12 +109,12 @@ public class Anomaly implements Serializable {
 		this.anomalyConfidence = anomalyConfidence;
 	}
 
-	public String getAnomalyLink() {
-		return anomalyLink;
+	public String getAnomalyVideoPath() {
+		return anomalyVideoPath;
 	}
 
-	public void setAnomalyLink(String anomalyLink) {
-		this.anomalyLink = anomalyLink;
+	public void setAnomalyVideoPath(String anomalyVideoPath) {
+		this.anomalyVideoPath = anomalyVideoPath;
 	}
 
 	public Long getWindowHiddenId() {
