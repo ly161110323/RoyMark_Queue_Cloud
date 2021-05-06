@@ -22,12 +22,13 @@
     <title>禾麦智能大厅管理系统</title>
     <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
           type="image/x-icon"/>
-    <script type="text/javascript" src="./js/cameraManagement.js">
+    <script type="text/javascript" src="./js/staffManagement.js">
     </script>
 
     <script type="text/javascript">
         var table;
         var dataId = "";
+        var staffInfo = {}
         var isSearch = "0";
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
@@ -42,7 +43,7 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/camera/queryData";
+            var tableUrl = "${ctx}/user/queryData";
             table = $('#itemResultTable')
                 .DataTable(
                     {
@@ -60,35 +61,16 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns": [
-                            {
-                                'mData': 'camHiddenId',
-                                'sTitle': '<input type="checkbox" name="checklist" id="checkall" />',
-                                'sName': 'camHiddenId',
-                                'sClass': 'center'
-                            },
-                            {'mData': 'camHiddenId', 'sTitle': '序号', 'sName': 'camHiddenId', 'sClass': 'center'},
-                            {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
-                            {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
-                            // {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
-                            {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                            {'mData': 'camStatus', 'sTitle': '设备状态', 'sName': 'camStatus', 'sClass': 'center'},
-                            {'mData': 'camVideoAddr', 'sTitle': '视频流地址', 'sName': 'camVideoAddr', 'sClass': 'center'},
-                            {'mData': 'camMacAddr', 'sTitle': 'mac地址', 'sName': 'camMacAddr', 'sClass': 'center'},
-                            {'mData': 'camBrand', 'sTitle': '厂商', 'sName': 'camBrand', 'sClass': 'center'},
-                            {'mData': 'camType', 'sTitle': '型号', 'sName': 'camType', 'sClass': 'center'},
-                            {'mData': 'camBirth', 'sTitle': '出厂日期', 'sName': 'camBirth', 'sClass': 'center'},
-                            {
-                                'mData': 'serverHiddenId',
-                                'sTitle': 'serverHiddenId',
-                                'sName': 'serverHiddenId',
-                                'sClass': 'hidden'
-                            },
-                            // {
-                            //     'mData': 'windowHiddenId',
-                            //     'sTitle': 'windowHiddenId',
-                            //     'sName': 'windowHiddenId',
-                            //     'sClass': 'hidden'
-                            // },
+                            {'mData': 'userHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'userHiddenId', 'sClass': 'center'},
+                            {'mData': 'userHiddenId', 'sTitle': '序号', 'sName': 'userHiddenId', 'sClass': 'center'},
+                            {'mData': 'userName', 'sTitle': '姓名', 'sName': 'userName', 'sClass': 'center'},
+                            {'mData': 'userSex', 'sTitle': '性别', 'sName': 'userSex', 'sClass': 'center'},
+                            {'mData': 'userId', 'sTitle': '编号', 'sName': 'userId', 'sClass': 'center'},
+                            {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
+                            {'mData': 'userDepartment', 'sTitle': '部门', 'sName': 'userDepartment', 'sClass': 'center'},
+                            {'mData': 'userPost', 'sTitle': '岗位', 'sName': 'userPost', 'sClass': 'center'},
+                            {'mData': 'windowHiddenId', 'sTitle': 'windowHiddenId', 'sName': 'windowHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'userPhoto', 'sTitle': 'userPhoto', 'sName': 'userPhoto', 'sClass': 'hidden'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -128,9 +110,9 @@
                         },
                         "columnDefs": [
                             {
-                                targets: 0, data: "camHiddenId", title: "操作",
+                                targets: 0, data: "userHiddenId", title: "操作",
                                 render: function (data, type, row, meta) {
-                                    var html = "<input type='checkbox' value=" + row.camHiddenId + " class='lsCheck' name='choice' />";
+                                    var html = "<input type='checkbox' value=" + row.userHiddenId + " class='lsCheck' name='choice' />";
                                     html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
                                 }
@@ -158,9 +140,9 @@
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
-            var inputCamId = $("#inputCommitCamId").val();
-            var selectServerId = $("#selectCommitServerId").find("option:selected").text();
-            // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
+            var inputUserName = $("#inputCommitUserName").val();
+            var inputUserId = $("#inputCommitUserId").val();
+            var inputUserDepartment = $("#inputCommitUserDepartment").val();
             var params;
             params = {
 
@@ -168,16 +150,16 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(selectServerId != "请选择绑定服务器ID"){
-                    params["serverId"] = selectServerId;
+                if(inputUserName != "请输入人员姓名"){
+                    params["userName"] = inputUserName;
 
                 }
-                // if(selectWindowId !="请选择绑定窗口ID"){
-                //     params["windowId"] = selectWindowId;
-                //
-                // }
-                if(inputCamId !=""){
-                    params["camId"] = inputCamId;
+                if(inputUserId !="请输入人员编号"){
+                    params["userId"] = inputUserId;
+
+                }
+                if(inputUserDepartment !="请输入所属部门"){
+                    params["userDepartment"] = inputUserDepartment;
                 }
 
             }
@@ -237,11 +219,11 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>摄像头ID：</label>
+                                                style="color: red;">*</span>姓名：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="camId" id="camId">
+                                                   name="userName" id="userName">
                                         </div>
 
                                     </div>
@@ -250,11 +232,11 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>摄像头IP：</label>
+                                                style="color: red;">*</span>性别：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
-                                                   name="camIp" id="camIp">
+                                                   name="userSex" id="userSex">
                                         </div>
                                     </div>
                                 </td>
@@ -262,131 +244,124 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器ID：</label>
+                                                style="color: red;">*</span>编号：</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   class="form-control table_content_zd"
+                                                   name="userId" id="userId">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>窗口ID：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
-                                                    id="serverId" name="serverId">
-                                                <option value="0">请选择绑定服务器ID</option>
+                                                    id="windowId" name="windowId">
+                                                <option value="0">请选择绑定窗口ID</option>
                                             </select>
                                         </div>
 
                                     </div>
                                 </td>
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>窗口ID：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <select class="form-control m-b table_content_zd"--%>
-<%--                                                    id="windowId" name="windowId">--%>
-<%--                                                <option value="0">请选择绑定窗口ID</option>--%>
-<%--                                            </select>--%>
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
-
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>mac地址：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
-                                                   name="camMacAddr" id="camMacAddr">
-                                        </div>
-                                    </div>
-                                </td>
-
                             </tr>
                             <tr>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>视频流地址：</label>
+                                                style="color: red;">*</span>部门：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camVideoAddr" id="camVideoAddr">
+                                                   class="form-control table_content_zd"
+                                                   name="userDepartment" id="userDepartment">
                                         </div>
-                                        <%--                                                                        <input type="hidden" name="queueDept.deptLs" id="txtDeptLs" />--%>
                                     </div>
                                 </td>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">厂商：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">职位：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="camBrand" id="camBrand">
+                                                   name="userPost" id="userPost">
                                         </div>
 
                                     </div>
                                 </td>
-
-                                <td style="width: 25%;">
+                                <td>
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>型号：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camType" id="camType">
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">个人照片：</label>
+                                        <div class="col-sm-8" style="width: 60%;">
+                                            <input type="file" name="staffPhoto" id="staffPhoto"
+                                                   style="display: none;"> <input type="text"
+                                                                                  style="width: 65%;" autocomplete="off"
+                                                                                  placeholder="768*365"
+                                                                                  class="form-control m-b input_btn_input"
+                                                                                  readonly="readonly" name="staffPhotoFileName"
+                                                                                  id="staffPhotoFileName">
+                                            <button type="button"
+                                                    class="btn btn-primary btn-sm input_btn_btn"
+                                                    id="btnChooseStaffPhoto"
+                                                    style="float: left; margin-left: 5px;">选择</button>
+
+
                                         </div>
 
                                     </div>
                                 </td>
 
 
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>生产日期：</label>
-                                        <div class="col-sm-8">
-                                            <input type="date" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camBirth" id="camBirth">
-                                        </div>
-
-                                    </div>
-                                </td>
                             </tr>
 
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
                             <tr class="table_menu_tr_zd">
-                                <td class="table_menu_tr_td_left_zd" colspan="2">
-                                    <input type="text" placeholder="摄像头ID" autocomplete="off"
-                                           spellcheck="false" placeholder="" style="width: 25%;"
-                                           class="form-control input_btn_input table_content_zd"
-                                           name="inputCommitCamId" id="inputCommitCamId">
-<%--                                    <select--%>
-<%--                                            class="form-control table_content_zd" name="selectCommitWindowId"--%>
-<%--                                            id="selectCommitWindowId"--%>
-<%--                                            style="width: 25%; float: left; margin-right: 10px">--%>
-<%--                                        <option value="">请选择绑定窗口ID</option>--%>
-<%--                                    </select>--%>
-                                    <select
-                                            class="form-control table_content_zd" name="selectCommitServerId"
-                                            id="selectCommitServerId"
-                                            style="width: 25%; float: left; margin-right: 10px">
-                                        <option value="">请选择绑定服务器ID</option>
-                                    </select>
+                                <td class="table_menu_tr_td_left_zd"
+                                    colspan="2">
+                                    <input
+                                            type="text"
+                                            placeholder="请输入人员姓名"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitUserName"
+                                            id="inputCommitUserName">
 
+                                    <input
+                                            type="text"
+                                            placeholder="请输入人员编号"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitUserId"
+                                            id="inputCommitUserId">
 
+                                    <input
+                                            type="text"
+                                            placeholder="请输入所属部门"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitUserDepartment"
+                                            id="inputCommitUserDepartment">
 
                                     <button type="button"
                                             class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
                                             style="margin-top: 2.5px; margin-bottom: 2px;"
-                                            id="queCommit">查询
+                                            id="queCommit">
+                                        查询
                                     </button>
                                 </td>
 
@@ -415,7 +390,7 @@
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="configWindow">显示配置按钮
+                                                id="showPhoto">查看照片
                                         </button>
                                     </div>
                                 </td>
@@ -440,6 +415,8 @@
                         </div>
                     </div>
                     <table id="itemResultTable" class="table table-bordered"></table>
+
+
                 </div>
             </div>
         </div>
@@ -449,59 +426,3 @@
 
 </html>
 
-<%--<table id="table_id" class="display">--%>
-<%--    <thead>--%>
-<%--    <tr>--%>
-<%--        <th>服务器ID</th>--%>
-<%--        <th>服务器IP</th>--%>
-<%--        <th>端口</th>--%>
-<%--        <th>服务器状态</th>--%>
-<%--        <th>程序状态</th>--%>
-<%--        <th>操作</th>--%>
-
-
-<%--    </tr>--%>
-<%--    </thead>--%>
-<%--    <tbody>--%>
-<%--    <tr>--%>
-<%--        <td>Row 1 Data 1</td>--%>
-<%--        <td>Row 1 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    <tr>--%>
-<%--        <td>Row 2 Data 1</td>--%>
-<%--        <td>Row 2 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    </tbody>--%>
-<%--</table>--%>
-<%--<script>--%>
-<%--    var table;--%>
-<%--    var dataId = "";--%>
-<%--    var isSearch = "0";--%>
-<%--    var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";--%>
-<%--    var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";--%>
-<%--    $(document).ready( function () {--%>
-<%--        $('#table_id').DataTable({--%>
-<%--            // "scrollY": 400,--%>
-<%--            // select: true,--%>
-<%--            ajax : {--%>
-<%--                "url" : "${ctx}/server/getAll",--%>
-<%--                "type" : "get",--%>
-
-<%--                "dataSrc" : "servers"--%>
-<%--            },--%>
-<%--            columns: [--%>
-<%--                {"data": "id"},--%>
-<%--                {"data": "ip"},--%>
-<%--                {"data": "port"},--%>
-<%--                {"data": "name"},--%>
-
-<%--            ],--%>
-<%--            processing: true,--%>
-<%--            language: {--%>
-<%--                "url": "${ctx}/page/manage/BR/js/datatables_language.json"--%>
-<%--            }--%>
-
-
-<%--        });--%>
-<%--    } );--%>
-<%--</script>--%>

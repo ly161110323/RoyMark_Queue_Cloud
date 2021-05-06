@@ -9,7 +9,8 @@
         <result column="anomaly_start_date" property="anomalyStartDate" />
         <result column="anomaly_end_date" property="anomalyEndDate" />
         <result column="anomaly_confidence" property="anomalyConfidence" />
-        <result column="anomaly_link" property="anomalyLink" />
+        <result column="anomaly_video_path" property="anomalyVideoPath" />
+        <result column="anomaly_image_path" property="anomalyImagePath" />
         <result column="cam_hidden_id" property="camHiddenId" />
         <result column="window_hidden_id" property="windowHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />

@@ -6,26 +6,25 @@ $(document).ready(function () {
     searchClick();
     clearClick();
     configClick();
-    // init_areaInfo();
-    // queryWindowList();
-    queryServerList();
-    //
-    // icon_operate();//部门图标处理
-    //
-    // caseAreaClick();
-    // selectAreaClick();
+    init_areaInfo();
+    queryWindowList();
+
+    icon_operate();//部门图标处理
+
+    caseAreaClick();
+    selectAreaClick();
 });
 
 function icon_operate() {
-    $(document).on('click', '#btnChooseDepartmentIcon', function () {
+    $(document).on('click', '#btnChooseStaffPhoto', function () {
         //让文件选择组件做一次点击
-        $("#departmentIcon").click();
+        $("#staffPhoto").click();
     });
     //为文件组合框绑定值改变事件
-    $(document).on('change', '#departmentIcon', function () {
+    $(document).on('change', '#staffPhoto', function () {
         var arrs = $(this).val().split('\\');
         var filename = arrs[arrs.length - 1];
-        $("#departmentIconFileName").val(filename);
+        $("#staffPhotoFileName").val(filename);
     });
 }
 
@@ -131,30 +130,27 @@ function trClick() {
             "color": "white"
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
+        imgPath = $(this).find("td:eq(9)").text();
+        staffInfo ={
+            userName : $(this).find("td:eq(2)").text(),
+            userSex : $(this).find("td:eq(3)").text(),
+            userId :$(this).find("td:eq(4)").text(),
+            windowId :$(this).find("td:eq(8)").text(),
+            userDepartment:$(this).find("td:eq(6)").text(),
+            userPost:$(this).find("td:eq(7)").text(),
+            userPhoto:$(this).find("td:eq(9)").text()
 
-        $("#camId").val($(this).find("td:eq(2)").text());
+        }
+        $("#userName").val($(this).find("td:eq(2)").text());
 
-        $("#camIp").val($(this).find("td:eq(3)").text());
-        // $("#windowId").val($(this).find("td:eq(4)").text());
-        $("#serverId").val($(this).find("td:eq(4)").text());
-        // $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camMacAddr").val($(this).find("td:eq(7)").text());
-        $("#camBrand").val($(this).find("td:eq(8)").text());
-        $("#camType").val($(this).find("td:eq(9)").text());
-        $("#camBirth").val($(this).find("td:eq(10)").text());
-        $("#serverId").val($(this).find("td:eq(11)").text());
-        // $("#windowId").val($(this).find("td:eq(13)").text());
+        $("#userSex").val($(this).find("td:eq(3)").text());
+        $("#userId").val($(this).find("td:eq(4)").text());
+        $("#windowId").val($(this).find("td:eq(8)").text());
+        $("#userDepartment").val($(this).find("td:eq(6)").text());
+        $("#userPost").val($(this).find("td:eq(7)").text());
 
-        // var tempValue = $(this).find("td:eq(0) input[name='deptImagepath']").val();
-        //
-        // if (tempValue != "null" && tempValue != '' && typeof (tempValue) != 'undefined') {
-        //     $("#departmentIconFileName").val(tempValue);
-        // }
-        // $("#txtDeptId").val($(this).find("td:eq(8)").text());
-        // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
-        // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
-        // $("#otherId").val($(this).find("td:eq(13)").text());
+
+
     });
 
 }
@@ -205,14 +201,22 @@ function checkBoxStyle_Control() {
 
 //页面数据合法性验证
 function validateData(isAdd) {
-    if ($("#camId").val().trim() == "") {
-        layer.alert("摄像头ID不能为空！");
+    if ($("#userName").val().trim() == "") {
+        layer.alert("人员姓名不能为空！");
+        return;
+    }
+    if ($("#userId").val().trim() == "") {
+        layer.alert("人员编号不能为空！");
+        return;
+    }
+    if ($("#userSex").val().trim() == "") {
+        layer.alert("人员性别不能为空！");
         return;
     }
 
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
-    var chooseId = $("#camId").val();
+    var chooseId = $("#userId").val();
     var isExit = false;
 
 //循环列表判断是否已经存在,放在客户端校验
@@ -222,12 +226,12 @@ function validateData(isAdd) {
         if ($(element).find("td:eq(2)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;
-                layer.alert("摄像头ID已存在！");
+                layer.alert("人员编号已存在！");
                 return false;
             } else {
                 if (objLs != dataId) {
                     isExit = true;
-                    layer.alert("摄像头ID已存在！");
+                    layer.alert("人员编号已存在！");
                     return false;
                 }
             }
@@ -244,47 +248,38 @@ function validateData(isAdd) {
 //清除数据
 function clearData() {
 
-    var $file = $("#departmentIcon");
-    $file.after($file.clone().val(""));
-    $file.remove();
-    $("#camId").val("");
+    $("#userName").val($(this).find("td:eq(2)").text());
 
-    // $("#windowId").val("");
-    $("#serverId").val("");
-    // $("#serverPort").val(");
-    $("#camVideoAddr").val("");
-    $("#camMacAddr").val("");
-    $("#camBrand").val("");
-    $("#camType").val("");
-    $("#camBirth").val("");
+    $("#userSex").val("");
+    $("#userId").val("");
+    $("#windowId").val("");
+    $("#userDepartment").val("");
+    $("#userPost").val("");
 
 }
+
 function clearSearch(){
-    $('#inputCommitCamId').val("");
-
-    queryWindowList();
-    queryServerList();
+    $("#inputCommitUserName").val("");
+    $("#inputCommitUserId").val("");
+    $("#inputCommitUserDepartment").val("");
 }
+
 function addClick() {
     $(document).on('click', '#addCommit', function () {
         if (!validateData(true)) {
             return;
         }
-
-
         var formData = new FormData();
-        formData.append("camId", $('#camId').val());
-        formData.append("camIp", $("#camIp").val());
-        formData.append("camVideoAddr", $("#camVideoAddr").val());
-        formData.append("camMacAddr", $("#camMacAddr").val());
-        formData.append("camBrand", $("#camBrand").val());
-        formData.append("camType", $("#camType").val());
-        // formData.append("windowHiddenId", $("#windowId").val());
-        formData.append("serverHiddenId", $("#serverId").val());
-        formData.append("cameraBirthStr", $("#camBirth").val());
+        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        formData.append("userId", $('#userId').val());
+        formData.append("userName", $("#userName").val());
+        formData.append("userSex", $("#userSex").val());
+        formData.append("userDepartment", $("#userDepartment").val());
+        formData.append("userPost", $("#userPost").val());
+        formData.append("windowHiddenId", $("#windowId").val());
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/insert";
+        var url = rootPath + "/user/insert";
         $.ajax({
             type: 'POST',
             url: url,
@@ -321,20 +316,20 @@ function updateClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("camHiddenId", dataId);
-        formData.append("camId", $('#camId').val());
-        formData.append("camIp", $("#camIp").val());
-        formData.append("camVideoAddr", $("#camVideoAddr").val());
-        formData.append("camMacAddr", $("#camMacAddr").val());
-        formData.append("camBrand", $("#camBrand").val());
-        formData.append("camType", $("#camType").val());
-        // formData.append("windowHiddenId", $("#windowId").val());
-        formData.append("serverHiddenId", $("#serverId").val());
-        formData.append("cameraBirthStr", $("#camBirth").val());
+        formData.append("userHiddenId", dataId);
+        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        formData.append("userId", $('#userId').val());
+        formData.append("userName", $("#userName").val());
+        formData.append("userSex", $("#userSex").val());
+        formData.append("userDepartment", $("#userDepartment").val());
+        formData.append("userPost", $("#userPost").val());
+
+        formData.append("windowHiddenId", $("#windowId").val());
+
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/update";
+        var url = rootPath + "/user/update";
 
         $.ajax({
             url: url,
@@ -359,12 +354,49 @@ function updateClick() {
         });
     });//修改事件处理完毕
 }
+function showPhotos(){
+    var rootPath = getWebRootPath();
+    var url = rootPath + staffInfo['userPhoto'];
+    var img = new Image()
+    if(dataId==''){
+        layer.alert("请选择人员信息！");
+        return
+    }
+
+    img.onload = function (){
+        wh = img.width/img.height
+        layerWidth = 300
+        layerHeight = layerWidth/wh
+        var imgdom = '<img id="img" src='+url+' style="width: 300px">'
+        layer.open({
+            type: 1,
+            title: false,
+            area: [layerWidth+'px',layerHeight+'px'],
+            // skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: imgdom
+        });
+
+    }
+    img.onerror = function (){
+        layer.alert("图片不存在！")
+    }
+    if(staffInfo['userPhoto']!=""){
+        img.src =url
+    }else {
+        layer.alert("未保存图片！")
+    }
+
+
+
+
+}
 
 function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click', '#deleteCommit', function () {
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/delete";
+        var url = rootPath + "/user/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {
@@ -426,17 +458,8 @@ function clearClick() {
 
 function configClick() {
 //更多配置
-    $(document).on('click', '#configWindow', function () {
-        var btn = document.getElementById("configWindow");
-        var btnV = btn.innerHTML;
-        if (btnV == "显示配置按钮") {
-            $("#configTr").slideDown();
-            btn.innerHTML = "隐藏配置按钮";
-        } else {
-            $("#configTr").slideUp();
-            btn.innerHTML = "显示配置按钮";
-        }
-
+    $(document).on('click', '#showPhoto', function () {
+        showPhotos()
     });
 }
 
@@ -446,8 +469,9 @@ function caseAreaClick() {
 //字典类型管理按钮
     $(document).on('click', '#caseArea_administration', function () {
         var targetUrl = rootPath + "/page/manage/dept/Queue_CaseArea.jsp";
-        var argTitle = "办事区域管理";
-        openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
+        var argTitle = "人员信息管理";
+        // openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
+        showPhotos()
     });
 }
 

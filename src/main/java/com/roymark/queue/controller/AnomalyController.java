@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.entity.Anomaly;
+import com.roymark.queue.entity.Camera;
+import com.roymark.queue.entity.Server;
 import com.roymark.queue.service.AnomalyService;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.service.CameraService;
+import com.roymark.queue.service.ServerService;
 import com.roymark.queue.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -33,8 +39,14 @@ public class AnomalyController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CameraService cameraService;
+
+    @Autowired
+    private ServerService serverService;
+
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
-    public void updateAnomalyFromServer(Anomaly anomaly) {
+    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
         try {
             if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
                 logger.info("回传格式有误");
@@ -52,13 +64,60 @@ public class AnomalyController {
             };
             threadPool.submit(callable).get();
 
+            // 获取服务器信息
+            String[] imagePaths = imagePath.split(",");
+            StringBuilder anomalyImagePath = new StringBuilder();
+            if (anomaly.getCamHiddenId() != null && imagePaths.length > 0 && imagePaths.length < 6) {       // 最多保存6张
+                Camera camera = cameraService.getById(anomaly.getCamHiddenId());
+                if (camera != null) {
+                    Server server = serverService.getById(camera.getServerHiddenId());
+                    if (server != null) {
+                        for (int i=0; i<imagePaths.length; i++) {
+                            if (!imagePaths[i].equals("")) {
+                                StringBuilder str = new StringBuilder();
+                                str.append("http://");
+                                str.append(server.getServerIp());
+                                str.append(":");
+                                str.append(server.getServerPort());
+                                str.append(imagePaths[i]);
+                                anomalyImagePath.append(str);
+                                anomalyImagePath.append(",");
+                            }
+                        }
+                    }
+                }
+            }
+            if (anomalyImagePath.length() > 0)
+                anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
+
+            // 将服务器信息加到视频路径中
+            StringBuilder anomalyVideoPath = new StringBuilder();
+            if (anomaly.getCamHiddenId() != null && !videoPath.equals("")) {
+                Camera camera = cameraService.getById(anomaly.getCamHiddenId());
+                if (camera != null) {
+                    Server server = serverService.getById(camera.getServerHiddenId());
+                    if (server != null) {
+                        anomalyVideoPath.append("http://");
+                        anomalyVideoPath.append(server.getServerIp());
+                        anomalyVideoPath.append(":");
+                        anomalyVideoPath.append(server.getServerPort());
+                        anomalyVideoPath.append(videoPath);
+                    }
+                }
+            }
+            anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
+
             // 根据windowHiddenId查询userHiddenId
             ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
             if (user == null) {
                 logger.info("该窗口id无对应的用户");
-                return;
+                anomaly.setUserHiddenId(null);
+                //return;
             }
-            anomaly.setUserHiddenId(user.getUserHiddenId());
+            else {
+                anomaly.setUserHiddenId(user.getUserHiddenId());
+            }
+
 
             // 首先检查是否有与开始时间完全相同的一项
             Timestamp startTime = anomaly.getAnomalyStartDate();
@@ -76,10 +135,11 @@ public class AnomalyController {
             }
             else {
                 // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
-                Timestamp endTimeThreshold = new Timestamp(startTime.getTime() - 60 * 1000);
+                Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
                 queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTime)
                         .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
                         .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
+
                 if (queryAnomaly != null) {                 // 如果差值<1分钟，更新该项
                     anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
                     anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
@@ -96,7 +156,7 @@ public class AnomalyController {
         }
     }
 
-        @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllAnomalies() {
         JSONObject jsonObject = new JSONObject();
 
@@ -174,9 +234,9 @@ public class AnomalyController {
             }
             else if (anomaly.getUserHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-                }
+            }
             else if (anomaly.getWindowHiddenId() != null) {
-               result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+                result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
             }
             else {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
@@ -270,6 +330,7 @@ public class AnomalyController {
                 Timestamp endTime = Timestamp.valueOf(end);
                 queryWrapper.between("anomaly_start_date", start, end);
             }
+            queryWrapper.orderByDesc("anomaly_start_date");
             // 执行分页
             IPage<Anomaly> pageList = anomalyService.page(page, queryWrapper);
             // 返回结果
@@ -292,6 +353,5 @@ public class AnomalyController {
             return jsonObject;
         }
     }
-
 
 }

@@ -1,5 +1,7 @@
 package com.roymark.queue.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -8,10 +10,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.service.WindowService;
+import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +26,9 @@ import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
 
 import com.alibaba.fastjson.JSONObject;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/camera")
@@ -114,17 +123,11 @@ public class CameraController {
 				return jsonObject;
 			}
 			boolean result;
-			if (camera.getWindowHiddenId() != null && camera.getServerHiddenId() != null) {
+			if (camera.getServerHiddenId() != null) {
 				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
 			}
-			else if (camera.getWindowHiddenId() != null) {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-			}
-			else if (camera.getServerHiddenId() != null) {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-			}
 			else {
-				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).set(Camera::getWindowHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+				result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
 			}
 
 			if (result) {
@@ -197,7 +200,7 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
-	public Object search(@RequestParam(required = false) String camId, @RequestParam(required = false) String windowId,
+	public Object search(@RequestParam(required = false) String camId,
 						 @RequestParam(required = false) String serverId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
@@ -207,12 +210,19 @@ public class CameraController {
 			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
 			if (camId != null)
 				queryWrapper.like ("cam_id",camId);
-			if (windowId != null)
-				queryWrapper.like ("window_id",windowId);
 			if (serverId != null)
 				queryWrapper.like("server_id", serverId);
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
+			for (Camera camera: pageList.getRecords()) {
+				boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
+				if (result) {
+					camera.setCamStatus("正常");
+				}
+				else {
+					camera.setCamStatus("异常");
+				}
+			}
 			// 返回结果
 			if (pageList.getTotal() <= 0) {
 				jsonObject.put("result", "no");
@@ -230,6 +240,64 @@ public class CameraController {
 			logger.error("/camera/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/getCurrentPic", produces = "application/json;charset=utf-8")
+	public Object getCurrentPic(HttpServletRequest request, Long cameraHiddenId) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			Camera camera = cameraService.getById(cameraHiddenId);
+			if (camera == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "摄像头不存在");
+				return jsonObject;
+			}
+			FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(camera.getCamVideoAddr());
+			if (grabber == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "grabber创建失败");
+				return jsonObject;
+			}
+			grabber.setOption("rtsp_transport", "tcp");
+
+			//设置帧率
+			grabber.setFrameRate(25);
+			//设置获取的视频宽度
+			grabber.setImageWidth(960);
+			//设置获取的视频高度
+			grabber.setImageHeight(540);
+			//设置视频bit率
+			grabber.setVideoBitrate(3000000);
+
+			grabber.start();
+			Frame frame = null;
+			for (int i=0; i<10; i++)
+				frame = grabber.grabImage();
+			if (frame == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "捕获失败");
+				return jsonObject;
+			}
+			BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
+
+			grabber.stop();
+			String path = "/uploads/camera/" + camera.getCamId()+".jpg";
+
+			ImageIO.write(image, "jpg", new File(request.getServletContext().getRealPath("") + path));
+
+			jsonObject.put("path", path);
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "捕获成功");
+			return jsonObject;
+
+
+		} catch (Exception e) {
+			logger.error("/camera/getCurrentPic 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "捕获出现错误");
 			return jsonObject;
 		}
 	}

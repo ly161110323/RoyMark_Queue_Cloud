@@ -8,6 +8,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.TimeZone;
 
 @Data
 @TableName(value = "br_anomaly")
@@ -22,18 +24,24 @@ public class Anomaly implements Serializable {
     private String anomalyEvent;
 
     @TableField(value = "anomaly_start_date")
-	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyStartDate;
     
     @TableField(value = "anomaly_end_date")
-	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp anomalyEndDate;
+
 
     @TableField(value = "anomaly_confidence")
     private double anomalyConfidence;
 
-	@TableField(value = "anomaly_link")
-    private String anomalyLink;
+
+	@TableField(value = "anomaly_image_path")
+	private String anomalyImagePath;
+
+
+	@TableField(value = "anomaly_video_path")
+    private String anomalyVideoPath;
 
 	@TableField(value = "cam_hidden_id")
 	private Long camHiddenId;
@@ -52,6 +60,14 @@ public class Anomaly implements Serializable {
 
     @TableField(exist = false)
 	private String userName;
+
+	public String getAnomalyImagePath() {
+		return anomalyImagePath;
+	}
+
+	public void setAnomalyImagePath(String anomalyImagePath) {
+		this.anomalyImagePath = anomalyImagePath;
+	}
 
 	public Long getAnomalyHiddenId() {
 		return anomalyHiddenId;
@@ -93,12 +109,12 @@ public class Anomaly implements Serializable {
 		this.anomalyConfidence = anomalyConfidence;
 	}
 
-	public String getAnomalyLink() {
-		return anomalyLink;
+	public String getAnomalyVideoPath() {
+		return anomalyVideoPath;
 	}
 
-	public void setAnomalyLink(String anomalyLink) {
-		this.anomalyLink = anomalyLink;
+	public void setAnomalyVideoPath(String anomalyVideoPath) {
+		this.anomalyVideoPath = anomalyVideoPath;
 	}
 
 	public Long getWindowHiddenId() {

@@ -211,72 +211,18 @@
 
                         <table class="table_zd" align="center" width="100%">
                             <tr>
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                class="must_field">*</span>所属大厅：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <input type="text" style="width: 100%;" autocomplete="off"--%>
-<%--                                                   class="form-control m-b input_btn_input table_content_zd"--%>
-<%--                                                   readonly="readonly" name="Area_Name" id="Area_Name">--%>
-<%--                                            <input type="hidden" name="areaLs" id="Area_Ls">--%>
-<%--                                        </div>--%>
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd">部门图标：</label>--%>
-<%--                                        <div class="col-sm-8" style="width: 60%;">--%>
-<%--                                            <input type="file" name="departmentIcon" id="departmentIcon"--%>
-<%--                                                   style="display: none;"> <input type="text"--%>
-<%--                                                                                  style="width: 65%;" autocomplete="off"--%>
-<%--                                                                                  placeholder="768*365"--%>
-<%--                                                                                  class="form-control m-b input_btn_input"--%>
-<%--                                                                                  readonly="readonly" name="departmentIconFileName"--%>
-<%--                                                                                  id="departmentIconFileName">--%>
-<%--                                            <button type="button"--%>
-<%--                                                    class="btn btn-primary btn-sm input_btn_btn"--%>
-<%--                                                    id="btnChooseDepartmentIcon"--%>
-<%--                                                    style="float: left; margin-left: 5px;">选择</button>--%>
-
-
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>委办局编号：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <input type="text" autocomplete="off" spellcheck="false"--%>
-<%--                                                   placeholder="" class="form-control table_content_zd"--%>
-<%--                                                   name="queueDept.deptId" id="txtDeptId">--%>
-<%--                                        </div>--%>
-<%--                                        <input type="hidden" name="queueDept.deptLs" id="txtDeptLs" />--%>
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器名称：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器名称：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
+                                                   placeholder="" class="form-control table_content_zd"
                                                    name="serverName" id="serverName">
                                         </div>
+
                                     </div>
                                 </td>
-
-<%--                            </tr>--%>
-<%--                            <tr>--%>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
@@ -303,22 +249,6 @@
 
                                     </div>
                                 </td>
-
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>现场预约上限：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <input type="text" autocomplete="off" spellcheck="false"--%>
-<%--                                                   placeholder="" class="form-control table_content_zd"--%>
-<%--                                                   name="queueDept.deptMaxappointment"--%>
-<%--                                                   id="txtDeptMaxappointment">--%>
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
@@ -333,68 +263,16 @@
                                     </div>
                                 </td>
                             </tr>
-<%--                            <tr>--%>
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>办事区域：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <select class="form-control m-b table_content_zd"--%>
-<%--                                                    id="formCaseAreaLs" name="queueDept.caseAreaLs">--%>
-<%--                                                <option value="0">请选择区域</option>--%>
-<%--                                            </select>--%>
-<%--                                            <!-- <button type="button" style="float: left;margin-left: 5px;" class="btn btn-primary btn-sm input_btn_btn list_btn" id="caseArea_administration">管理</button>	 -->--%>
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>行政区域：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <select class="form-control m-b table_content_zd"--%>
-<%--                                                    id="adjSelectArea" >--%>
-<%--                                                <option value="0">请选择区域</option>--%>
-<%--                                            </select>--%>
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"></span>第三方编号：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <input type="text" autocomplete="off" spellcheck="false"--%>
-<%--                                                   placeholder="" class="form-control table_content_zd"--%>
-<%--                                                   name="queueDept.otherId" id="otherId">--%>
-<%--                                        </div>--%>
-
-<%--                                    </div>--%>
-<%--                                </td>--%>
-<%--                            </tr>--%>
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
-                            <tr class="table_menu_tr_zd" >
-                                <td class="table_menu_tr_td_left_zd" colspan="2">
-<%--                                    <select--%>
-<%--                                            class="form-control table_content_zd" name="selectCaseLs"--%>
-<%--                                            id="selectCaseLs"--%>
-<%--                                            style="width: 35%; float: left; margin-right: 10px">--%>
-<%--                                        <option value="">请选择区域</option>--%>
-<%--                                    </select> --%>
-
-                                        <input type="text" placeholder="服务器名称" autocomplete="off"
-                                                     spellcheck="false" placeholder="" style="width: 35%;"
-                                                     class="form-control input_btn_input table_content_zd"
-                                                     name="inputCommitServerName" id="inputCommitServerName"
-                                           >
-
+                            <tr>
+                                <td>
+                                    <input type="text" placeholder="服务器名称" autocomplete="off"
+                                                 spellcheck="false" placeholder="" style="width: 35%;"
+                                                 class="form-control input_btn_input table_content_zd"
+                                                 name="inputCommitServerName" id="inputCommitServerName"
+                                       >
                                     <input type="text" placeholder="服务器ID" autocomplete="off"
                                            spellcheck="false" placeholder="" style="width: 35%;"
                                            class="form-control input_btn_input table_content_zd"
@@ -427,11 +305,19 @@
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="configWindow">显示配置按钮</button>
+                                                id="startCommit">启动</button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="stopCommit">停止</button>
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="configWindow">显示配置按钮</button>--%>
                                     </div>
                                 </td>
                             </tr>
-                            </tbody>
+
                         </table>
                     </form>
                     <div id="configTr" class="table_menu_tr_zd"

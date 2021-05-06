@@ -13,22 +13,28 @@
         <result column="floor_id" property="floorId" />
         <result column="window_action_analysis" property="windowActionAnalysis" />
         <result column="window_nine_palaces" property="windowNinePalaces" />
+        <result column="window_coordinates" property="windowCoordinates" />
+        <result column="cam_hidden_id" property="camHiddenId" />
+        <result column="cam_id" property="camId" />
         <result column="floor_name" property="floorName" />
     </resultMap>
 
 
     <!-- 通用查询结果列 -->
     <select id="getAllWindow" resultMap="BaseResultMap">
-        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
+        SELECT * FROM (br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id)
+        LEFT JOIN br_cam ON br_window.cam_hidden_id=br_cam.cam_hidden_id
     </select>
 
     <select id="getWindowByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
+        SELECT * FROM (br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id)
+            LEFT JOIN br_cam ON br_window.cam_hidden_id=br_cam.cam_hidden_id
         WHERE window_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT * FROM br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id
+        SELECT * FROM (br_window LEFT JOIN br_floor ON br_window.floor_hidden_id=br_floor.floor_hidden_id)
+            LEFT JOIN br_cam ON br_window.cam_hidden_id=br_cam.cam_hidden_id
         ${ew.customSqlSegment}
     </select>
 </mapper>

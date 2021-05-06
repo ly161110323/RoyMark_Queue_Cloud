@@ -48,12 +48,6 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
                     .eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
         }
 
-        List<Camera> cameraList = cameraMapper.selectList(Wrappers.<Camera>lambdaQuery().eq(Camera::getWindowHiddenId, windowHiddenId));
-        for (Camera camera : cameraList) {
-            cameraMapper.update(null, Wrappers.<Camera>lambdaUpdate().set(Camera::getWindowHiddenId, null)
-                    .eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-        }
-
         List<ActionUser> actionUserList = userMapper.selectList(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, windowHiddenId));
         for (ActionUser user : actionUserList) {
             userMapper.update(null, Wrappers.<ActionUser>lambdaUpdate().set(ActionUser::getWindowHiddenId, null)
