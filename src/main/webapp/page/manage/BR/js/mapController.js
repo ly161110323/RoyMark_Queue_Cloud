@@ -291,7 +291,7 @@ function updateClick() {
         formData.append("serverPort",$("#serverPort").val());
         formData.append("serverId",$("#serverId").val());
         formData.append("serverHiddenId",dataId)
-        console.log(formData)
+
 
         var rootPath = getWebRootPath();
         var url = rootPath + "/server/update";

@@ -7,8 +7,8 @@ $(document).ready(function () {
     clearClick();
     configClick();
     init_areaInfo();
-    queryCaseAreaList();
-    querySelectAreaList();
+    // queryCaseAreaList();
+    // querySelectAreaList();
 
     icon_operate();//部门图标处理
 
@@ -33,61 +33,61 @@ function init_areaInfo() {
     $("#Area_Name").val(defaultAreaName);
 
 }
-function queryCaseAreaList()
-{
-
-    var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueCasearea/listall"
-//获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-//调用成功时对返回的值进行解析
-
-            var list = data.returnObject;
-//若未出错，则获取信息设置到控件中
-            var str ="";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].caseareaLs + "'>" + list[i].caseareaName + "</option>";
-            }
-            $("#formCaseAreaLs").empty();
-            $("#formCaseAreaLs").append(str);
-            $("#selectCaseLs").empty();
-            $("#selectCaseLs").append("<option value=''>请选择办事区域</option>");
-            $("#selectCaseLs").append(str);
-        }
-    });
-}
-function querySelectAreaList()
-{
-
-    var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueSelectarea/listall"
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-//调用成功时对返回的值进行解析
-            var list = data.returnObject;
-//若未出错，则获取信息设置到控件中
-            var str = "<option value=''></option>";
-
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].selectareaLs + "'>" + list[i].selectareaName + "</option>";
-            }
-            //将节点插入
-            $("#adjSelectArea").empty();
-            $("#adjSelectArea").append(str);
-        }
-    });
-}
+// function queryCaseAreaList()
+// {
+//
+//     var rootPath = getWebRootPath();
+//     var url=rootPath+"/QueueCasearea/listall"
+// //获取问卷调查
+//     $.ajax({
+//         type: 'POST',
+//         url: url,
+//         cache: false,
+//         async: true,
+//         dataType: 'json',
+//         success: function (data) {
+// //调用成功时对返回的值进行解析
+//
+//             var list = data.returnObject;
+// //若未出错，则获取信息设置到控件中
+//             var str ="";
+//             for (var i = 0; i < list.length; i++) {
+//                 str += "<option value='" + list[i].caseareaLs + "'>" + list[i].caseareaName + "</option>";
+//             }
+//             $("#formCaseAreaLs").empty();
+//             $("#formCaseAreaLs").append(str);
+//             $("#selectCaseLs").empty();
+//             $("#selectCaseLs").append("<option value=''>请选择办事区域</option>");
+//             $("#selectCaseLs").append(str);
+//         }
+//     });
+// }
+// function querySelectAreaList()
+// {
+//
+//     var rootPath = getWebRootPath();
+//     var url=rootPath+"/QueueSelectarea/listall"
+//     $.ajax({
+//         type: 'POST',
+//         url: url,
+//         cache: false,
+//         async: true,
+//         dataType: 'json',
+//         success: function (data) {
+// //调用成功时对返回的值进行解析
+//             var list = data.returnObject;
+// //若未出错，则获取信息设置到控件中
+//             var str = "<option value=''></option>";
+//
+//             for (var i = 0; i < list.length; i++) {
+//                 str += "<option value='" + list[i].selectareaLs + "'>" + list[i].selectareaName + "</option>";
+//             }
+//             //将节点插入
+//             $("#adjSelectArea").empty();
+//             $("#adjSelectArea").append(str);
+//         }
+//     });
+// }
 
 
 function trClick() {
@@ -108,11 +108,10 @@ function trClick() {
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         $("#txtDeptLs").val(dataId);
-        $("#serverName").val($(this).find("td:eq(2)").text());
-        console.log($(this).find("td:eq(2)").text())
-        $("#serverId").val($(this).find("td:eq(3)").text());
-        $("#serverIp").val($(this).find("td:eq(4)").text());
-        $("#serverPort").val($(this).find("td:eq(5)").text());
+        $("#paramName").val($(this).find("td:eq(1)").text());
+        $("#paramValue").val($(this).find("td:eq(2)").text());
+        $("#paramDefault").val($(this).find("td:eq(3)").text());
+        $("#paramRemark").val($(this).find("td:eq(4)").text());
         $("#txtDeptMaxappointment").val($(this).find("td:eq(6)").text());
         var tempValue=$(this).find("td:eq(0) input[name='deptImagepath']").val();
 
@@ -157,55 +156,32 @@ function checkBoxStyle_Control()
 }
 //页面数据合法性验证
 function validateData(isAdd) {
-    if($("#serverName").val().trim()==""){
-        layer.alert("服务器名称不能为空！");
+    if($("#paramName").val().trim()==""){
+        layer.alert("参数名称不能为空！");
         return;
     }
-    if($("#serverIp").val().trim()==""){
-        layer.alert("服务器IP不能为空！");
+    if($("#paramDefault").val().trim()==""){
+        layer.alert("参数默认值不能为空！");
         return;
     }
 
-    if($("#serverPort").val().trim()==""){
-        layer.alert("服务器端口不能为空！");
-        return;
-    }
-    if($("#serverId").val().trim()==""){
-        layer.alert("服务器ID不能为空！");
+    if($("#paramValue").val().trim()==""){
+        layer.alert("参数值不能为空！");
         return;
     }
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
-    var chooseId = $("#serverId").val();
+    var paramName = $("#paramName").val();
     var isExit = false;
 
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function(index,element){
-        var objLs = $(element).find("td:eq(0)>input").val();
-        // if($(element).find("td:eq(2)").text() == chooseName){
-        //     if(isAdd){
-        //         isExit=true;
-        //         layer.alert("该委办局名称已存在！");
-        //         return false;
-        //     }else{
-        //         if(objLs!=dataId){
-        //             isExit=true;
-        //             layer.alert("该委办局名称已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
-        if($(element).find("td:eq(3)").text() == chooseId){
+        var objLs = $(element).find("td:eq(1)>input").val();
+        if($(element).find("td:eq(1)").text() == paramName){
             if(isAdd){
                 isExit=true;
-                layer.alert("该服务器id已存在！");
+                layer.alert("该参数名称已存在！");
                 return false;
-            }else{
-                if(objLs!=dataId){
-                    isExit=true;
-                    layer.alert("该委办局编号已存在！");
-                    return false;
-                }
             }
         }
     });
@@ -222,15 +198,10 @@ function clearData(){
     var $file = $("#departmentIcon");
     $file.after($file.clone().val(""));
     $file.remove();
-    $("#serverName").val("");
-    $("#serverIp").val("");
-    $("#serverPort").val("")
-    $("#serverId").val("")
-    // $("#txtDeptMaxtakeno").val("");
-    // $("#txtDeptMaxappointment").val("");
-    // $("#departmentIconFileName").val("");
-    // $("#txtDeptId").val("");
-    // $("#otherId").val("");
+    $("#paramName").val("");
+    $("#paramDefault").val("");
+    $("#paramRemark").val("")
+    $("#paramValue").val("")
 }
 
 function addClick() {
@@ -239,16 +210,16 @@ function addClick() {
         {
             return;
         }
-
-
         var formData = new FormData();
-        formData.append("serverName", $('#serverName').val());
-        formData.append("serverIp",$("#serverIp").val());
-        formData.append("serverPort",$("#serverPort").val());
-        formData.append("serverId",$("#serverId").val());
+        formData.append("paramName", $('#paramName').val());
+        formData.append("paramDefault",$("#paramDefault").val());
+        formData.append("paramRemark",$("#paramRemark").val());
+        formData.append("paramValue",$("#paramValue").val());
+        formData.append("paramHiddenId",dataId);
         // formData.append("deptPrint",$("#serverId").val());
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/insert";
+        var url=rootPath+"/param/insert";
+
         $.ajax({
             type: 'POST',
             url:  url,
@@ -286,15 +257,14 @@ function updateClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("serverName", $('#serverName').val());
-        formData.append("serverIp",$("#serverIp").val());
-        formData.append("serverPort",$("#serverPort").val());
-        formData.append("serverId",$("#serverId").val());
-        formData.append("serverHiddenId",dataId)
-        console.log(formData)
+        formData.append("paramName", $('#paramName').val());
+        formData.append("paramDefault",$("#paramDefault").val());
+        formData.append("paramRemark",$("#paramRemark").val());
+        formData.append("paramValue",$("#paramValue").val());
+        formData.append("paramHiddenId",dataId)
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/server/update";
+        var url = rootPath + "/param/update";
 
         $.ajax({
             url: url,
@@ -304,6 +274,7 @@ function updateClick() {
             contentType : false, // 不要设置Content-Type请求头
             data: formData,
             success: function (data) {
+                console.log(data)
                 if (data.result == "error") {
                     layer.alert("服务器错误！");
                     return;
@@ -371,8 +342,8 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
-        $('#inputCommitServerId').val("");
-        $('#inputCommitServerName').val("");
+        $('#inputCommitParamValue').val("");
+        $('#inputCommitParamName').val("");
     });
 
 }
