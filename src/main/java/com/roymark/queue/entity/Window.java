@@ -41,6 +41,9 @@ public class Window implements Serializable {
     @TableField(value = "window_nine_palaces")
 	private Boolean windowNinePalaces;
 
+    @TableField(value = "window_coordinates")
+	private String windowCoordinates;
+
     @TableField(value = "cam_hidden_id")
 	private Long camHiddenId;
 
@@ -144,5 +147,13 @@ public class Window implements Serializable {
 
 	public void setFloorHiddenId(Long floorHiddenId) {
 		this.floorHiddenId = floorHiddenId;
+	}
+
+	public String getWindowCoordinates() {
+		return windowCoordinates;
+	}
+
+	public void setWindowCoordinates(String windowCoordinates) {
+		this.windowCoordinates = windowCoordinates;
 	}
 }

@@ -1,5 +1,7 @@
 package com.roymark.queue.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -8,11 +10,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +26,9 @@ import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
 
 import com.alibaba.fastjson.JSONObject;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/camera")
@@ -232,6 +240,64 @@ public class CameraController {
 			logger.error("/camera/queryData 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/getCurrentPic", produces = "application/json;charset=utf-8")
+	public Object getCurrentPic(HttpServletRequest request, Long cameraHiddenId) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			Camera camera = cameraService.getById(cameraHiddenId);
+			if (camera == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "摄像头不存在");
+				return jsonObject;
+			}
+			FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(camera.getCamVideoAddr());
+			if (grabber == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "grabber创建失败");
+				return jsonObject;
+			}
+			grabber.setOption("rtsp_transport", "tcp");
+
+			//设置帧率
+			grabber.setFrameRate(25);
+			//设置获取的视频宽度
+			grabber.setImageWidth(960);
+			//设置获取的视频高度
+			grabber.setImageHeight(540);
+			//设置视频bit率
+			grabber.setVideoBitrate(3000000);
+
+			grabber.start();
+			Frame frame = null;
+			for (int i=0; i<10; i++)
+				frame = grabber.grabImage();
+			if (frame == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "捕获失败");
+				return jsonObject;
+			}
+			BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
+
+			grabber.stop();
+			String path = "/uploads/camera/" + camera.getCamId()+".jpg";
+
+			ImageIO.write(image, "jpg", new File(request.getServletContext().getRealPath("") + path));
+
+			jsonObject.put("path", path);
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "捕获成功");
+			return jsonObject;
+
+
+		} catch (Exception e) {
+			logger.error("/camera/getCurrentPic 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "捕获出现错误");
 			return jsonObject;
 		}
 	}

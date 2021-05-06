@@ -105,7 +105,6 @@ public class AnomalyController {
                     }
                 }
             }
-            System.out.println(anomalyVideoPath.toString());
             anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
 
             // 根据windowHiddenId查询userHiddenId
@@ -331,7 +330,7 @@ public class AnomalyController {
                 Timestamp endTime = Timestamp.valueOf(end);
                 queryWrapper.between("anomaly_start_date", start, end);
             }
-            queryWrapper.orderByAsc("anomaly_start_date");
+            queryWrapper.orderByDesc("anomaly_start_date");
             // 执行分页
             IPage<Anomaly> pageList = anomalyService.page(page, queryWrapper);
             // 返回结果

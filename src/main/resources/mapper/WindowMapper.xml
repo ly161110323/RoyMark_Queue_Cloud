@@ -13,6 +13,7 @@
         <result column="floor_id" property="floorId" />
         <result column="window_action_analysis" property="windowActionAnalysis" />
         <result column="window_nine_palaces" property="windowNinePalaces" />
+        <result column="window_coordinates" property="windowCoordinates" />
         <result column="cam_hidden_id" property="camHiddenId" />
         <result column="cam_id" property="camId" />
         <result column="floor_name" property="floorName" />
