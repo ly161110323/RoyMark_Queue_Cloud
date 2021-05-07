@@ -17,7 +17,6 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -224,7 +223,7 @@ public class CameraController {
 				}
 			}
 			// 返回结果
-			if (pageList.getTotal() <= 0) {
+			if (pageList.getRecords().size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "搜素结果为空");
 				jsonObject.put("pageList", pageList);
