@@ -20,304 +20,131 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="Cache-Control" content="no-siteapp" />
   <title>禾麦智能大厅管理系统</title>
+  <style type="text/css">
+    .gray-bg{
+      background: url("${ctx}/resources/images/backimg.jfif") no-repeat;
+    }
+  </style>
   <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
         type="image/x-icon" />
-  <script type="text/javascript" src="./js/mapController.js">
-  </script>
-
-  <script type="text/javascript">
-    var table;
-    var dataId = "";
-    var isSearch = "0";
-    var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";
-    var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";
-    var clickitem = null
-    $(document).ready(function() {
-      //加载表格
-      loadTable();
-      trClick();
-      checkBoxStyle_Control();
-
-    });
-
-    function loadTable() {
-
-      var tableUrl = "${ctx}/server/queryData";
-      table = $('#itemResultTable')
-              .DataTable(
-                      {
-                        "bPaginate": true, //开关，是否显示分页器
-                        "paging": true,
-                        "lengthChange": true,
-                        "searching": false,
-                        "ordering": false,
-                        "info": true,
-                        "autoWidth": false,
-                        "displayLength": 10,
-                        "sAjaxDataProp": "data",
-                        "bServerSide": true,
-                        "sAjaxSource":tableUrl,
-                        "fnServerData": loadData,
-                        "bLengthChange": false,
-                        "aoColumns" : [
-                          {'mData': 'serverHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'serverHiddenId', 'sClass': 'center'},
-                          {'mData': 'serverHiddenId', 'sTitle': '序号', 'sName': 'serverHiddenId', 'sClass': 'center'},
-                          {'mData': 'serverName', 'sTitle': '服务器名称', 'sName': 'serverName', 'sClass': 'center'},
-                          {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                          {'mData': 'serverIp', 'sTitle': '服务器IP', 'sName': 'serverIp', 'sClass': 'center'},
-                          {'mData': 'serverPort', 'sTitle': '服务器端口', 'sName': 'serverPort', 'sClass': 'center'},
-                          {'mData': 'serverStatus', 'sTitle': '服务器状态', 'sName': 'serverStatus', 'sClass': 'center'},
-                          {'mData': 'programStatus', 'sTitle': '程序状态', 'sName': 'programStatus', 'sClass': 'center'},
-
-                        ],
-                        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
-                          let api = this.api();
-                          let startIndex = api.context[0]._iDisplayStart;//获取本页开始的条数
-                          $("td:nth-child(2)", nRow).html(iDisplayIndex+startIndex+1);//设置序号位于第一列，并顺次加一
-                          return nRow;
-                        },
-                        "initComplete": function( settings, json ) {
-                          $(".dataTables_scrollHeadInner").css({width:"100%"});
-                          $(".dataTables_scrollHeadInner table").css({width:"100%"});
-                          $(".dataTables_scrollBody").attr('id','scrollBodyDiv');
-                          $(".dataTables_scrollBody").css({"overflow-y":"auto","overflow-x":"hidden"});
-                          var obj=document.getElementById("scrollBodyDiv");
-                          //如果数据DIV有滚动条，则标题头也需要增加滚动条，以保持一致
-                          if(obj)
-                          {
-                            if(obj.scrollHeight>obj.clientHeight||obj.offsetHeight>obj.clientHeight){
-                              $(".dataTables_scrollHead").css({overflow:"scroll","overflow-x":"hidden"});
-                            }else{
-                              $(".dataTables_scrollHead").css({overflow:"auto","overflow-x":"hidden"});
-                            }
-                          }
-                        },
-                        "drawCallback": function( settings ) {
-                          $(".dataTables_scrollHeadInner").css({width:"100%"});
-                          $(".dataTables_scrollHeadInner table").css({width:"100%"});
-                          $(".dataTables_scrollBody").attr('id','scrollBodyDiv');
-                          $(".dataTables_scrollBody").css({"overflow-y":"auto","overflow-x":"hidden"});
-                          var obj=document.getElementById("scrollBodyDiv");
-                          //如果数据DIV有滚动条，则标题头也需要增加滚动条，以保持一致
-                          if(obj)
-                          {
-                            if(obj.scrollHeight>obj.clientHeight||obj.offsetHeight>obj.clientHeight){
-                              $(".dataTables_scrollHead").css({overflow:"scroll","overflow-x":"hidden"});
-                            }else{
-                              $(".dataTables_scrollHead").css({overflow:"auto","overflow-x":"hidden"});
-                            }
-                          }
-                        },
-                        "columnDefs": [
-                          {targets: 0,data: "serverHiddenId",title: "操作",
-                            render: function (data, type, row, meta) {
-                              var html = "<input type='checkbox' value="+row.serverHiddenId+" class='lsCheck' name='choice' />";
-                              html+="<input type='hidden' name='deptImagepath' value="+row.deptImagepath+"></input>";
-                              return html;
-                            }
-                          },
-                        ]
-                      });
-    }
-
-    function loadData(sSource, aoData, fnCallback) {
-      console.log(sSource)
-      console.log(aoData)
-
-      var pageSize = aoData.iDisplayLength;
-      var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength+1  : aoData.iDisplayStart / aoData.iDisplayLength;
-      var serverName = $("#inputCommitServerName").val();
-      var serverId = $("#inputCommitServerId").val();
-      var params;
-      params = {
-
-        "pageSize":pageSize,
-        "pageNo":pageNo,
-      };
-      if(isSearch=="1"){
-        if(serverName != ""){
-          params["serverName"] = serverName;
-
+  <script src="${ctx}/resources/jquery/jquery-ui-1.12.1/jquery-ui.js"></script>
+  <script>
+  window.onload = function(){
+      //模拟后端返回了多个摄像头
+    var cameraArray = [{"id":1,"x":100,"y":100},
+      {"id":2,"x":200, "y":200},
+      {"id":3,"x":300,"y":300}];
+    // 右键菜单栏
+      var rm=document.getElementById("rightMenu");
+      rm.style.display="none";
+    // body根节点
+    var body = document.getElementById("bodyBg")
+      // 创建可拖动元素的div和对应的img，如果有多个要遍历创建
+      for (var i =0; i < cameraArray.length; i++) {
+        var divNode = document.createElement("div");
+        divNode.id = "draggable" +"_"+cameraArray[i]["id"];
+        divNode.style.position = "absolute";
+        divNode.style.left = cameraArray[i]["x"] + "px";
+        divNode.style.top = cameraArray[i]["y"] + "px";
+        var imgNode = document.createElement("img");
+        imgNode.src = "${ctx}/resources/images/camera.png";
+        imgNode.height = 100;
+        imgNode.width = 100;
+        divNode.append(imgNode);
+        body.append(divNode);
+        // 绑定每个摄像头右键事件
+        divNode.oncontextmenu = function (e) {
+          var mx = e.clientX;
+          var my = e.clientY;
+          rm.style.left = mx + "px";
+          rm.style.top = my + "px";
+          rm.style.display="block";
+          return false;
         }
-        if(serverId !=""){
-          params["serverId"] = serverId;
-
-        }
-
+        // 为每个摄像头设定可拖拽
+        $(function() {
+          $( "#"+ divNode.id).draggable({
+            stop: function( event, ui ) {console.log(ui);
+            console.log(divNode.id.split("_")[1]);}
+          });
+        });
       }
-      dataId = "";
-
-
-      $.ajax({
-        type : 'POST',
-        url : sSource,
-        cache:false,
-        async:true,
-        dataType : 'json',
-        data : params,
-        success : function(result) {
-
-          isSearch = "0";
-          var pagelist = result.pageList;
-          var datainfos = pagelist.records
-          var obj = {};
-          obj['data'] = datainfos;
-          console.log(obj)
-          if(typeof(datainfos)!="undefined"&&datainfos.length>0){
-            obj.iTotalRecords = pagelist.total;
-            obj.iTotalDisplayRecords = pagelist.total;
-            fnCallback(obj);
-          }else if((typeof(datainfos)=="undefined")&&pageNo>1){
-            var oTable = $("#itemResultTable").dataTable();
-            oTable.fnPageChange(0);
-          }else{
-            obj['data'] = [];
-            obj.iTotalRecords = 0;
-            obj.iTotalDisplayRecords = 0;
-            fnCallback(obj);
-          }
+      document.documentElement.onclick=function () {
+        if (rm.style.display == "block"){
+          rm.style.display="none";
         }
-      });
-    }
+      }
+  }
+  // 上传地图
+  function uploadMap() {
+    var file_data = $('#file').prop('files')[0];
+    console.log(file_data);
+    var form_data = new FormData();
+    form_data.append('file', file_data);
+    // $.ajax({
+    //   url: "",
+    //   dataType: 'text', // what to expect back from the server
+    //   cache: false,
+    //   contentType: false,
+    //   processData: false,
+    //   data: form_data,
+    //   type: 'post',
+    //   success: function (response) {
+    //     console.log(response);
+    //   },
+    //   error: function (response) {
+    //     console.log(response);
+    //   }
+    // });
+  }
+  // 保存地图设置
+  function saveMap() {
 
+  }
+  // 点击监控函数
+  function surveillance() {
 
+  }
+  // 录像回放函数
+  function reviewVideo() {
+
+  }
+  // 异常情况确认
+  function abnormal() {
+
+  }
+  // 设定某元素可拖拽，如果有多个元素，应该要遍历，通过name确定是哪一个摄像头，做更新
 
 
   </script>
 
-<body class="gray-bg">
+<body class="gray-bg" id="bodyBg">
 <div class="wrapper wrapper-content animated fadeInRight">
   <div class="row">
     <div class="col-sm-12">
-      <div class="ibox float-e-margins">
-        <div class="ibox-content">
-          <form class="form-horizontal" role="form" action="#" method="post" id="itemInfoForm">
-
-
-            <table class="table_zd" align="center" width="100%">
-              <tr>
-                <td style="width: 25%;">
-                  <div class="form-group">
-                    <label style="width: 38%;"
-                           class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                            style="color: red;">*</span>服务器名称：</label>
-                    <div class="col-sm-8">
-                      <input type="text" autocomplete="off" spellcheck="false"
-                             class="form-control table_content_zd"
-                             name="serverName" id="serverName">
-                    </div>
-                  </div>
-                </td>
-                <td style="width: 25%;">
-                  <div class="form-group">
-                    <label style="width: 38%;"
-                           class="col-sm-3 control-label input_lable_hm table_label_zd">服务器IP：</label>
-                    <div class="col-sm-8">
-                      <input type="text" autocomplete="off" spellcheck="false"
-                             placeholder="" class="form-control table_content_zd"
-                             name="serverIp" id="serverIp">
-                    </div>
-
-                  </div>
-                </td>
-
-                <td style="width: 25%;">
-                  <div class="form-group">
-                    <label style="width: 38%;"
-                           class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                            style="color: red;">*</span>服务器端口：</label>
-                    <div class="col-sm-8">
-                      <input type="text" autocomplete="off" spellcheck="false"
-                             placeholder="" class="form-control table_content_zd"
-                             name="serverPort" id="serverPort">
-                    </div>
-
-                  </div>
-                </td>
-                <td style="width: 25%;">
-                  <div class="form-group">
-                    <label style="width: 38%;"
-                           class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                            style="color: red;">*</span>服务器ID：</label>
-                    <div class="col-sm-8">
-                      <input type="text" autocomplete="off" spellcheck="false"
-                             placeholder="" class="form-control table_content_zd"
-                             name="serverId" id="serverId">
-                    </div>
-
-                  </div>
-                </td>
-              </tr>
-            </table>
-            <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
-              <tbody>
-              <tr class="table_menu_tr_zd" >
-                <td class="table_menu_tr_td_left_zd" colspan="2">
-                  <input type="text" placeholder="服务器名称" autocomplete="off"
-                         spellcheck="false" placeholder="" style="width: 35%;"
-                         class="form-control input_btn_input table_content_zd"
-                         name="inputCommitServerName" id="inputCommitServerName"
-                  >
-
-                  <input type="text" placeholder="服务器ID" autocomplete="off"
-                         spellcheck="false" placeholder="" style="width: 35%;"
-                         class="form-control input_btn_input table_content_zd"
-                         name="inputCommitServerId" id="inputCommitServerId">
-
-                  <button type="button"
-                          class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
-                          style="margin-top: 2.5px; margin-bottom: 2px;"
-                          id="queCommit">查询</button>
-                </td>
-
-                <td class="table_menu_tr_td_right_zd" colspan="2">
-                  <div style="float: right;">
-                    <button type="button"
-                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                            id="addCommit">新增</button>
-                    <button type="button"
-                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                            id="modifyCommit">修改</button>
-                    <button type="button"
-                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                            id="clearData">清除</button>
-                    <button type="button"
-                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                            id="deleteCommit">删除</button>
-                    <button type="button"
-                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                            id="configWindow">显示配置按钮</button>
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </form>
-          <div id="configTr" class="table_menu_tr_zd"
-               style="height: 35px; display: none; margin-top: 0px; border: 1px solid white;">
-            <span style="padding-left: 45px;">&nbsp;&nbsp;</span>
-            <div class="optionRow-right" style="margin-right: 10px">
-              <button type="button"
-                      class="btn btn-primary btn-sm input_btn_btn list_btn"
-                      style="float: left; margin-bottom: 2px;"
-                      id="caseArea_administration">办事区域管理</button>
-              <button type="button"
-                      class="btn btn-primary btn-sm input_btn_btn list_btn"
-                      style="float: left; margin-bottom: 2px;"
-                      id="selectArea_administration">行政区域管理</button>
-            </div>
-          </div>
-          <table id="itemResultTable" class="table table-bordered"></table>
-        </div>
+      <div style="float: right;">
+        <input type="file"
+                id = "file"
+                name = "file"
+                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"></input>
+        <button type="button"
+                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                onclick="uploadMap()">上传地图</button>
+        <button type="button"
+                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                nclick="saveMap()">保存地图设置</button>
       </div>
     </div>
   </div>
 </div>
+<ul id="rightMenu" style="width: 100px; position: absolute;">
+  <li><button  type="button" onclick="surveillance()" value="实时监控">实时监控</button></li>
+  <li><button  type="button" onclick="reviewVideo()" value="录像回放">录像回放</button></li>
+  <li><button  type="button" onclick="abnormal()" value="异常确认">异常确认</button></li>
+</ul>
 </body>
 
 </html>
