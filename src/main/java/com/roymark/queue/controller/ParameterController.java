@@ -172,7 +172,7 @@ public class ParameterController {
             // 执行分页
             IPage<Parameter> pageList = parameterService.page(page, queryWrapper);
             // 返回结果
-            if (pageList.getTotal() <= 0) {
+            if (pageList.getRecords().size() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "搜素结果为空");
                 jsonObject.put("pageList", pageList);
