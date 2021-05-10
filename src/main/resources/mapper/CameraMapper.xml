@@ -15,7 +15,7 @@
         <result column="cam_coordinates" property="camCoordinates" />
         <result column="server_hidden_id" property="serverHiddenId" />
         <result column="server_id" property="serverId" />
-        <result column="br_cam.floor_hidden_id" property="floorHiddenId" />
+        <result column="floor_hidden_id" property="floorHiddenId" />
         <result column="floor_id" property="floorId" />
         <result column="floor_name" property="floorName" />
     </resultMap>
