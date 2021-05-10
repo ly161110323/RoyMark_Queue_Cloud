@@ -40,12 +40,23 @@ public class Camera implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date camBirth;
 
+    @TableField(value = "cam_coordinates")
+	private String camCoordinates;
+
     @TableField(value = "server_hidden_id")
 	private Long serverHiddenId;
 
 	@TableField(exist = false)
 	private String serverId;
 
+	@TableField(value = "floor_Hidden_id")
+	private Long floorHiddenId;
+
+	@TableField(exist = false)
+	private String floorId;
+
+	@TableField(exist = false)
+	private String floorName;
 
 	@TableField(exist = false)
 	private String camStatus;
@@ -136,5 +147,37 @@ public class Camera implements Serializable {
 
 	public void setServerHiddenId(Long serverHiddenId) {
 		this.serverHiddenId = serverHiddenId;
+	}
+
+	public String getCamCoordinates() {
+		return camCoordinates;
+	}
+
+	public void setCamCoordinates(String camCoordinates) {
+		this.camCoordinates = camCoordinates;
+	}
+
+	public Long getFloorHiddenId() {
+		return floorHiddenId;
+	}
+
+	public void setFloorHiddenId(Long floorHiddenId) {
+		this.floorHiddenId = floorHiddenId;
+	}
+
+	public String getFloorId() {
+		return floorId;
+	}
+
+	public void setFloorId(String floorId) {
+		this.floorId = floorId;
+	}
+
+	public String getFloorName() {
+		return floorName;
+	}
+
+	public void setFloorName(String floorName) {
+		this.floorName = floorName;
 	}
 }

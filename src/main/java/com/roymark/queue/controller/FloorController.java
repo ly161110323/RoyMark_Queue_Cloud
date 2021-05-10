@@ -1,17 +1,25 @@
 package com.roymark.queue.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.roymark.queue.entity.Camera;
 import com.roymark.queue.entity.Floor;
 import com.roymark.queue.entity.Window;
+import com.roymark.queue.service.CameraService;
 import com.roymark.queue.service.FloorService;
 import com.roymark.queue.service.WindowService;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.util.UploadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -24,7 +32,7 @@ public class FloorController {
     private FloorService floorService;
 
     @Autowired
-    private WindowService windowService;
+    private CameraService cameraService;
 
     @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
     public Object getAllFloors() {
@@ -50,11 +58,17 @@ public class FloorController {
     }
 
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
-    public Object insert(Floor floor) {
+    public Object insert(HttpServletRequest request,
+                         Floor floor, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
         JSONObject jsonObject = new JSONObject();
 
         try {
             floor.setFloorHiddenId(Long.valueOf(0));
+            if (uploadMap != null) {
+                String uploadPath = "/uploads/floor/";
+                String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
+                floor.setFloorMapPath(filePath);
+            }
             Floor queryFloor = floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, floor.getFloorId()));
             if (queryFloor != null) {
                 jsonObject.put("result", "no");
@@ -81,7 +95,8 @@ public class FloorController {
     }
 
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
-    public Object update(Floor floor) {
+    public Object update(HttpServletRequest request,
+                         Floor floor, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -98,6 +113,11 @@ public class FloorController {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "楼层ID已存在");
                 return jsonObject;
+            }
+            if (uploadMap != null) {
+                String uploadPath = "/uploads/floor/";
+                String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
+                floor.setFloorMapPath(filePath);
             }
             boolean result = floorService.update(floor, Wrappers.<Floor>lambdaUpdate().eq(Floor::getFloorHiddenId, floor.getFloorHiddenId()));
             if (result) {
@@ -130,13 +150,12 @@ public class FloorController {
                 return jsonObject;
             }
             for (int i = 0; i < deletes.length; i++) {
-                // 首先删除所有关联窗口
+                // 首先删除所有关联摄像头
                 Long deleteFloorHiddenId = Long.valueOf(deletes[i]);
-                List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getFloorHiddenId, deleteFloorHiddenId));
-                for (Window window : windows) {
-                    windowService.deletePreHiddenId(window.getWindowHiddenId());
-                    windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getFloorHiddenId, null)
-                            .eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+                List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getFloorHiddenId, deleteFloorHiddenId));
+                for (Camera camera : cameras) {
+                    cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getFloorHiddenId, null)
+                            .eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
                 }
                 floorService.removeById(deleteFloorHiddenId);
             }

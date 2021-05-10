@@ -29,12 +29,6 @@ public class Window implements Serializable {
     @TableField(value = "window_event")
     private String windowEvent;
 
-    @TableField(value = "floor_Hidden_id")
-    private Long floorHiddenId;
-
-	@TableField(exist = false)
-	private String floorId;
-
 	@TableField(value = "window_action_analysis")
 	private Boolean windowActionAnalysis;
 
@@ -50,8 +44,7 @@ public class Window implements Serializable {
     @TableField(exist = false)
 	private String camId;
 
-    @TableField(exist = false)
-	private String floorName;
+
 
 	public Long getCamHiddenId() {
 		return camHiddenId;
@@ -67,14 +60,6 @@ public class Window implements Serializable {
 
 	public void setCamId(String camId) {
 		this.camId = camId;
-	}
-
-	public String getFloorName() {
-		return floorName;
-	}
-
-	public void setFloorName(String floorName) {
-		this.floorName = floorName;
 	}
 
 	public Long getWindowHiddenId() {
@@ -117,14 +102,6 @@ public class Window implements Serializable {
 		this.windowEvent = windowEvent;
 	}
 
-	public String getFloorId() {
-		return floorId;
-	}
-
-	public void setFloorId(String floorId) {
-		this.floorId = floorId;
-	}
-
 	public Boolean getWindowActionAnalysis() {
 		return windowActionAnalysis;
 	}
@@ -139,14 +116,6 @@ public class Window implements Serializable {
 
 	public void setWindowNinePalaces(Boolean windowNinePalaces) {
 		this.windowNinePalaces = windowNinePalaces;
-	}
-
-	public Long getFloorHiddenId() {
-		return floorHiddenId;
-	}
-
-	public void setFloorHiddenId(Long floorHiddenId) {
-		this.floorHiddenId = floorHiddenId;
 	}
 
 	public String getWindowCoordinates() {

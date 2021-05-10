@@ -23,6 +23,17 @@ public class Floor implements Serializable {
     @TableField(value = "floor_name")
     private String floorName;
 
+    @TableField(value = "floor_map_path")
+	private String floorMapPath;
+
+	public String getFloorMapPath() {
+		return floorMapPath;
+	}
+
+	public void setFloorMapPath(String floorMapPath) {
+		this.floorMapPath = floorMapPath;
+	}
+
 	public Long getFloorHiddenId() {
 		return floorHiddenId;
 	}

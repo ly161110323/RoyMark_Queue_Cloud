@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.Window;
+import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +38,9 @@ public class CameraController {
 
 	@Autowired
 	private CameraService cameraService;
+
+	@Autowired
+	private WindowService windowService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -159,7 +164,13 @@ public class CameraController {
 				return jsonObject;
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				cameraService.removeById(deletes[i]);
+				Long deleteCamHiddenId = Long.valueOf(deletes[i]);
+				List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, deleteCamHiddenId));
+				for (Window window : windows) {
+					windowService.update(window, Wrappers.<Window>lambdaUpdate().set(Window::getCamHiddenId, null)
+							.eq(Window::getWindowHiddenId, window.getWindowHiddenId()));
+				}
+				cameraService.removeById(deleteCamHiddenId);
 			}
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "删除成功");
@@ -200,7 +211,8 @@ public class CameraController {
 
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
 	public Object search(@RequestParam(required = false) String camId,
-						 @RequestParam(required = false) String serverId, int pageNo, int pageSize) {
+						 @RequestParam(required = false) String serverId,
+			             @RequestParam(required = false) Long floorHiddenId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
@@ -211,6 +223,8 @@ public class CameraController {
 				queryWrapper.like ("cam_id",camId);
 			if (serverId != null)
 				queryWrapper.like("server_id", serverId);
+			if (floorHiddenId != null)
+				queryWrapper.eq("br_cam.floor_hidden_id", floorHiddenId);
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
 			for (Camera camera: pageList.getRecords()) {
@@ -283,7 +297,7 @@ public class CameraController {
 			BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
 
 			grabber.stop();
-			String path = "/uploads/camera/" + camera.getCamId()+".jpg";
+			String path = "/uploads/camera/" + camera.getCamId() + ".jpg";
 
 			ImageIO.write(image, "jpg", new File(request.getServletContext().getRealPath("") + path));
 
@@ -295,6 +309,38 @@ public class CameraController {
 
 		} catch (Exception e) {
 			logger.error("/camera/getCurrentPic 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "捕获出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/updateCoordinates", produces = "application/json;charset=utf-8")
+	public Object updateCoordinates(Long camHiddenId, String camCoordinates) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			Camera queryCamera = cameraService.getById(camHiddenId);
+
+			if (queryCamera == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "摄像头不存在");
+				return jsonObject;
+			}
+			queryCamera.setCamCoordinates(camCoordinates);
+			Boolean result = cameraService.update(queryCamera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camHiddenId));
+
+			if (result) {
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "修改成功");
+			}
+			else {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "修改失败");
+			}
+			return jsonObject;
+		} catch (Exception e) {
+			logger.error("/camera/updateCoordinates 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "捕获出现错误");
 			return jsonObject;

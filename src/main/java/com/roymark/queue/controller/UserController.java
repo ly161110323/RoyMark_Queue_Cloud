@@ -115,7 +115,7 @@ public class UserController {
 					String filePath = "";
 					if (uploadinfo != null) {
 						// 上传文件
-						String uploadPath = "/RemoteQueue/upload/user/";
+						String uploadPath = "/uploads/user/";
 						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 						tempActionUser.setUserPhoto(filePath);
 						// System.out.println(filePath);
