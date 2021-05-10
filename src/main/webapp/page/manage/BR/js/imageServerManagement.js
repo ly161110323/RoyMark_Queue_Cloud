@@ -5,6 +5,8 @@ $(document).ready(function () {
     deleteClick();
     searchClick();
     clearClick();
+    startClick();
+    stopClick();
     // configClick();
     // init_areaInfo();
     // queryCaseAreaList();
@@ -292,7 +294,7 @@ function updateClick() {
         formData.append("serverPort",$("#serverPort").val());
         formData.append("serverId",$("#serverId").val());
         formData.append("serverHiddenId",dataId)
-
+        console.log(formData)
 
         var rootPath = getWebRootPath();
         var url = rootPath + "/server/update";
@@ -382,7 +384,7 @@ function stopClick(){
                 for (var i = 0; i < cBox.length; i++) {
                     items.push(cBox.eq(i).val());
                 }
-                var data = {"startId" : items.toString()};
+                var data = {"stopId" : items.toString()};
 
                 $.ajax({
                     type : 'POST',

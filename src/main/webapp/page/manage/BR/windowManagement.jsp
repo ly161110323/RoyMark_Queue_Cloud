@@ -29,8 +29,8 @@
         var table;
         var dataId = "";
         var isSearch = "0";
-        var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
-        var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
+        var selectInfo ={};
+
 
         $(document).ready(function () {
             //加载表格
@@ -64,12 +64,15 @@
                             {'mData': 'windowHiddenId', 'sTitle': '序号', 'sName': 'windowHiddenId', 'sClass': 'center'},
                             {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
                             {'mData': 'windowName', 'sTitle': '名称', 'sName': 'windowName', 'sClass': 'center'},
+                            {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
                             {'mData': 'windowDepartment', 'sTitle': '部门', 'sName': 'windowDepartment', 'sClass': 'center'},
                             {'mData': 'windowEvent', 'sTitle': '事项', 'sName': 'windowEvent', 'sClass': 'center'},
                             {'mData': 'floorName', 'sTitle': '楼层', 'sName': 'floorName', 'sClass': 'center'},
                             {'mData': 'windowNinePalaces', 'sTitle': '九宫格监控', 'sName': 'windowNinePalaces', 'sClass': 'center'},
                             {'mData': 'windowActionAnalysis', 'sTitle': '行为分析', 'sName': 'windowActionAnalysis', 'sClass': 'center'},
+                            {'mData': 'windowCoordinates', 'sTitle': '区域坐标', 'sName': 'windowCoordinates', 'sClass': 'center'},
                             {'mData': 'floorHiddenId', 'sTitle': '楼层', 'sName': 'floorHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'camHiddenId', 'sTitle': '楼层', 'sName': 'camHiddenId', 'sClass': 'hidden'},
 
 
 
@@ -339,19 +342,21 @@
 
                                     </div>
                                 </td>
-                                <%--                                                            <td style="width: 25%;">--%>
-                                <%--                                                                <div class="form-group">--%>
-                                <%--                                                                    <label style="width: 38%;"--%>
-                                <%--                                                                           class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-                                <%--                                                                            style="color: red;">*</span>厂商：</label>--%>
-                                <%--                                                                    <div class="col-sm-8">--%>
-                                <%--                                                                        <input type="text" autocomplete="off" spellcheck="false"--%>
-                                <%--                                                                               placeholder="" class="form-control table_content_zd"--%>
-                                <%--                                                                               name="queueDept.deptOrderno" id="camBrand">--%>
-                                <%--                                                                    </div>--%>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>绑定摄像头ID：</label>
+                                        <div class="col-sm-8">
+                                            <select
+                                                    class="form-control m-b table_content_zd"
+                                                    id="camId">
+                                                <option value="">请选择绑定摄像头ID</option>
+                                            </select>
+                                        </div>
 
-                                <%--                                                                </div>--%>
-                                <%--                                                            </td>--%>
+                                    </div>
+                                </td>
 
                                 <%--                                                            <td style="width: 25%;">--%>
                                 <%--                                                                <div class="form-group">--%>
@@ -365,6 +370,21 @@
 
                                 <%--                                                                </div>--%>
                                 <%--                                                            </td>--%>
+                            </tr>
+                            <tr>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>区域坐标：</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   class="form-control table_content_zd"
+                                                   disabled="disabled"
+                                                   name="windowEvent" id="windowCoordinates">
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
@@ -436,7 +456,7 @@
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="configWindow">显示配置按钮
+                                                id="drawWindow">绘制窗口区域
                                         </button>
                                     </div>
                                 </td>

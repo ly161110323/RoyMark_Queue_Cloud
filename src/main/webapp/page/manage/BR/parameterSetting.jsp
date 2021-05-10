@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
-  User: liucl
-  Date: 2021/3/26
-  Time: 10:42 上午
+  User: gulante
+  Date: 2021/4/12
+  Time: 22:56
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -22,7 +22,7 @@
     <title>禾麦智能大厅管理系统</title>
     <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
           type="image/x-icon" />
-    <script type="text/javascript" src="./js/imageServerManagement.js">
+    <script type="text/javascript" src="./js/parameterSetting.js">
     </script>
 
     <script type="text/javascript">
@@ -42,7 +42,7 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/server/queryData";
+            var tableUrl = "${ctx}/param/getAll";
             table = $('#itemResultTable')
                 .DataTable(
                     {
@@ -60,14 +60,11 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns" : [
-                            {'mData': 'serverHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'serverHiddenId', 'sClass': 'center'},
-                            {'mData': 'serverHiddenId', 'sTitle': '序号', 'sName': 'serverHiddenId', 'sClass': 'center'},
-                            {'mData': 'serverName', 'sTitle': '服务器名称', 'sName': 'serverName', 'sClass': 'center'},
-                            {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                            {'mData': 'serverIp', 'sTitle': '服务器IP', 'sName': 'serverIp', 'sClass': 'center'},
-                            {'mData': 'serverPort', 'sTitle': '服务器端口', 'sName': 'serverPort', 'sClass': 'center'},
-                            {'mData': 'serverStatus', 'sTitle': '服务器状态', 'sName': 'serverStatus', 'sClass': 'center'},
-                            {'mData': 'programStatus', 'sTitle': '程序状态', 'sName': 'programStatus', 'sClass': 'center'},
+                            {'mData': 'paramHiddenId', 'sTitle': '序号', 'sName': 'paramHiddenId', 'sClass': 'center'},
+                            {'mData': 'paramName', 'sTitle': '参数名称', 'sName': 'paramName', 'sClass': 'center'},
+                            {'mData': 'paramValue', 'sTitle': '参数值', 'sName': 'paramValue', 'sClass': 'center'},
+                            {'mData': 'paramDefault', 'sTitle': '默认值', 'sName': 'paramDefault', 'sClass': 'center'},
+                            {'mData': 'paramRemark', 'sTitle': '备注', 'sName': 'paramRemark', 'sClass': 'center'},
 
                         ],
                         "fnRowCallback" : function(nRow, aData, iDisplayIndex){
@@ -109,25 +106,13 @@
                             }
                         },
                         "columnDefs": [
-                            {targets: 0,data: "serverHiddenId",title: "操作",
+                            {targets: 0,data: "paramHiddenId",title: "操作",
                                 render: function (data, type, row, meta) {
-                                    var html = "<input type='checkbox' value="+row.serverHiddenId+" class='lsCheck' name='choice' />";
+                                    var html = "<input type='checkbox' value="+row.paramHiddenId+" class='lsCheck' name='choice' />";
                                     html+="<input type='hidden' name='deptImagepath' value="+row.deptImagepath+"></input>";
                                     return html;
                                 }
                             },
-                            // {
-                            //     targets: 7,data: "deptImagepath",title: "委办局图标名称",
-                            //     render: function (data, type, row, meta) {
-                            //         var deptImagepath=row.deptImagepath;
-                            //         var deptImageName='';
-                            //         if(deptImagepath!=null && deptImagepath!='' && typeof(deptImagepath)!='undefined')
-                            //         {
-                            //             deptImageName=deptImagepath.substring(deptImagepath.lastIndexOf("/")+1);
-                            //         }
-                            //         return deptImageName;
-                            //     }
-                            // }
                         ]
                     });
         }
@@ -138,11 +123,8 @@
 
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength+1  : aoData.iDisplayStart / aoData.iDisplayLength;
-            //设置参数
-            // var caseAreaObj = $("[name=selectCaseLs]>option:selected");
-            // var selectedArea = caseAreaObj.val();
-            var serverName = $("#inputCommitServerName").val();
-            var serverId = $("#inputCommitServerId").val();
+            var paramName = $("#inputCommitParamName").val();
+            var paramValue = $("#inputCommitParamValue").val();
             var params;
             params = {
 
@@ -150,12 +132,12 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(serverName != ""){
-                    params["serverName"] = serverName;
+                if(paramName != ""){
+                    params["paramName"] = paramName;
 
                 }
-                if(serverId !=""){
-                    params["serverId"] = serverId;
+                if(paramValue !=""){
+                    params["paramValue"] = paramValue;
 
                 }
 
@@ -171,13 +153,12 @@
                 dataType : 'json',
                 data : params,
                 success : function(result) {
-
+                    console.log(result)
                     isSearch = "0";
-                    var pagelist = result.pageList;
-                    var datainfos = pagelist.records
+                    var pagelist = result.params;
+                    var datainfos = pagelist;
                     var obj = {};
                     obj['data'] = datainfos;
-                    console.log(obj)
                     if(typeof(datainfos)!="undefined"&&datainfos.length>0){
                         obj.iTotalRecords = pagelist.total;
                         obj.iTotalDisplayRecords = pagelist.total;
@@ -214,23 +195,23 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器名称：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>参数名称：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="serverName" id="serverName">
+                                                   class="form-control table_content_zd"
+                                                   name="paramName" id="paramName">
                                         </div>
-
                                     </div>
                                 </td>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器IP：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">默认值</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="serverIp" id="serverIp">
+                                                   name="paramDefault" id="paramDefault">
                                         </div>
 
                                     </div>
@@ -240,11 +221,11 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器端口：</label>
+                                                style="color: red;">*</span>备注：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="serverPort" id="serverPort">
+                                                   name="paramRemark" id="paramRemark">
                                         </div>
 
                                     </div>
@@ -253,11 +234,11 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器ID：</label>
+                                                style="color: red;">*</span>参数值</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="serverId" id="serverId">
+                                                   name="paramValue" id="paramValue">
                                         </div>
 
                                     </div>
@@ -266,17 +247,13 @@
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
-                            <tr>
-                                <td>
-                                    <input type="text" placeholder="服务器名称" autocomplete="off"
-                                                 spellcheck="false" placeholder="" style="width: 35%;"
-                                                 class="form-control input_btn_input table_content_zd"
-                                                 name="inputCommitServerName" id="inputCommitServerName"
-                                       >
-                                    <input type="text" placeholder="服务器ID" autocomplete="off"
+                            <tr class="table_menu_tr_zd" >
+                                <td class="table_menu_tr_td_left_zd" colspan="2">
+                                    <input type="text" placeholder="参数名称" autocomplete="off"
                                            spellcheck="false" placeholder="" style="width: 35%;"
                                            class="form-control input_btn_input table_content_zd"
-                                           name="inputCommitServerId" id="inputCommitServerId">
+                                           name="inputCommitParamName" id="inputCommitParamName"
+                                    >
 
                                     <button type="button"
                                             class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
@@ -305,19 +282,11 @@
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="startCommit">启动</button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="stopCommit">停止</button>
-<%--                                        <button type="button"--%>
-<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
-<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
-<%--                                                id="configWindow">显示配置按钮</button>--%>
+                                                id="configWindow">显示配置按钮</button>
                                     </div>
                                 </td>
                             </tr>
-
+                            </tbody>
                         </table>
                     </form>
                     <div id="configTr" class="table_menu_tr_zd"
@@ -343,60 +312,3 @@
 </body>
 
 </html>
-
-<%--<table id="table_id" class="display">--%>
-<%--    <thead>--%>
-<%--    <tr>--%>
-<%--        <th>服务器ID</th>--%>
-<%--        <th>服务器IP</th>--%>
-<%--        <th>端口</th>--%>
-<%--        <th>服务器状态</th>--%>
-<%--        <th>程序状态</th>--%>
-<%--        <th>操作</th>--%>
-
-
-<%--    </tr>--%>
-<%--    </thead>--%>
-<%--    <tbody>--%>
-<%--    <tr>--%>
-<%--        <td>Row 1 Data 1</td>--%>
-<%--        <td>Row 1 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    <tr>--%>
-<%--        <td>Row 2 Data 1</td>--%>
-<%--        <td>Row 2 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    </tbody>--%>
-<%--</table>--%>
-<%--<script>--%>
-<%--    var table;--%>
-<%--    var dataId = "";--%>
-<%--    var isSearch = "0";--%>
-<%--    var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";--%>
-<%--    var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";--%>
-<%--    $(document).ready( function () {--%>
-<%--        $('#table_id').DataTable({--%>
-<%--            // "scrollY": 400,--%>
-<%--            // select: true,--%>
-<%--            ajax : {--%>
-<%--                "url" : "${ctx}/server/getAll",--%>
-<%--                "type" : "get",--%>
-
-<%--                "dataSrc" : "servers"--%>
-<%--            },--%>
-<%--            columns: [--%>
-<%--                {"data": "id"},--%>
-<%--                {"data": "ip"},--%>
-<%--                {"data": "port"},--%>
-<%--                {"data": "name"},--%>F
-
-<%--            ],--%>
-<%--            processing: true,--%>
-<%--            language: {--%>
-<%--                "url": "${ctx}/page/manage/BR/js/datatables_language.json"--%>
-<%--            }--%>
-
-
-<%--        });--%>
-<%--    } );--%>
-<%--</script>--%>
