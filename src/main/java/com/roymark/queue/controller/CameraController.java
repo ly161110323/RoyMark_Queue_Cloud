@@ -258,11 +258,11 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/getCurrentPic", produces = "application/json;charset=utf-8")
-	public Object getCurrentPic(HttpServletRequest request, Long cameraHiddenId) {
+	public Object getCurrentPic(HttpServletRequest request, Long camHiddenId) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			Camera camera = cameraService.getById(cameraHiddenId);
+			Camera camera = cameraService.getById(camHiddenId);
 			if (camera == null) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "摄像头不存在");
@@ -297,9 +297,16 @@ public class CameraController {
 			BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
 
 			grabber.stop();
+
+			// 确保文件夹创建情况
+			String filePath = request.getServletContext().getRealPath("") + "/uploads/camera/";
+			File file = new File(filePath);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 			String path = "/uploads/camera/" + camera.getCamId() + ".jpg";
 
-			ImageIO.write(image, "jpg", new File(request.getServletContext().getRealPath("") + path));
+			ImageIO.write(image, "jpg", new File(request.getServletContext().getRealPath("")+ path));
 
 			jsonObject.put("path", path);
 			jsonObject.put("result", "ok");
