@@ -5,6 +5,8 @@ $(document).ready(function () {
     deleteClick();
     searchClick();
     clearClick();
+    startClick();
+    stopClick();
     // configClick();
     // init_areaInfo();
     // queryCaseAreaList();
@@ -382,7 +384,7 @@ function stopClick(){
                 for (var i = 0; i < cBox.length; i++) {
                     items.push(cBox.eq(i).val());
                 }
-                var data = {"startId" : items.toString()};
+                var data = {"stopId" : items.toString()};
 
                 $.ajax({
                     type : 'POST',

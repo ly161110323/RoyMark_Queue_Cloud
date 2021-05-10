@@ -72,7 +72,8 @@
                             {'mData': 'anomalyConfidence', 'sTitle': '置信度', 'sName': 'anomalyConfidence', 'sClass': 'center'},
                             {'mData': 'windowHiddenId', 'sTitle': 'windowHiddenId', 'sName': 'windowHiddenId', 'sClass': 'hidden'},
                             {'mData': 'userHiddenId', 'sTitle': 'userHiddenId', 'sName': 'userHiddenId', 'sClass': 'hidden'},
-                            {'mData': 'anomalyLink', 'sTitle': 'anomalyLink', 'sName': 'anomalyLink', 'sClass': 'hidden'},
+                            {'mData': 'anomalyVideoPath', 'sTitle': 'anomalyVideoPath', 'sName': 'anomalyVideoPath', 'sClass': 'hidden'},
+                            {'mData': 'anomalyImagePath', 'sTitle': 'anomalyImagePath', 'sName': 'anomalyImagePath', 'sClass': 'hidden'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -378,6 +379,11 @@
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="showPhoto">查看截图
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="showVideo">查看视频
                                         </button>
                                     </div>
                                 </td>

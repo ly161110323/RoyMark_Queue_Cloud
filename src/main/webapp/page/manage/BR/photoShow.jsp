@@ -46,23 +46,23 @@
         }
         .container{
 
-            width: 740px;
-            height:360px;
+            width: 820px;
+            height:480px;
             /*margin:0 auto;*/
             position: relative;
             padding: 0;
         }
         .one{
-            width:740px;
-            height:360px;
+            width:820px;
+            height:480px;
 
 
             overflow: auto;
         }
         .one-center{
-            width:640px;
+            width:720px;
 
-            height:360px;
+            height:480px;
             /*text-align:center;*/
             /*overflow: auto;*/
             float: left;
@@ -79,7 +79,7 @@
         }
         button{
             width:50px;
-            height:360px;
+            height:480px;
             background-color:#999;
             border:none;
             outline:none;
@@ -100,7 +100,7 @@
             <button id="pre"><b><</b></button>
         </div>
         <div class="one-center">
-            <img id="img" src="" height="360" width="640" >
+            <img id="img" src="" height="480" width="720" >
         </div>
         <div class="one-right">
             <button id="next"><b>></b></button>

@@ -5,10 +5,11 @@ $(document).ready(function () {
     deleteClick();
     searchClick();
     clearClick();
-    configClick();
+    // configClick();
     // init_areaInfo();
+    drawWindow();
     queryFloorList();
-    // querySelectAreaList();
+    queryCamList();
 
     // icon_operate();//部门图标处理
     //
@@ -39,12 +40,17 @@ function queryFloorList()
     var rootPath = getWebRootPath();
     var url=rootPath+"/floor/getAll"
 //获取问卷调查
+    var params = {
+        "pageNo": 1,
+        "pageSize": -1
+    }
     $.ajax({
         type: 'POST',
         url: url,
         cache: false,
         async: true,
         dataType: 'json',
+        data: params,
         success: function (data) {
 //调用成功时对返回的值进行解析
 
@@ -61,29 +67,36 @@ function queryFloorList()
         }
     });
 }
-function querySelectAreaList()
+function queryCamList()
 {
 
     var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueSelectarea/listall"
+    var url=rootPath+"/camera/queryData"
+    var params = {
+        "pageNo": 1,
+        "pageSize": -1
+    }
     $.ajax({
         type: 'POST',
         url: url,
         cache: false,
         async: true,
         dataType: 'json',
+        data: params,
         success: function (data) {
 //调用成功时对返回的值进行解析
-            var list = data.returnObject;
+            var list = data.pageList.records;
 //若未出错，则获取信息设置到控件中
-            var str = "<option value=''></option>";
-
+            var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].selectareaLs + "'>" + list[i].selectareaName + "</option>";
+                str += "<option value='" + list[i].camHiddenId + "'>" + list[i].camId + "</option>";
             }
-            //将节点插入
-            $("#adjSelectArea").empty();
-            $("#adjSelectArea").append(str);
+
+            // $("#formCaseAreaLs").empty();
+            // $("#formCaseAreaLs").append(str);
+            $("#camId").empty();
+            $("#camId").append("<option value=''>请选择绑定摄像头ID</option>");
+            $("#camId").append(str);
         }
     });
 }
@@ -107,17 +120,23 @@ function trClick() {
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         // $("#txtDeptLs").val(dataId);
+        selectInfo = {
+            "camHiddenId":$(this).find("td:eq(12)").text(),
+            "windowId":$(this).find("td:eq(2)").text()
+        }
+
         $("#windowId").val($(this).find("td:eq(2)").text());
 
         $("#windowName").val($(this).find("td:eq(3)").text());
-        $("#windowDepartment").val($(this).find("td:eq(4)").text());
-        $("#windowEvent").val($(this).find("td:eq(5)").text());
-        $('#floorName').val($(this).find("td:eq(9)").text())
+        $("#windowDepartment").val($(this).find("td:eq(5)").text());
+        $("#windowEvent").val($(this).find("td:eq(6)").text());
+        $("#windowCoordinates").val($(this).find("td:eq(10)").text());
+        $('#floorName').val($(this).find("td:eq(11)").text())
+        $('#camId').val($(this).find("td:eq(12)").text())
 
 
-
-        $("#windowNinePalaces").val(val=($(this).find("td:eq(7)").text()==="开").toString())
-        $("#windowActionAnalysis").val(val=($(this).find("td:eq(8)").text()==="开").toString())
+        $("#windowNinePalaces").val(val=($(this).find("td:eq(8)").text()==="开").toString())
+        $("#windowActionAnalysis").val(val=($(this).find("td:eq(9)").text()==="开").toString())
         // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
         // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
         // $("#otherId").val($(this).find("td:eq(13)").text());
@@ -248,6 +267,8 @@ function addClick() {
         formData.append("floorHiddenId",$("#floorName").val());
         formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
         formData.append("windowNinePalaces",$("#windowNinePalaces").val());
+        formData.append("windowCoordinates",$("#windowCoordinates").val());
+
         var rootPath = getWebRootPath();
         var url=rootPath+"/window/insert";
         $.ajax({
@@ -295,7 +316,8 @@ function updateClick() {
         formData.append("floorHiddenId",$("#floorName").val());
         formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
         formData.append("windowNinePalaces",$("#windowNinePalaces").val());
-
+        formData.append("camHiddenId",$("#camId").val());
+        formData.append("windowCoordinates",$("#windowCoordinates").val());
 
         var rootPath = getWebRootPath();
         var url = rootPath + "/window/update";
@@ -386,21 +408,43 @@ function clearClick()
         clearData();
     });
 }
-function configClick()
+function drawWindow()
 {
 //更多配置
-    $(document).on('click','#configWindow',function(){
-        var btn=document.getElementById("configWindow");
-        var btnV = btn.innerHTML;
-        if(btnV=="显示配置按钮"){
-            $("#configTr").slideDown();
-            btn.innerHTML="隐藏配置按钮";
-        }else{
-            $("#configTr").slideUp();
-            btn.innerHTML="显示配置按钮";
-        }
+
+    $(document).on('click','#drawWindow',function(){
+        var data = {"cameraHiddenId":selectInfo.camHiddenId}
+        var rootPath = getWebRootPath();
+        var url=rootPath+"/camera/getCurrentPic";
+        $.ajax({
+            type : 'POST',
+            url : url,
+            data : data,
+            success:function (data){
+                if(data.result=='ok'){
+                    var path = rootPath+data.path
+                    window.imgPath = path
+                    window.windowId = selectInfo.windowId
+                    layer.open({
+                        type: 2,
+                        title: false,
+                        area: ['1280px','760'],
+                        // skin: 'layui-layer-nobg', //没有背景色
+                        shadeClose: true,
+                        content: rootPath+'/page/manage/BR/canvas.jsp'
+                    });
+                }else {
+                    layer.alert(data.msg+",请重新检查绑定摄像头！")
+                }
+            }
+        })
 
     });
+}
+function setCoordinate(coord){
+    selectInfo["windowCoordinates"] = coord;
+    $("#windowCoordinates").val(coord);
+
 }
 
 

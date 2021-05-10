@@ -138,7 +138,8 @@ function trClick() {
             "windowHiddenId": $(this).find("td:eq(9)").text(),
             "userHiddenId": $(this).find("td:eq(10)").text(),
             "anomalyConfidence": $(this).find("td:eq(8)").text(),
-            "anomalyLink": $(this).find("td:eq(11)").text(),
+            "anomalyVideoPath": $(this).find("td:eq(11)").text(),
+            "anomalyImagePath":$(this).find("td:eq(12)").text(),
         }
 
         $("#windowId").val($(this).find("td:eq(9)").text());
@@ -403,14 +404,13 @@ function deleteClick() {
 
 function showPhotos() {
     var rootPath = getWebRootPath();
-    var url1 = rootPath + '/RemoteQueue/upload/user/19e9afe202924efeac74bb5ca565248a_23009026-C44B-45C3-85BB-359B0F518484.png';
-    var url2 = rootPath + '/RemoteQueue/upload/user/b84413f6f04b49cc9a74b6e4a9dc75ed_262EF5C2-46C9-411C-AE78-F4A5F9BC22E1.png';
-    var imgs = [url1, url2]
+    var imgs = selectInfo.anomalyImagePath.split(',')
+
     window.imgs = imgs
     layer.open({
         type: 2,
         title: false,
-        area: ['740px','400px'],
+        area: ['820px','520px'],
         // skin: 'layui-layer-nobg', //没有背景色
         shadeClose: true,
         content: getWebRootPath()+'/page/manage/BR/photoShow.jsp'
@@ -447,6 +447,20 @@ function showPhotos() {
 
 
 }
+function showVideo(){
+    var rootPath = getWebRootPath();
+    // var videopath = selectInfo.anomalyVideoPath
+    var videopath = "http://10.249.41.65:5000/static/videos/2021-05-03/00:21:47_leave_1_h264.mp4"
+    var video = '<video width="720" controls="controls"> <source src="'+videopath+'" type="video/mp4"></video>'
+    layer.open({
+                type: 1,
+                title: false,
+                area: ['720px','480px'],
+                // skin: 'layui-layer-nobg', //没有背景色
+                shadeClose: true,
+                content: video
+            });
+}
 
 function searchClick() {
 
@@ -470,6 +484,9 @@ function configClick() {
 //更多配置
     $(document).on('click', '#showPhoto', function () {
         showPhotos()
+    });
+    $(document).on('click', '#showVideo', function () {
+        showVideo()
     });
 }
 
