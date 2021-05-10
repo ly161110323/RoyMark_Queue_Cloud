@@ -1,6 +1,10 @@
 package com.roymark.queue.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.entity.Floor;
 import com.roymark.queue.entity.Window;
@@ -195,5 +199,39 @@ public class FloorController {
             return jsonObject;
         }
     }
+
+
+    @RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
+    public Object search(int pageNo, int pageSize) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            // 分页构造器
+            Page<Floor> page = new Page<Floor>(pageNo, pageSize);
+            QueryWrapper<Floor> queryWrapper = new QueryWrapper<Floor>();
+
+            // 执行分页
+            IPage<Floor> pageList = floorService.page(page, queryWrapper);
+            // 返回结果
+            if (pageList.getRecords().size() <= 0) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "搜素结果为空");
+                jsonObject.put("pageList", pageList);
+                return jsonObject;
+            }
+            else {
+                jsonObject.put("pageList", pageList);
+                jsonObject.put("result", "ok");
+                jsonObject.put("msg", "搜索成功");
+                return jsonObject;
+            }
+        } catch (Exception e) {
+            logger.error("/floor/queryData 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "搜索出现错误");
+            return jsonObject;
+        }
+    }
+
 }
 
