@@ -227,6 +227,7 @@ public class CameraController {
 				queryWrapper.like("server_id", serverId);
 			if (floorHiddenId != null)
 				queryWrapper.eq("br_cam.floor_hidden_id", floorHiddenId);
+			queryWrapper.orderByAsc("cam_id");
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
 			for (Camera camera: pageList.getRecords()) {

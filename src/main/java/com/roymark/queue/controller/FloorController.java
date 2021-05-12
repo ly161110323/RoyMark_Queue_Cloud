@@ -209,7 +209,7 @@ public class FloorController {
             // 分页构造器
             Page<Floor> page = new Page<Floor>(pageNo, pageSize);
             QueryWrapper<Floor> queryWrapper = new QueryWrapper<Floor>();
-
+            queryWrapper.orderByAsc("floor_id");
             // 执行分页
             IPage<Floor> pageList = floorService.page(page, queryWrapper);
             // 返回结果

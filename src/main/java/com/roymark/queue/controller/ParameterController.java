@@ -169,6 +169,7 @@ public class ParameterController {
             QueryWrapper<Parameter> queryWrapper = new QueryWrapper<Parameter>();
             if (paramName != null)
                 queryWrapper.like ("param_name",paramName);
+            queryWrapper.orderByAsc("param_name");
             // 执行分页
             IPage<Parameter> pageList = parameterService.page(page, queryWrapper);
             // 返回结果

@@ -239,6 +239,8 @@ public class UserController {
 			if (userDepartment != null) {
 				queryWrapper.like("user_department", userDepartment);
 			}
+
+			queryWrapper.orderByAsc("user_id");
 			// 执行分页
 			IPage<ActionUser> pageList = userService.page(page, queryWrapper);
 			// 返回结果

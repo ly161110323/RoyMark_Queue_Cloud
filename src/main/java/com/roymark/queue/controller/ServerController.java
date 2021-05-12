@@ -2,6 +2,7 @@ package com.roymark.queue.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -214,6 +215,8 @@ public class ServerController {
 				queryWrapper.like ("server_id",serverId);
 			if (serverName != null)
 				queryWrapper.like("server_name", serverName);
+
+			queryWrapper.orderByAsc("server_id");
 			// 执行分页
 			IPage<Server> pageList = serverService.page(page, queryWrapper);
 
@@ -328,6 +331,7 @@ public class ServerController {
 						if (!reachable) {
 							msg.append(serverName + "启动失败,服务器不可用;\n");
 						}else {
+
 							// 获取当前服务器对应的摄像头以及窗口
 							List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
 
@@ -335,9 +339,17 @@ public class ServerController {
 							for (Camera camera : cameras) {
 								CamAndWinInfo temp = new CamAndWinInfo();
 								List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
-								temp.setCamera(camera);
-								temp.setWindows(windows);
-								camAndWinInfos.add(temp);
+								// 移除未开启行为分析的
+								for (Window window : windows) {
+									if (!window.getWindowActionAnalysis()) {
+										windows.remove(window);
+									}
+								}
+								if (windows.size() > 0) {
+									temp.setCamera(camera);
+									temp.setWindows(windows);
+									camAndWinInfos.add(temp);
+								}
 							}
 							JSONObject requestData = new JSONObject();
 							requestData.put("params", params);

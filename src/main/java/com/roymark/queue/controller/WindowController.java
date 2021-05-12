@@ -202,6 +202,7 @@ public class WindowController {
             if (windowDepartment != null)
                 queryWrapper.like ("window_department",windowDepartment);
 
+            queryWrapper.orderByAsc("window_id");
             // 执行分页
             IPage<Window> pageList = windowService.page(page, queryWrapper);
             // 返回结果
