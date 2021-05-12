@@ -14,6 +14,7 @@
         <result column="window_coordinates" property="windowCoordinates" />
         <result column="cam_hidden_id" property="camHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />
+        <result column="user_update_time" property="userUpdateTime" />
         <result column="cam_id" property="camId" />
     </resultMap>
 

@@ -1,6 +1,7 @@
 package com.roymark.queue.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -44,9 +45,19 @@ public class Window implements Serializable {
     @TableField(value = "user_hidden_id")
 	private Long userHiddenId;
 
+    @TableField(value = "user_update_time")
+	private Date userUpdateTime;
+
     @TableField(exist = false)
 	private String camId;
 
+	public Date getUserUpdateTime() {
+		return userUpdateTime;
+	}
+
+	public void setUserUpdateTime(Date userUpdateTime) {
+		this.userUpdateTime = userUpdateTime;
+	}
 
 	public Long getUserHiddenId() {
 		return userHiddenId;

@@ -122,6 +122,12 @@ public class UserController {
 					}
 
 					boolean result = userService.save(tempActionUser);
+
+					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
+
+
+
+
 					if (result) {
 						jsonObject.put("result", "ok");
 						jsonObject.put("msg", "添加成功");

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/face")
 public class FaceController {
@@ -33,6 +35,9 @@ public class FaceController {
     public Object insert(String faceId, Long windowHiddenId, String reId) {
         JSONObject jsonObject = new JSONObject();
         try {
+            System.out.println("faceId:"+faceId);
+            System.out.println("windowHiddenId:" + windowHiddenId);
+            System.out.println("reId:"+ reId);
             // faceId不为空，则利用faceId在faceVector中获取uId，且保存faceId和reId的对应关系
             if (!faceId.equals("")) {
                 FaceFeature faceFeature = new FaceFeature(Long.valueOf(0), faceId, reId);
@@ -64,6 +69,7 @@ public class FaceController {
             else {
                 Long userHiddenId = faceVector.getUserHiddenId();
                 window.setUserHiddenId(userHiddenId);
+                window.setUserUpdateTime(new Date());
                 windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, windowHiddenId));
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "上传成功");
