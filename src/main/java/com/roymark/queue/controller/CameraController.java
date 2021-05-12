@@ -3,6 +3,7 @@ package com.roymark.queue.controller;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.CamAndWinInfo;
 import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
@@ -354,4 +356,34 @@ public class CameraController {
 		}
 	}
 
+	@RequestMapping(value = "/getCamAndWinInfo", produces = "application/json;charset=utf-8")
+	public Object getCameraInfo() {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			List<Camera> cameras = cameraService.list();
+			if (cameras.size() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "无摄像头存在");
+				return jsonObject;
+			}
+			List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
+			for (Camera camera : cameras) {
+				CamAndWinInfo temp = new CamAndWinInfo();
+				List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
+				temp.setCamera(camera);
+				temp.setWindows(windows);
+				camAndWinInfos.add(temp);
+			}
+			jsonObject.put("data", camAndWinInfos);
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "获取成功");
+			return jsonObject;
+		} catch (Exception e) {
+			logger.error("/camera/getCamAndWinInfo 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
+			return jsonObject;
+		}
+	}
 }
