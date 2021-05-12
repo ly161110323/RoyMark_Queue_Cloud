@@ -356,34 +356,4 @@ public class CameraController {
 		}
 	}
 
-	@RequestMapping(value = "/getCamAndWinInfo", produces = "application/json;charset=utf-8")
-	public Object getCameraInfo() {
-		JSONObject jsonObject = new JSONObject();
-
-		try {
-			List<Camera> cameras = cameraService.list();
-			if (cameras.size() <= 0) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "无摄像头存在");
-				return jsonObject;
-			}
-			List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
-			for (Camera camera : cameras) {
-				CamAndWinInfo temp = new CamAndWinInfo();
-				List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
-				temp.setCamera(camera);
-				temp.setWindows(windows);
-				camAndWinInfos.add(temp);
-			}
-			jsonObject.put("data", camAndWinInfos);
-			jsonObject.put("result", "ok");
-			jsonObject.put("msg", "获取成功");
-			return jsonObject;
-		} catch (Exception e) {
-			logger.error("/camera/getCamAndWinInfo 错误:" + e.getMessage(), e);
-			jsonObject.put("result", "error");
-			jsonObject.put("msg", "获取出现错误");
-			return jsonObject;
-		}
-	}
 }

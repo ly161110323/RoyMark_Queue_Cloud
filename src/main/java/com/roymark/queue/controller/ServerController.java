@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Camera;
-import com.roymark.queue.entity.Parameter;
+import com.roymark.queue.entity.*;
 import com.roymark.queue.service.CameraService;
 import com.roymark.queue.service.ParameterService;
+import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.roymark.queue.entity.Server;
 import com.roymark.queue.service.ServerService;
 
 import com.alibaba.fastjson.JSONObject;
@@ -41,6 +40,9 @@ public class ServerController {
 
 	@Autowired
 	private ParameterService parameterService;
+
+	@Autowired
+	private WindowService windowService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllServers() {
@@ -302,14 +304,10 @@ public class ServerController {
 		for (Parameter parameter : parameters) {
 			params.put(parameter.getParamName(), parameter.getParamValue());
 		}
-		JSONObject requestData = new JSONObject();
-		requestData.put("params", params);
-		HashMap<String, String> header = new HashMap<>();
-		header.put("Content-Type", "application/json");// 设置请求头信息
-		String body = JSONObject.toJSONString(requestData);// 设置请求体信息
 
 		for (int i=0; i<startIdList.length; i++) {
-			Server startServer = serverService.getById(Long.valueOf(startIdList[i]));
+			Long serverHiddenId = Long.valueOf(startIdList[i]);
+			Server startServer = serverService.getById(serverHiddenId);
 			if (startServer != null) {
 				String ip_address = startServer.getServerIp();
 				Long port = startServer.getServerPort();
@@ -330,6 +328,24 @@ public class ServerController {
 						if (!reachable) {
 							msg.append(serverName + "启动失败,服务器不可用;\n");
 						}else {
+							// 获取当前服务器对应的摄像头以及窗口
+							List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
+
+							List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
+							for (Camera camera : cameras) {
+								CamAndWinInfo temp = new CamAndWinInfo();
+								List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
+								temp.setCamera(camera);
+								temp.setWindows(windows);
+								camAndWinInfos.add(temp);
+							}
+							JSONObject requestData = new JSONObject();
+							requestData.put("params", params);
+							requestData.put("camAndWin", camAndWinInfos);
+							HashMap<String, String> header = new HashMap<>();
+							header.put("Content-Type", "application/json");// 设置请求头信息
+							String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
 							HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
 							if(response.getStatusLine().getStatusCode() == 200){
 								msg.append(serverName+"启动成功;\n");
