@@ -9,13 +9,17 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "br_face_")
-public class Face implements Serializable {
+@TableName(value = "br_face_vector")
+public class FaceVector implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    @TableField(value = "face_id")
-    private Long faceId;
+    @TableField(value = "face_vector_id")
+    private Long faceVectorId;
 
-    @TableField(value = "user_id")
-    private Long userId;
+    @TableField(value = "face_id")
+    private String faceId;
+
+    @TableField(value = "user_hidden_id")
+    private Long userHiddenId;
 }

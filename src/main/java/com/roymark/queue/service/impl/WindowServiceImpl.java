@@ -29,9 +29,6 @@ public class WindowServiceImpl extends ServiceImpl<WindowMapper, Window> impleme
     private AnomalyMapper anomalyMapper;
 
     @Autowired
-    private CameraMapper cameraMapper;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Override

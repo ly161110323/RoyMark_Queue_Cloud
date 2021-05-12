@@ -4,15 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.ActionUser;
-import com.roymark.queue.entity.Anomaly;
-import com.roymark.queue.entity.Camera;
-import com.roymark.queue.entity.Server;
-import com.roymark.queue.service.AnomalyService;
+import com.roymark.queue.entity.*;
+import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
-import com.roymark.queue.service.CameraService;
-import com.roymark.queue.service.ServerService;
-import com.roymark.queue.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +38,9 @@ public class AnomalyController {
 
     @Autowired
     private ServerService serverService;
+
+    @Autowired
+    private WindowService windowService;
 
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
@@ -108,16 +105,13 @@ public class AnomalyController {
             anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
 
             // 根据windowHiddenId查询userHiddenId
-            ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
-            if (user == null) {
-                logger.info("该窗口id无对应的用户");
-                anomaly.setUserHiddenId(null);
-                //return;
+            Window window = windowService.getById(anomaly.getWindowHiddenId());
+            if (window != null) {
+                anomaly.setUserHiddenId(window.getUserHiddenId());
             }
             else {
-                anomaly.setUserHiddenId(user.getUserHiddenId());
+                anomaly.setUserHiddenId(null);
             }
-
 
             // 首先检查是否有与开始时间完全相同的一项
             Timestamp startTime = anomaly.getAnomalyStartDate();

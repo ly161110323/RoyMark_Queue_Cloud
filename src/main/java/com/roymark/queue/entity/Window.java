@@ -41,10 +41,20 @@ public class Window implements Serializable {
     @TableField(value = "cam_hidden_id")
 	private Long camHiddenId;
 
+    @TableField(value = "user_hidden_id")
+	private Long userHiddenId;
+
     @TableField(exist = false)
 	private String camId;
 
 
+	public Long getUserHiddenId() {
+		return userHiddenId;
+	}
+
+	public void setUserHiddenId(Long userHiddenId) {
+		this.userHiddenId = userHiddenId;
+	}
 
 	public Long getCamHiddenId() {
 		return camHiddenId;
