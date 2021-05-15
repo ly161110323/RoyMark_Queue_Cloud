@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -21,9 +22,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
@@ -357,4 +356,40 @@ public class CameraController {
 		}
 	}
 
+	@RequestMapping(value = "/batchUpdateCoordinates", produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public Object batchUpdateCoordinates(@RequestBody(required = false) Map<Long, String> coordinateMap) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			if (coordinateMap.isEmpty()) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "数据为空");
+			}
+			else {
+				StringBuilder msg = new StringBuilder();
+				for (Map.Entry<Long, String> entry : coordinateMap.entrySet()) {
+					Long camHiddenId = entry.getKey();
+					Camera queryCamera = cameraService.getById(camHiddenId);
+					if (queryCamera == null)
+						msg.append("摄像头不存在\n");
+					else {
+						queryCamera.setCamCoordinates(entry.getValue());
+						cameraService.update(queryCamera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camHiddenId));
+					}
+				}
+				if (msg.length() == 0) {
+					msg.append("全部修改成功");
+				}
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", msg);
+			}
+			return jsonObject;
+		} catch (Exception e) {
+			logger.error("/camera/batchUpdateCoordinates 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "捕获出现错误");
+			return jsonObject;
+		}
+	}
 }
