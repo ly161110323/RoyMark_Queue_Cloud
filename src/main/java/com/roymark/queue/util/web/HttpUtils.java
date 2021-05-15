@@ -254,6 +254,7 @@ public class HttpUtils {
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setConnectTimeout(500);
+		connection.setReadTimeout(500);
 		connection.connect();
 		return connection.getResponseCode() == 200;
 	}
