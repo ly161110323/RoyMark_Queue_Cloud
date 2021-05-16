@@ -123,16 +123,39 @@ public class WebSocketServer{
     @OnOpen
     public void onOpen(Session session){
         this.openFlag = true;
-        width = 960;
-        height = 540;
+
         rtspUrls = new ArrayList<>();
         String rtspUrlsStr = "";
         this.session = session;
         Map<String, List<String>> map = session.getRequestParameterMap();
         List<String> list = map.get("video_address");
         // x和y轴上的图片个数
-        xPicNum = Integer.valueOf(map.get("x").get(0));
-        yPicNum = Integer.valueOf(map.get("y").get(0));
+        if (map.containsKey("x")) {
+            xPicNum = Integer.parseInt(map.get("x").get(0));
+        }
+        else {
+            xPicNum = 1;
+        }
+        if (map.containsKey("y")) {
+            yPicNum = Integer.parseInt(map.get("y").get(0));
+        }
+        else {
+            yPicNum = 1;
+        }
+        if (map.containsKey("width")) {
+            width = Integer.parseInt(map.get("width").get(0));
+        }
+        else {
+            width = 960;
+        }
+        if (map.containsKey("height")) {
+            height = Integer.parseInt(map.get("height").get(0));
+        }
+        else {
+            height = 540;
+        }
+        System.out.println(width);
+        System.out.println(height);
         singleWidth = width / xPicNum;
         singleHeight = height /yPicNum;
 
