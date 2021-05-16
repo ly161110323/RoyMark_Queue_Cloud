@@ -14,6 +14,7 @@
         <result column="cam_hidden_id" property="camHiddenId" />
         <result column="window_hidden_id" property="windowHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />
+        <result column="anomaly_status" property="anomalyStatus" />
         <result column="window_id" property="windowId" />
         <result column="window_name" property="windowName" />
         <result column="user_name" property="userName" />
@@ -28,7 +29,7 @@
     <select id="getAnomalyByHiddenId" parameterType="long" resultMap="BaseResultMap">
         SELECT br_anomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (br_anomaly LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id)
             LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
-        WHERE anomaly.anomaly_hidden_id=#{VALUE }
+        WHERE br_anomaly.anomaly_hidden_id=#{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">

@@ -42,6 +42,30 @@ public class AnomalyController {
     @Autowired
     private WindowService windowService;
 
+    @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
+    public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            Boolean result = anomalyService.update(Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getAnomalyStatus, anomalyStatus)
+                    .eq(Anomaly::getAnomalyHiddenId, anomalyHiddenId));
+            if (result) {
+                jsonObject.put("result", "ok");
+                jsonObject.put("msg", "修改成功");
+            }
+            else {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "修改失败");
+            }
+            return jsonObject;
+        }catch (Exception e) {
+            logger.error("/anomaly/updateAnomalyStatus 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "获取出现错误");
+            return jsonObject;
+        }
+
+    }
+
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
         try {

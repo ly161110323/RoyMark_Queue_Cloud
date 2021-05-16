@@ -154,8 +154,6 @@ public class WebSocketServer{
         else {
             height = 540;
         }
-        System.out.println(width);
-        System.out.println(height);
         singleWidth = width / xPicNum;
         singleHeight = height /yPicNum;
 
@@ -352,14 +350,13 @@ public class WebSocketServer{
                 readPicThread.start();
                 readPicThreads.add(readPicThread);
             }catch (Exception e) {
-                log.error("grapper启动失败");
+                log.error("grabber启动失败");
                 return;
             }
 
         }
 
         while (this.openFlag) {
-            // System.out.println(this.openFlag);
             // System.out.println("push: "+this.thread.getId());
             // System.out.println(Thread.currentThread().isInterrupted());
             try {
@@ -373,7 +370,7 @@ public class WebSocketServer{
                         BufferedImage partImage = readPicThreads.get(induce).getImage();
                         int[] imageArray = new int[width * height];
                         imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                        returnImg.setRGB(i*singleWidth, j*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                        returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                         induce++;
                         if (induce >= rtspNum) {
                             break;

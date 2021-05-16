@@ -52,6 +52,9 @@ public class Anomaly implements Serializable {
     @TableField(value = "user_hidden_id")
     private Long userHiddenId;
 
+    @TableField(value = "anomaly_status")
+	private String anomalyStatus;
+
     @TableField(exist =  false)
 	private String windowId;
 
@@ -60,6 +63,14 @@ public class Anomaly implements Serializable {
 
     @TableField(exist = false)
 	private String userName;
+
+	public String getAnomalyStatus() {
+		return anomalyStatus;
+	}
+
+	public void setAnomalyStatus(String anomalyStatus) {
+		this.anomalyStatus = anomalyStatus;
+	}
 
 	public String getAnomalyImagePath() {
 		return anomalyImagePath;

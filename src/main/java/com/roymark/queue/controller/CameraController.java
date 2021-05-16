@@ -12,8 +12,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.CamAndWinInfo;
 import com.roymark.queue.entity.Window;
+import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +44,9 @@ public class CameraController {
 
 	@Autowired
 	private WindowService windowService;
+
+	@Autowired
+	private AnomalyService anomalyService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -389,6 +394,41 @@ public class CameraController {
 			logger.error("/camera/batchUpdateCoordinates 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "捕获出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/getLatestAnomaly", produces = "application/json;charset=utf-8")
+	public Object getLatestAnomaly(Long camHiddenId) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
+			if (windows.size() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "当前摄像头无窗口");
+			}
+			else {
+				List<Anomaly> anomalyOfWindowList = new ArrayList<>();
+				for (Window window: windows) {
+					List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
+							.eq(Anomaly::getWindowHiddenId, window.getWindowHiddenId())
+							.isNull(Anomaly::getAnomalyEndDate)
+							.ne(Anomaly::getAnomalyStatus, "invalid")
+							.orderByDesc(Anomaly::getAnomalyStartDate));
+					if (anomalies.size() > 0) {
+						anomalyOfWindowList.add(anomalyService
+								.getByHiddenId(anomalies.get(0).getAnomalyHiddenId()));
+					}
+					jsonObject.put("result", "ok");
+					jsonObject.put("msg", "获取成功");
+					jsonObject.put("anomalies", anomalyOfWindowList);
+				}
+			}
+			return jsonObject;
+		}catch (Exception e) {
+			logger.error("/camera/getLatestAnomaly 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
 			return jsonObject;
 		}
 	}
