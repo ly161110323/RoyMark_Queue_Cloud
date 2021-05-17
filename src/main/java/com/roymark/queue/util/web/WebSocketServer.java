@@ -365,8 +365,8 @@ public class WebSocketServer{
                 int induce = 0;             // 当前要写入图片索引0 - XpicNum*yPicNum
 
                 int rtspNum = rtspUrls.size();
-                for (int i=0; i<xPicNum; i++) {
-                    for (int j=0; j<yPicNum; j++) {
+                for (int i=0; i<yPicNum; i++) {
+                    for (int j=0; j<xPicNum; j++) {
                         BufferedImage partImage = readPicThreads.get(induce).getImage();
                         int[] imageArray = new int[width * height];
                         imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);

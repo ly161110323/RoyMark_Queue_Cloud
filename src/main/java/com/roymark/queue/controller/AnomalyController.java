@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -378,4 +377,44 @@ public class AnomalyController {
         }
     }
 
+    @RequestMapping(value = "/getLatestAnomaly", produces = "application/json;charset=utf-8")
+    public Object getLatestAnomaly(Long floorHiddenId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getFloorHiddenId, floorHiddenId));
+            if (cameras.size() <= 0) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "当前楼层无摄像头");
+                return jsonObject;
+            }
+            Map<Long, List<Anomaly>> map = new HashMap<>();
+            for (Camera camera : cameras) {
+                Long camHiddenId = camera.getCamHiddenId();
+                List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
+                List<Anomaly> anomalyOfWindowList = new ArrayList<>();
+                for (Window window: windows) {
+                    List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
+                            .eq(Anomaly::getWindowHiddenId, window.getWindowHiddenId())
+                            .isNull(Anomaly::getAnomalyEndDate)
+                            .ne(Anomaly::getAnomalyStatus, "invalid")
+                            .orderByDesc(Anomaly::getAnomalyStartDate));
+                    if (anomalies.size() > 0) {
+                        anomalyOfWindowList.add(anomalyService
+                                .getByHiddenId(anomalies.get(0).getAnomalyHiddenId()));
+                    }
+                }
+                map.put(camHiddenId, anomalyOfWindowList);
+            }
+            jsonObject.put("result", "ok");
+            jsonObject.put("msg", "获取成功");
+            jsonObject.put("data", map);
+
+            return jsonObject;
+        }catch (Exception e) {
+            logger.error("/camera/getLatestAnomaly 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "获取出现错误");
+            return jsonObject;
+        }
+    }
 }
