@@ -73,6 +73,7 @@ public class WebSocketServer{
         private String picRtspUrl;
         private BufferedImage image;
         public volatile boolean flag = true;
+        public volatile boolean exitFlag = false;
 
         public BufferedImage getImage() {
             return image;
@@ -97,12 +98,6 @@ public class WebSocketServer{
 
         @Override
         public void run() {
-//            try {
-//                picGrabber.start();
-//            } catch (Exception e) {
-//                log.error(e.getMessage());
-//                return;
-//            }
             while (flag) {
                 Java2DFrameConverter java2DFrameConverter = new Java2DFrameConverter();
                 if (picGrabber == null) {
@@ -117,11 +112,21 @@ public class WebSocketServer{
                         if (frame == null)
                             return;
                         image = java2DFrameConverter.getBufferedImage(frame);
-                    }catch (FrameGrabber.Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
+                        log.error(e.getMessage());
                         return;
                     }
                 }
+            }
+            if (picGrabber != null) {
+                try {
+                    picGrabber.stop();
+                    picGrabber.close();
+                }catch (Exception e) {
+                    log.info(e.getMessage());
+                }
+
             }
         }
     }
@@ -201,20 +206,13 @@ public class WebSocketServer{
     @OnClose
     public void onClose() {
         // 终止进程
+        System.out.println("OnClose");
         for (ReadPicThread readPicThread : readPicThreads) {
             if (readPicThread != null)
                 readPicThread.flag = false;
+            readPicThreads.remove(readPicThread);
         }
-        for (FFmpegFrameGrabber grabber : grabbers) {
-            try {
-                if (grabber != null) {
-                    grabber.stop();
-                    grabber.close();
-                }
-            }catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        }
+
         if (this.openFlag) {
             this.openFlag = false;
         }
@@ -260,7 +258,7 @@ public class WebSocketServer{
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        onClose();
+        // onClose();
         log.error("错误,原因:" + error.getMessage());
         log.error("websocket error: ", error);
     }
@@ -349,7 +347,7 @@ public class WebSocketServer{
             String host = "http://" + strings[1].split("/")[0];
             System.out.println(host);
             try {
-                HttpUtils.isReachable(host);
+                HttpUtils.isReachable(host, 3000);
             }catch (IOException e) {
                 return null;
             }
@@ -377,6 +375,7 @@ public class WebSocketServer{
      * 推送图片（摄像机直播）
      */
     public void startCameraPush(List<FFmpegFrameGrabber> grabbers) {
+        System.out.println("startCameraPush");
         readPicThreads = new ArrayList<>();
         for (int i=0; i<grabbers.size(); i++) {
             try {
@@ -393,6 +392,7 @@ public class WebSocketServer{
             }catch (FrameGrabber.Exception e) {  // 无法启动grabber时，跳过该线程捕获
                 log.error("rtsp:"+rtspUrls.get(i)+",grabber启动失败");
                 log.error(e.getMessage());
+                grabbers.set(i, null);
                 readPicThreads.add(null);
             }
 

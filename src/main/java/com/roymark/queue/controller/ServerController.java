@@ -246,7 +246,7 @@ public class ServerController {
 					String host = "http://" + ip_address + ":" + port;
 					String path = "/status";
 					try {
-						boolean reachable = HttpUtils.isReachable(host);
+						boolean reachable = HttpUtils.isReachable(host, 500);
 						if (!reachable){
 							server.setServerStatus("离线");
 							server.setProgramStatus("无");
@@ -327,7 +327,7 @@ public class ServerController {
 					String path = "/start";// 请求路径
 
 					try {
-						boolean reachable = HttpUtils.isReachable(host);
+						boolean reachable = HttpUtils.isReachable(host, 500);
 						if (!reachable) {
 							msg.append(serverName + "启动失败,服务器不可用;\n");
 						}else {
@@ -410,7 +410,7 @@ public class ServerController {
 					String host = "http://" + ip_address + ":" + port;
 					String path = "/stop";
 					try {
-						boolean reachable = HttpUtils.isReachable(host);
+						boolean reachable = HttpUtils.isReachable(host, 500);
 						if (!reachable) {
 							msg.append(serverName + "停止失败,服务器不可用;\n");
 						}else {

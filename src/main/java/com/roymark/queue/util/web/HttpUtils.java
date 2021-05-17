@@ -250,11 +250,11 @@ public class HttpUtils {
 		return httpClient.execute(request);
 	}
 
-	public static boolean isReachable(String host) throws IOException {
+	public static boolean isReachable(String host, int timeout) throws IOException {
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setConnectTimeout(500);
-		connection.setReadTimeout(500);
+		connection.setConnectTimeout(timeout);
+		connection.setReadTimeout(timeout);
 		connection.connect();
 		return connection.getResponseCode() == 200;
 	}
