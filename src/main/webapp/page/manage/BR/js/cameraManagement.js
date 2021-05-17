@@ -7,7 +7,7 @@ $(document).ready(function () {
     clearClick();
     configClick();
     // init_areaInfo();
-    // queryWindowList();
+    queryFloorList();
     queryServerList();
     //
     // icon_operate();//部门图标处理
@@ -35,10 +35,10 @@ function init_areaInfo() {
 
 }
 
-function queryWindowList() {
+function queryFloorList() {
 
     var rootPath = getWebRootPath();
-    var url = rootPath + "/window/queryData"
+    var url = rootPath + "/floor/queryData"
     var params = {
         "pageNo": 1,
         "pageSize": -1
@@ -58,17 +58,17 @@ function queryWindowList() {
 //若未出错，则获取信息设置到控件中
             var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].windowHiddenId + "'>" + list[i].windowId + "</option>";
+                str += "<option value='" + list[i].floorHiddenId + "'>" + list[i].floorId + "</option>";
             }
 
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
-            $("#windowId").empty();
-            $("#windowId").append("<option value=''>请选择绑定窗口ID</option>");
-            $("#windowId").append(str);
-            $("#selectCommitWindowId").empty();
-            $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
-            $("#selectCommitWindowId").append(str);
+            $("#floorId").empty();
+            $("#floorId").append("<option value=''>请选择绑定楼层ID</option>");
+            $("#floorId").append(str);
+            // $("#selectCommitWindowId").empty();
+            // $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
+            // $("#selectCommitWindowId").append(str);
         }
     });
 }
@@ -138,13 +138,13 @@ function trClick() {
         // $("#windowId").val($(this).find("td:eq(4)").text());
         $("#serverId").val($(this).find("td:eq(4)").text());
         // $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camMacAddr").val($(this).find("td:eq(7)").text());
-        $("#camBrand").val($(this).find("td:eq(8)").text());
-        $("#camType").val($(this).find("td:eq(9)").text());
-        $("#camBirth").val($(this).find("td:eq(10)").text());
-        $("#serverId").val($(this).find("td:eq(11)").text());
-        // $("#windowId").val($(this).find("td:eq(13)").text());
+        $("#camVideoAddr").val($(this).find("td:eq(7)").text());
+        $("#camMacAddr").val($(this).find("td:eq(8)").text());
+        $("#camBrand").val($(this).find("td:eq(9)").text());
+        $("#camType").val($(this).find("td:eq(10)").text());
+        $("#camBirth").val($(this).find("td:eq(11)").text());
+        $("#serverId").val($(this).find("td:eq(12)").text());
+        $("#floorId").val($(this).find("td:eq(13)").text());
 
         // var tempValue = $(this).find("td:eq(0) input[name='deptImagepath']").val();
         //
@@ -262,7 +262,7 @@ function clearData() {
 function clearSearch(){
     $('#inputCommitCamId').val("");
 
-    queryWindowList();
+    // queryWindowList();
     queryServerList();
 }
 function addClick() {
@@ -279,7 +279,7 @@ function addClick() {
         formData.append("camMacAddr", $("#camMacAddr").val());
         formData.append("camBrand", $("#camBrand").val());
         formData.append("camType", $("#camType").val());
-        // formData.append("windowHiddenId", $("#windowId").val());
+        formData.append("floorHiddenId", $("#floorId").val());
         formData.append("serverHiddenId", $("#serverId").val());
         formData.append("cameraBirthStr", $("#camBirth").val());
 
@@ -328,7 +328,7 @@ function updateClick() {
         formData.append("camMacAddr", $("#camMacAddr").val());
         formData.append("camBrand", $("#camBrand").val());
         formData.append("camType", $("#camType").val());
-        // formData.append("windowHiddenId", $("#windowId").val());
+        formData.append("floorHiddenId", $("#floorId").val());
         formData.append("serverHiddenId", $("#serverId").val());
         formData.append("cameraBirthStr", $("#camBirth").val());
 

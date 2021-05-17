@@ -247,8 +247,11 @@ function validateData(isAdd) {
 
 //清除数据
 function clearData() {
+    var $file = $("#staffPhoto");
+    $file.after($file.clone().val(""));
+    $file.remove();
 
-    $("#userName").val($(this).find("td:eq(2)").text());
+    $("#userName").val("");
 
     $("#userSex").val("");
     $("#userId").val("");

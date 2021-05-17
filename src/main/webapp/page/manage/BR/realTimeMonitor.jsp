@@ -29,38 +29,9 @@
           type="image/x-icon"/>
 
     <script src="${ctx}/resources/jquery/jquery-ui-1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="./js/mapController.js"></script>
-    <style>
-        #page{
-            position: fixed;
-            bottom: 0;
-            left:0;
-            height: 40px;
-        }
-        #page ul li{
-            float: left;
-            display: inherit;
-            padding: 0.3125rem 0.25rem 0.25rem 0.25rem;
-            border-radius: 0.25rem;
-            border: 0.0625rem solid black;
-            width: 1.5625rem;
-            height: 1.5625rem;
-            text-align: center;
-            margin: 0.25rem;
-        }
-        #page ul li:hover{
-            background-color: #00aa00;
-            color: aliceblue;
-        }
-        #page ul li a{
-            text-decoration: none;
-        }
-        #page ul{
-        }
-        .active{
-            background-color: #00aaff;
-        }
-    </style>
+    <script type="text/javascript" charset="UTF-8" src="${ctx}/static/resources/js/websocket.js"></script>
+    <script type="text/javascript" src="./js/realTimeMonitor.js"></script>
+
 
 <body class="gray-bg" id="bodyBg">
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -70,68 +41,7 @@
                 <div class="ibox-content" >
                     <form class="form-horizontal" role="form" action="#" method="post" id="itemInfoForm">
 
-                        <table class="table_zd" align="center" width="100%">
-                            <tr>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>地图ID：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="floorId" id="floorId">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>地图名称：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="floorName" id="floorName">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">上传图片：</label>
-                                        <div class="col-sm-8" style="width: 60%;">
-                                            <input type="file" name="mapImage" id="mapImage"
-                                                   style="display: none;"> <input type="text"
-                                                                                  style="width: 65%;" autocomplete="off"
-<%--                                                                                  placeholder="768*365"--%>
-                                                                                  class="form-control m-b input_btn_input"
-                                                                                  readonly="readonly" name="mapImageFileName"
-                                                                                  id="mapImageFileName">
-                                            <button type="button"
-                                                    class="btn btn-primary btn-sm input_btn_btn"
-                                                    id="btnChooseMapImage"
-                                                    style="float: left; margin-left: 5px;">选择</button>
-                                        </div>
 
-                                    </div>
-                                </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">已绑定摄像头数量：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="cameraNum" id="cameraNum" readonly="readonly">
-                                        </div>
-                                    </div>
-                                </td>
-
-                            </tr>
-
-
-                        </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
                             <tr class="table_menu_tr_zd">
@@ -216,15 +126,8 @@
                             </tbody>
                         </table>
                     </form>
-<%--                    main 的positon必须设置为absolute--%>
-                    <div style="height: 100%">
-                        <div id="main" style="height:80%;position: absolute; left:0; right:0;margin: auto;float: top">
-                            <%--                        <canvas id="myCanvas" width="1280" height="720" style="">--%>
-                            <%--                            Your browser does not support the HTML5 canvas tag.--%>
-                            <%--                        </canvas>--%>
-                        </div>
+                    <%--                    main 的positon必须设置为absolute--%>
 
-                    </div>
 
 
                 </div>
@@ -232,27 +135,19 @@
 
         </div>
     </div>
-
+    <div style="width: 100%;height: 100%;display: block">
+        <%--<video width="1024" height="576" controls>
+            <source src="http://localhost:8080/crowdManagement/getVideo?video_address=" +${video_address}
+                    type="video/mp4">
+        </video>--%>
+        <img id="show_video" style="width: auto;height: 100%;object-fit:cover" src="">
+    </div>
 </div>
 
 
 
-<div>
-    <ul id="rightMenu" style="width: 100px; position: absolute;">
-        <li>
-            <button id="realtimeMinitor" onclick="realtimeMinitor()" value="实时监控">实时监控</button>
-        </li>
-        <li>
-            <button id="reviewVideo" onclick="reviewVideo()" value="录像回放">录像回放</button>
-        </li>
-        <li>
-            <button id="abnormalyComfirm" onclick="abnormalyComfirm()" value="异常确认">异常确认</button>
-        </li>
-        <li>
-            <button id="deleteCamera" onclick="deleteCamera()" type="button"  value="删除">删除</button>
-        </li>
-    </ul>
-</div>
+
+
 
 </body>
 

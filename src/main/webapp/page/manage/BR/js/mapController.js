@@ -1,262 +1,308 @@
-$(document).ready(function () {
+//模拟后端返回了多个摄像头
+var cameraArray = [{"id": 3, "x": 35, "y": 118},
+    {"id": 2, "x": 200, "y": 200},
+    {"id": 1, "x": 300, "y": 300}];
+// 右键菜单栏
+var rm = null
+// body根节点
+// var body = document.getElementById("bodyBg")
+// 创建可拖动元素的div和对应的img，如果有多个要遍历创建
+// var c = document.getElementById("myCanvas");
+// var ctx = c.getContext("2d");
 
+
+var mapList = null
+var curMapIndex = 0
+var curMap = null
+var hasCoordCams = []
+var noCoordCams = []
+var edit = true
+var isChange = false;
+
+$(document).ready(function () {
+    queryMap();``
+    icon_operate();
     addClick();
     updateClick();
-    deleteClick();
-    searchClick();
-    clearClick();
-    configClick();
-    init_areaInfo();
-    queryCaseAreaList();
-    querySelectAreaList();
+    cameraEdit();
+    rm = document.getElementById("rightMenu");
+    rm.style.display = "none";
+    bindEventListen();
+})
 
-    icon_operate();//部门图标处理
-
-    caseAreaClick();
-    selectAreaClick();
-});
-function icon_operate()
-{
-    $(document).on('click', '#btnChooseDepartmentIcon', function() {
+function icon_operate() {
+    $(document).on('click', '#btnChooseMapImage', function () {
         //让文件选择组件做一次点击
-        $("#departmentIcon").click();
+        $("#mapImage").click();
     });
     //为文件组合框绑定值改变事件
-    $(document).on('change', '#departmentIcon', function() {
+    $(document).on('change', '#mapImage', function () {
         var arrs = $(this).val().split('\\');
         var filename = arrs[arrs.length - 1];
-        $("#departmentIconFileName").val(filename);
-    });
-}
-function init_areaInfo() {
-    $("#Area_Ls").val(defaultAreaLs);
-    $("#Area_Name").val(defaultAreaName);
-
-}
-function queryCaseAreaList()
-{
-
-    var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueCasearea/listall"
-//获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-//调用成功时对返回的值进行解析
-
-            var list = data.returnObject;
-//若未出错，则获取信息设置到控件中
-            var str ="";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].caseareaLs + "'>" + list[i].caseareaName + "</option>";
-            }
-            $("#formCaseAreaLs").empty();
-            $("#formCaseAreaLs").append(str);
-            $("#selectCaseLs").empty();
-            $("#selectCaseLs").append("<option value=''>请选择办事区域</option>");
-            $("#selectCaseLs").append(str);
-        }
-    });
-}
-function querySelectAreaList()
-{
-
-    var rootPath = getWebRootPath();
-    var url=rootPath+"/QueueSelectarea/listall"
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-//调用成功时对返回的值进行解析
-            var list = data.returnObject;
-//若未出错，则获取信息设置到控件中
-            var str = "<option value=''></option>";
-
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].selectareaLs + "'>" + list[i].selectareaName + "</option>";
-            }
-            //将节点插入
-            $("#adjSelectArea").empty();
-            $("#adjSelectArea").append(str);
-        }
+        $("#mapImageFileName").val(filename);
     });
 }
 
+function loadOneCameraIcon(mainDiv, camObj) {
+    var mainPosition = {top: mainDiv.offset().top, left: mainDiv.offset().left}
 
-function trClick() {
+    // var divNode = document.createElement("div");
+    // divNode.id = "draggable" + "_" + camObj["camHiddenId"];
+    // divNode.style.position = "absolute";
+    let coord = camObj["camCoordinates"].split(',')
 
-    //为表格行绑定点击事件
-    $('#itemResultTable tbody').on('click', 'tr', function () {
-        $("#itemResultTable tr:even").css({
-            "background": "#f9f9f9",
-            "color": "#676a6c"
-        });
-        $("#itemResultTable tr:odd").css({
-            "background": "white",
-            "color": "#676a6c"
-        });
-        $(this).css({
-            "background" : "rgb(255, 128, 64)",
-            "color": "white"
-        });
-        dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
-        $("#txtDeptLs").val(dataId);
-        $("#serverName").val($(this).find("td:eq(2)").text());
-        console.log($(this).find("td:eq(2)").text())
-        $("#serverId").val($(this).find("td:eq(3)").text());
-        $("#serverIp").val($(this).find("td:eq(4)").text());
-        $("#serverPort").val($(this).find("td:eq(5)").text());
-        $("#txtDeptMaxappointment").val($(this).find("td:eq(6)").text());
-        var tempValue=$(this).find("td:eq(0) input[name='deptImagepath']").val();
+    // divNode.style.left = (parseInt(coord[0]) +parseInt(mainPosition.left))+ "px";
+    // divNode.style.top = (parseInt(coord[1]) +parseInt(mainPosition.top))+ "px";
+    // var imgNode = document.createElement("img");
+    // imgNode.src = getWebRootPath() + "/resources/images/xw/camera.png";
+    // imgNode.height = 100;
+    // imgNode.width = 100;
+    var divNode = $('<div></div>');
+    divNode.attr('id', camObj.camHiddenId);
+    divNode.css('position', 'absolute');
+    divNode.offset({top: parseInt(coord[1]), left: parseInt(coord[0])});
+    var imgNode = new Image();
+    imgNode.src = getWebRootPath() + "/resources/images/xw/camera.png";
+    imgNode.height = 50;
+    imgNode.width = 50;
+    divNode.append(imgNode);
+    mainDiv.append(divNode);
+    // 绑定每个摄像头右键事件
+    divNode.contextmenu(function (e) {
 
-        if(tempValue!="null" && tempValue!='' && typeof(tempValue)!='undefined')
-        {
-            $("#departmentIconFileName").val(tempValue);
-        }
-        $("#txtDeptId").val($(this).find("td:eq(8)").text());
-        $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
-        $("#adjSelectArea").val($(this).find("td:eq(12)").text());
-        $("#otherId").val($(this).find("td:eq(13)").text());
-    });
+        var mx = e.clientX;
+        var my = e.clientY;
+        rm.style.left = mx + "px";
+        rm.style.top = my + "px";
+        rm.style.display = "block";
+        rightHiidenId = this.id;
+        console.log(rightHiidenId)
+        return false;
+    })
 
-}
+    divNode.click(function (e) {
+        console.log("click", this.id);
 
-//表格选择框操作
-function checkBoxStyle_Control()
-{
-    $(".lsCheck").prop("checked", false);
-    $("#checkall").prop("checked", false);
-//表格头部复选框点击事件
-    $("#checkall").unbind("#checkall").bind("click", function(){
-        if($(this).is(":checked")){
-            $(".lsCheck").prop("checked", true);
-        }else{
-            $(".lsCheck").prop("checked", false);
-        }
-    });
 
-//表格主体复选框点击事件
-    $(".lsCheck").unbind(".lsCheck").bind("click", function(){
-        var allCheckNum = $(".lsCheck").length;
-        var checkedNum = $(".lsCheck:checked").length;
-        if (allCheckNum == checkedNum) {
-            $("#checkall").prop("checked", true);
-        } else if(checkedNum == 0){
-            $("#checkall").prop("checked", false);
-        } else if(checkedNum > 0){
-            $("#checkall").prop("checked", true);
-        }
-    });
-}
-//页面数据合法性验证
-function validateData(isAdd) {
-    if($("#serverName").val().trim()==""){
-        layer.alert("服务器名称不能为空！");
-        return;
-    }
-    if($("#serverIp").val().trim()==""){
-        layer.alert("服务器IP不能为空！");
-        return;
-    }
-
-    if($("#serverPort").val().trim()==""){
-        layer.alert("服务器端口不能为空！");
-        return;
-    }
-    if($("#serverId").val().trim()==""){
-        layer.alert("服务器ID不能为空！");
-        return;
-    }
-    var trs = $("#itemResultTable tr:gt(0)");
-    // var chooseName = $("#txtDeptName").val();
-    var chooseId = $("#serverId").val();
-    var isExit = false;
-
-//循环列表判断是否已经存在,放在客户端校验
-    trs.each(function(index,element){
-        var objLs = $(element).find("td:eq(0)>input").val();
-        // if($(element).find("td:eq(2)").text() == chooseName){
-        //     if(isAdd){
-        //         isExit=true;
-        //         layer.alert("该委办局名称已存在！");
-        //         return false;
-        //     }else{
-        //         if(objLs!=dataId){
-        //             isExit=true;
-        //             layer.alert("该委办局名称已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
-        if($(element).find("td:eq(3)").text() == chooseId){
-            if(isAdd){
-                isExit=true;
-                layer.alert("该服务器id已存在！");
-                return false;
-            }else{
-                if(objLs!=dataId){
-                    isExit=true;
-                    layer.alert("该委办局编号已存在！");
-                    return false;
+    })
+    // 为每个摄像头设定可拖拽
+    $(function () {
+        divNode.draggable({
+            // containment: { containment: "parent" },
+            containment: "#main", scroll: false,
+            stop: function (event, ui) {
+                console.log(ui);
+                console.log(ui.helper.context.id);
+                var index = hasCoordCams.findIndex(e => e.camHiddenId === camObj["camHiddenId"]);
+                if (index != -1) {
+                    var c = ui.position.left.toString() + ',' + ui.position.top.toString();
+                    hasCoordCams[index].camCoordinates = c;
+                }
+                if (edit) {
+                    isChange = true;
                 }
             }
-        }
+        });
     });
+}
 
-    if(isExit){
+function loadDivNodes(cameraArray) {
+    var mainDiv = $('#main');
+    mainDiv.empty();
+    for (var i = 0; i < cameraArray.length; i++) {
+        loadOneCameraIcon(mainDiv, cameraArray[i]);
+    }
+    $('#cameraNum').val(hasCoordCams.length);
+}
+
+//载入地图与摄像头信息
+function loadMapAndCamera(url, floorHiddenId) {
+    if (url) {
+        var rootPath = getWebRootPath()
+        console.log(rootPath + url)
+        img = new Image()
+        img.src = rootPath + url;
+        img.onload = function () {
+
+            // $('#main').empty()
+            $('#main').css('width', img.width)
+            $('#main').css('height', img.height)
+            // $('#main').append(img)
+            $('#main').css('background', 'url(' + img.src + ')')
+            $('#floorId').val(mapList[curMapIndex]['floorId'])
+            $('#floorName').val(mapList[curMapIndex]['floorName'])
+            // $('#mapImageFileName').val(mapList[curMapIndex]['floorMapPath'])
+        }
+    }
+    if (floorHiddenId) {
+        // initDivNode
+        var rootPath = getWebRootPath();
+        var url = rootPath + "/camera/queryData"
+        var params = {
+            "pageNo": 1,
+            "pageSize": -1,
+            "floorHiddenId": floorHiddenId
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            cache: false,
+            async: true,
+            dataType: 'json',
+            data: params,
+            success: function (data) {
+                //调用成功时对返回的值进行解析
+                var list = data.pageList.records;
+                hasCoordCams = []
+                noCoordCams = []
+                list.forEach(function (item) {
+                    if (item.camCoordinates) {
+                        hasCoordCams.push(item)
+                    } else {
+                        noCoordCams.push(item)
+                    }
+                });
+                loadDivNodes(hasCoordCams);
+                flashAddibleCamera(noCoordCams);
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+}
+
+function flashAddibleCamera(noCoordCams) {
+
+    $('#selectCameraAdd').empty();
+    if (noCoordCams.length == 0) {
+        $("#selectCameraAdd").append("<option value=''>" + "无可添加摄像头" + "</option>");
+        return;
+    }
+    noCoordCams.forEach(function (item) {
+        $("#selectCameraAdd").append("<option value='" + item['camHiddenId'] + "'>" + item['camId'] + "</option>");
+    });
+    $("#selectCameraAdd option:first").prop("selected", 'selected');
+
+}
+
+function validateData(isAdd) {
+    if ($("#floorId").val().trim() == "") {
+        layer.alert("地图ID不能为空！");
+        return false;
+    }
+    if ($("#floorName").val().trim() == "") {
+        layer.alert("地图名称不能为空！");
+        return false;
+    }
+    if (isAdd) {
+        if ($("#mapImageFileName").val().trim() == "") {
+            layer.alert("图片路径不能为空！");
+            return false;
+        }
+    }
+
+
+    var chooseId = $("#floorId").val();
+    var chooseName = $("#floorName").val();
+    // var fileName = $("#mapImageFileName").val();
+    // console.log(fileName)
+    var isExit = false;
+    var idIndex = mapList.findIndex(e => e.floorId == chooseId)
+    var nameIndex = mapList.findIndex(e => e.floorName == chooseName)
+    if (isAdd) {
+        if (idIndex != -1 || nameIndex != -1) {
+            isExit = true;
+            layer.alert("地图ID或名称已存在！");
+        }
+    } else {
+        if (idIndex != curMapIndex || nameIndex != curMapIndex) {
+            isExit = true;
+            layer.alert("地图ID或名称已存在！");
+        }
+    }
+
+
+    if (isExit) {
         return false;
     }
 
     return true;
 }
-//清除数据
-function clearData(){
 
-    var $file = $("#departmentIcon");
-    $file.after($file.clone().val(""));
-    $file.remove();
-    $("#serverName").val("");
-    $("#serverIp").val("");
-    $("#serverPort").val("")
-    $("#serverId").val("")
-    // $("#txtDeptMaxtakeno").val("");
-    // $("#txtDeptMaxappointment").val("");
-    // $("#departmentIconFileName").val("");
-    // $("#txtDeptId").val("");
-    // $("#otherId").val("");
-}
+function updateClick(callback) {
+//为修改绑定点击事件
+    $(document).on('click', '#modifyCommit', function () {
 
-function addClick() {
-    $(document).on('click','#addCommit',function(){
-        if(!validateData(true))
-        {
+        if (!mapList[curMapIndex]) {
+            layer.alert("当前无地图！");
             return;
+        }
+        if (!validateData(false)) {
+            return;
+        }
+        var formData = new FormData();
+        formData.append("floorHiddenId", mapList[curMapIndex].floorHiddenId);
+        formData.append("floorId", $('#floorId').val());
+        formData.append("floorName", $("#floorName").val());
+        if ($('#mapImageFileName').val() != "") {
+            formData.append("uploadMap", $('#mapImage')[0].files[0]);
         }
 
 
-        var formData = new FormData();
-        formData.append("serverName", $('#serverName').val());
-        formData.append("serverIp",$("#serverIp").val());
-        formData.append("serverPort",$("#serverPort").val());
-        formData.append("serverId",$("#serverId").val());
-        // formData.append("deptPrint",$("#serverId").val());
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/insert";
+        var url = rootPath + "/floor/update";
+
+        $.ajax({
+            url: url,
+            type: "post",
+            datatype: "json",
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
+            data: formData,
+            success: function (data) {
+                if (data.result == "error") {
+                    layer.msg("服务器错误！");
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.msg("修改成功！");
+                } else if (data.result == "no") {
+                    layer.msg("修改失败！");
+                }
+                // table.draw(false);
+                queryMap();
+                clearData();
+
+
+            }
+        });
+        saveCamera();
+    });//修改事件处理完毕
+}
+
+function addClick() {
+    $(document).on('click', '#addCommit', function () {
+        if (!validateData(true)) {
+            return;
+        }
+        var formData = new FormData();
+        formData.append("uploadMap", $('#mapImage')[0].files[0]);
+        formData.append("floorId", $('#floorId').val());
+        formData.append("floorName", $("#floorName").val());
+
+
+        var rootPath = getWebRootPath();
+        var url = rootPath + "/floor/insert";
         $.ajax({
             type: 'POST',
-            url:  url,
+            url: url,
             cache: false,
-            processData : false, // 使数据不做处理
-            contentType : false, // 不要设置Content-Type请求头
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
             data: formData,
-            success : function(data) {
+            success: function (data) {
                 console.log(data)
                 if (data.result == "error") {
                     layer.alert("服务器错误！");
@@ -267,84 +313,245 @@ function addClick() {
                 } else if (data.result == "no") {
                     layer.alert("新增失败！");
                 }
-                table.draw(false);
+                queryMap();
+                // table.draw(false);
                 clearData();
             }
         });
     });
 }
 
-function updateClick() {
-//为修改绑定点击事件
-    $(document).on('click', '#modifyCommit', function () {
-        if (dataId=='') {
-            layer.alert("请选择要修改的数据！");
-            return;
-        }
-        if(!validateData(false))
-        {
-            return;
-        }
-        var formData = new FormData();
-        formData.append("serverName", $('#serverName').val());
-        formData.append("serverIp",$("#serverIp").val());
-        formData.append("serverPort",$("#serverPort").val());
-        formData.append("serverId",$("#serverId").val());
-        formData.append("serverHiddenId",dataId)
+//清除数据
+function clearData() {
+    var $file = $("#mapImageFileName");
+    $file.after($file.clone().val(""));
+    $file.remove();
+
+    $("#floorName").val("");
+
+    $("#floorId").val("");
 
 
-        var rootPath = getWebRootPath();
-        var url = rootPath + "/server/update";
-
-        $.ajax({
-            url: url,
-            type: "post",
-            datatype: "json",
-            processData : false, // 使数据不做处理
-            contentType : false, // 不要设置Content-Type请求头
-            data: formData,
-            success: function (data) {
-                if (data.result == "error") {
-                    layer.alert("服务器错误！");
-                    return;
-                }
-                if (data.result == "ok") {
-                    layer.alert("修改成功！");
-                } else if (data.result == "no") {
-                    layer.alert("修改失败！");
-                }
-                table.draw(false);
-                clearData();
-            }
-        });
-    });//修改事件处理完毕
 }
+
+// 上传地图
+function uploadMap() {
+    var file_data = $('#file').prop('files')[0];
+    console.log(file_data);
+    var form_data = new FormData();
+    form_data.append('file', file_data);
+    $.ajax({
+        url: "",
+        dataType: 'text', // what to expect back from the server
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
+}
+
+//查询所有地图
+function queryMap(id = "", name = "") {
+    var rootPath = getWebRootPath();
+    var url = rootPath + "/floor/queryData"
+    var params = {
+        "pageNo": 1,
+        "pageSize": -1
+    }
+
+    if (id != "") {
+        params["floorId"] = id
+    }
+    if (name != "") {
+        params["floorName"] = name
+    }
+    $.ajax({
+        type: 'POST',
+        url: url,
+        cache: false,
+        async: true,
+        dataType: 'json',
+        data: params,
+        success: function (result) {
+
+            var pageList = result.pageList;
+            var datainfos = pageList.records
+
+            mapList = datainfos;
+            console.log(mapList)
+            if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
+                // curMap = mapList[curMapIndex]
+                loadMapAndCamera(mapList[curMapIndex].floorMapPath, mapList[curMapIndex].floorHiddenId) //加载背景图
+                loadMapOptions()
+            } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
+
+            } else {
+
+            }
+        }
+    });
+}
+
+//更新可选地图
+function loadMapOptions() {
+    var idstr = ""
+    for (var i = 0; i < mapList.length; i++) {
+        idstr += "<option value='" + mapList[i].floorHiddenId + "'>" + mapList[i].floorId + "</option>";
+    }
+    $("#selectCommitFloorId").empty();
+    // $("#selectCommitFloorId").append("<option value=''>请选择地图ID</option>");
+    $("#selectCommitFloorId").append(idstr);
+    $("#selectCommitFloorId").val(mapList[curMapIndex].floorHiddenId);
+
+    var namestr = ""
+    for (var i = 0; i < mapList.length; i++) {
+        namestr += "<option value='" + mapList[i].floorHiddenId + "'>" + mapList[i].floorName + "</option>";
+    }
+    $("#selectCommitFloorName").empty();
+    // $("#selectCommitFloorName").append("<option value=''>请选择地图名称</option>");
+    $("#selectCommitFloorName").append(namestr);
+    $("#selectCommitFloorName").val(mapList[curMapIndex].floorHiddenId);
+    // flashAddibleCamera(noCoordCams);
+}
+
+function saveCamera(callback) {
+    var map = new Map();
+
+    hasCoordCams.forEach(function (item) {
+        map.set(item.camHiddenId, item.camCoordinates);
+
+    })
+    noCoordCams.forEach(function (item) {
+        map.set(item.camHiddenId, item.camCoordinates);
+    })
+    let obj = Object.create(null);
+    for (let [k, v] of map) {
+        obj[k] = v;
+    }
+
+    $.ajax({
+        url: getWebRootPath() + '/camera/batchUpdateCoordinates',
+        type: 'post',
+        datatype: 'json',
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(obj),
+        sync: false,
+        success: function (res) {
+
+            if (res.result == 'ok') {
+                layer.msg('保存成功!');
+                isChange = false;
+                if (typeof callback == 'function') {
+                    callback();
+                }
+            } else {
+                layer.msg(res.msg);
+            }
+
+        }
+    });
+}
+
+function bindEventListen() {
+    $('#saveCameraCommit').click(saveCamera);
+    $(document).on('click', '#changeCommit', function () {
+        var selectId = $('#selectCommitFloorId').val();
+        var selectName = $('#selectCommitFloorName').val();
+
+        if (selectId == mapList[curMapIndex].floorHiddenId) {
+            layer.msg("已选择当前地图！")
+            return;
+        }
+        var map = mapList.find(e => e.floorHiddenId == selectId)
+        curMapIndex = mapList.findIndex(e => e.floorHiddenId == selectId)
+        console.log(curMapIndex)
+        if (isChange) {
+            layer.confirm('是否保存当前摄像头位置修改？', {
+                btn: ['保存', '不保存'],
+                icon: 3
+            }, function () {
+                // $('#modifyCommit').trigger("click");
+                saveCamera(function () {
+                    loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+                    loadMapOptions();
+                });
+
+            }, function () {
+                loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+                loadMapOptions();
+            })
+        } else {
+            loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+            loadMapOptions();
+        }
+
+    })
+    $('#selectCommitFloorId').change(function () {
+        var hiddenId = $(this).children('option:selected').val()
+        $('#selectCommitFloorName').val(hiddenId)
+    })
+    $('#selectCommitFloorName').change(function () {
+        var hiddenId = $(this).children('option:selected').val()
+        $('#selectCommitFloorId').val(hiddenId)
+    })
+    document.documentElement.onclick = function () {
+        if (rm.style.display == "block") {
+            rm.style.display = "none";
+        }
+    }
+    $(document).on('click', '#addCameraCommit', function () {
+        var selectHiddenId = $('#selectCameraAdd').val();
+        if (!selectHiddenId) {
+            layer.msg("已经没有可添加的摄像头！");
+            return;
+        }
+        var index = noCoordCams.findIndex(e => e.camHiddenId == selectHiddenId);
+        noCoordCams[index].camCoordinates = "0,0";
+        hasCoordCams.push(noCoordCams[index]);
+        loadOneCameraIcon($('#main'), noCoordCams[index])
+        noCoordCams.splice(index, 1);
+        $('#cameraNum').val(hasCoordCams.length);
+        flashAddibleCamera(noCoordCams);
+        isChange = true;
+    });
+    $('#clearData').click(clearData);
+
+}
+
+//删除地图
 function deleteClick() {
 //为删除按钮绑定点击事件
-    $(document).on('click','#deleteCommit',function() {
+    $(document).on('click', '#deleteCommit', function () {
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/delete";
+        var url = rootPath + "/window/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {
             layer.alert("请勾选您所要删除的数据！");
             return;
         }
-        layer.confirm("您确定要" +"删除" + "这" + cBox.length+ "条记录吗？",
+        layer.confirm("您确定要" + "删除" + "这" + cBox.length + "条记录吗？",
             {
-                btn : [ '确定', '取消' ]
+                btn: ['确定', '取消']
             },
-            function() {
+            function () {
                 for (var i = 0; i < cBox.length; i++) {
                     items.push(cBox.eq(i).val());
                 }
-                var data = {"deleteId" : items.toString()};
+                var data = {"deleteId": items.toString()};
 
                 $.ajax({
-                    type : 'POST',
-                    url : url,
-                    data : data,
-                    success : function(data) {
+                    type: 'POST',
+                    url: url,
+                    data: data,
+                    success: function (data) {
                         if (data.result == "error") {
                             layer.alert("服务器错误！删除失败");
                             return;
@@ -355,68 +562,76 @@ function deleteClick() {
                         table.draw(false);
                         clearData();
                     },
-                    error : function(data){
+                    error: function (data) {
                         layer.alert("错误！");
                     }
                 });
-            }, function() {
+            }, function () {
 
             });
     });
 }
-function searchClick()
-{
 
-    //为查询按钮绑定点击事件
-    $(document).on('click','#queCommit',function(){
-        isSearch="1";
-        table.draw(false);
-        $('#inputCommitServerId').val("");
-        $('#inputCommitServerName').val("");
-    });
-
-}
-function clearClick()
-{
-//清除
-    $(document).on('click','#clearData',function(){
-        clearData();
-    });
-}
-function configClick()
-{
+function cameraEdit() {
 //更多配置
-    $(document).on('click','#configWindow',function(){
-        var btn=document.getElementById("configWindow");
-        var btnV = btn.innerHTML;
-        if(btnV=="显示配置按钮"){
-            $("#configTr").slideDown();
-            btn.innerHTML="隐藏配置按钮";
-        }else{
-            $("#configTr").slideUp();
-            btn.innerHTML="显示配置按钮";
+    $(document).on('click', '#cameraEdit', function () {
+        if (edit) {
+            $('#cameraEdit').text("摄像头编辑开启");
+            edit = false;
+            $("#main").children().draggable({revert: true});
+        } else {
+            $('#cameraEdit').text("摄像头编辑关闭");
+            edit = true;
+            $("#main").children().draggable({revert: false});
         }
-
     });
 }
 
-
-
-function caseAreaClick()
-{   var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click','#caseArea_administration',function(){
-        var targetUrl = rootPath + "/page/manage/dept/Queue_CaseArea.jsp";
-        var argTitle="办事区域管理";
-        openwindowNoRefresh(targetUrl,argTitle,1020,480);
-    });
+//删除摄像头
+function deleteCamera() {
+    var inx = hasCoordCams.findIndex(e => e.camHiddenId == rightHiidenId);
+    if(inx!=-1){
+        hasCoordCams[inx].camCoordinates = "";
+        noCoordCams.push(hasCoordCams[inx]);
+        hasCoordCams.splice(inx, 1);
+        $("#main").find("div[id="+rightHiidenId+"]").remove();
+        flashAddibleCamera(noCoordCams);
+        layer.msg("已删除！");
+    }
 }
-function selectAreaClick()
-{   var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click','#selectArea_administration',function(){
-        var targetUrl = rootPath + "/page/manage/dept/Queue_SelectArea.jsp";
-        var argTitle="行政区域管理";
-        openwindowNoRefresh(targetUrl,argTitle,1020,480);
-    });
+
+// 保存地图设置
+function saveMap() {
+
 }
+
+// 点击监控函数
+function realtimeMinitor() {
+    var addr = hasCoordCams.find(e => e.camHiddenId == rightHiidenId).camVideoAddr;
+    if(addr){
+        window.videoPath = addr;
+        window.grid = {x:1,y:1};
+        layer.open({
+            type: 2,
+            title: false,
+            area: ['1280px','720px'],
+            // skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: getWebRootPath()+'/page/manage/BR/playvideo.jsp'
+        });
+    }
+
+}
+
+// 录像回放函数
+function reviewVideo() {
+
+}
+
+// 异常情况确认
+function abnormalyComfirm() {
+
+}
+
+// 设定某元素可拖拽，如果有多个元素，应该要遍历，通过name确定是哪一个摄像头，做更新
+

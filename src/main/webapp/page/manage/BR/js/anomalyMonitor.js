@@ -449,8 +449,8 @@ function showPhotos() {
 }
 function showVideo(){
     var rootPath = getWebRootPath();
-    // var videopath = selectInfo.anomalyVideoPath
-    var videopath = "http://10.249.41.65:5000/static/videos/2021-05-03/00:21:47_leave_1_h264.mp4"
+    var videopath = selectInfo.anomalyVideoPath
+    var videopath = videopath
     var video = '<video width="720" controls="controls"> <source src="'+videopath+'" type="video/mp4"></video>'
     layer.open({
                 type: 1,

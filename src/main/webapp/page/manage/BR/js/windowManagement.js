@@ -8,7 +8,7 @@ $(document).ready(function () {
     // configClick();
     // init_areaInfo();
     drawWindow();
-    queryFloorList();
+    // queryFloorList();
     queryCamList();
 
     // icon_operate();//部门图标处理
@@ -121,22 +121,22 @@ function trClick() {
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         // $("#txtDeptLs").val(dataId);
         selectInfo = {
-            "camHiddenId":$(this).find("td:eq(12)").text(),
-            "windowId":$(this).find("td:eq(2)").text()
+            "camHiddenId":$(this).find("td:eq(10)").text(),
+            "windowId":$(this).find("td:eq(2)").text(),
+            "windowCoordinates":$(this).find("td:eq(9)").text()
         }
 
         $("#windowId").val($(this).find("td:eq(2)").text());
 
         $("#windowName").val($(this).find("td:eq(3)").text());
+        $('#camId').val($(this).find("td:eq(10)").text())
         $("#windowDepartment").val($(this).find("td:eq(5)").text());
         $("#windowEvent").val($(this).find("td:eq(6)").text());
-        $("#windowCoordinates").val($(this).find("td:eq(10)").text());
-        $('#floorName').val($(this).find("td:eq(11)").text())
-        $('#camId').val($(this).find("td:eq(12)").text())
 
 
-        $("#windowNinePalaces").val(val=($(this).find("td:eq(8)").text()==="开").toString())
-        $("#windowActionAnalysis").val(val=($(this).find("td:eq(9)").text()==="开").toString())
+        $("#windowNinePalaces").val(val=($(this).find("td:eq(7)").text()==="开").toString())
+        $("#windowActionAnalysis").val(val=($(this).find("td:eq(8)").text()==="开").toString())
+        $("#windowCoordinates").val($(this).find("td:eq(9)").text());
         // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
         // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
         // $("#otherId").val($(this).find("td:eq(13)").text());
@@ -264,7 +264,8 @@ function addClick() {
         formData.append("windowName",$("#windowName").val());
         formData.append("windowDepartment",$("#windowDepartment").val());
         formData.append("windowEvent",$("#windowEvent").val());
-        formData.append("floorHiddenId",$("#floorName").val());
+        formData.append("camHiddenId",$("#camId").val());
+        // formData.append("floorHiddenId",$("#floorName").val());
         formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
         formData.append("windowNinePalaces",$("#windowNinePalaces").val());
         formData.append("windowCoordinates",$("#windowCoordinates").val());
@@ -313,7 +314,7 @@ function updateClick() {
         formData.append("windowName",$("#windowName").val());
         formData.append("windowDepartment",$("#windowDepartment").val());
         formData.append("windowEvent",$("#windowEvent").val());
-        formData.append("floorHiddenId",$("#floorName").val());
+        // formData.append("floorHiddenId",$("#floorName").val());
         formData.append("windowActionAnalysis",$("#windowActionAnalysis").val());
         formData.append("windowNinePalaces",$("#windowNinePalaces").val());
         formData.append("camHiddenId",$("#camId").val());
@@ -413,7 +414,7 @@ function drawWindow()
 //更多配置
 
     $(document).on('click','#drawWindow',function(){
-        var data = {"cameraHiddenId":selectInfo.camHiddenId}
+        var data = {"camHiddenId":selectInfo.camHiddenId}
         var rootPath = getWebRootPath();
         var url=rootPath+"/camera/getCurrentPic";
         $.ajax({
@@ -425,13 +426,14 @@ function drawWindow()
                     var path = rootPath+data.path
                     window.imgPath = path
                     window.windowId = selectInfo.windowId
+                    window.windowCoordinates = selectInfo.windowCoordinates
                     layer.open({
                         type: 2,
                         title: false,
                         area: ['1280px','760'],
                         // skin: 'layui-layer-nobg', //没有背景色
                         shadeClose: true,
-                        content: rootPath+'/page/manage/BR/canvas.jsp'
+                        content: rootPath+'/page/manage/BR/drawRect.jsp'
                     });
                 }else {
                     layer.alert(data.msg+",请重新检查绑定摄像头！")

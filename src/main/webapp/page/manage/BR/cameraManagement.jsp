@@ -60,35 +60,20 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns": [
-                            {
-                                'mData': 'camHiddenId',
-                                'sTitle': '<input type="checkbox" name="checklist" id="checkall" />',
-                                'sName': 'camHiddenId',
-                                'sClass': 'center'
-                            },
+                            {'mData': 'camHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'camHiddenId', 'sClass': 'center'},
                             {'mData': 'camHiddenId', 'sTitle': '序号', 'sName': 'camHiddenId', 'sClass': 'center'},
                             {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
                             {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
-                            // {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
                             {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
+                            {'mData': 'floorId', 'sTitle': '楼层ID', 'sName': 'floorId', 'sClass': 'center'},
                             {'mData': 'camStatus', 'sTitle': '设备状态', 'sName': 'camStatus', 'sClass': 'center'},
                             {'mData': 'camVideoAddr', 'sTitle': '视频流地址', 'sName': 'camVideoAddr', 'sClass': 'center'},
                             {'mData': 'camMacAddr', 'sTitle': 'mac地址', 'sName': 'camMacAddr', 'sClass': 'center'},
                             {'mData': 'camBrand', 'sTitle': '厂商', 'sName': 'camBrand', 'sClass': 'center'},
                             {'mData': 'camType', 'sTitle': '型号', 'sName': 'camType', 'sClass': 'center'},
                             {'mData': 'camBirth', 'sTitle': '出厂日期', 'sName': 'camBirth', 'sClass': 'center'},
-                            {
-                                'mData': 'serverHiddenId',
-                                'sTitle': 'serverHiddenId',
-                                'sName': 'serverHiddenId',
-                                'sClass': 'hidden'
-                            },
-                            // {
-                            //     'mData': 'windowHiddenId',
-                            //     'sTitle': 'windowHiddenId',
-                            //     'sName': 'windowHiddenId',
-                            //     'sClass': 'hidden'
-                            // },
+                            {'mData': 'serverHiddenId', 'sTitle': 'serverHiddenId', 'sName': 'serverHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'floorHiddenId', 'sTitle': 'floorHiddenId', 'sName': 'floorHiddenId', 'sClass': 'hidden'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -164,11 +149,11 @@
             var params;
             params = {
 
-                "pageSize":pageSize,
-                "pageNo":pageNo,
+                "pageSize": pageSize,
+                "pageNo": pageNo,
             };
-            if(isSearch=="1"){
-                if(selectServerId != "请选择绑定服务器ID"){
+            if (isSearch == "1") {
+                if (selectServerId != "请选择绑定服务器ID") {
                     params["serverId"] = selectServerId;
 
                 }
@@ -176,7 +161,7 @@
                 //     params["windowId"] = selectWindowId;
                 //
                 // }
-                if(inputCamId !=""){
+                if (inputCamId != "") {
                     params["camId"] = inputCamId;
                 }
 
@@ -272,20 +257,20 @@
 
                                     </div>
                                 </td>
-<%--                                <td style="width: 25%;">--%>
-<%--                                    <div class="form-group">--%>
-<%--                                        <label style="width: 38%;"--%>
-<%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>窗口ID：</label>--%>
-<%--                                        <div class="col-sm-8">--%>
-<%--                                            <select class="form-control m-b table_content_zd"--%>
-<%--                                                    id="windowId" name="windowId">--%>
-<%--                                                <option value="0">请选择绑定窗口ID</option>--%>
-<%--                                            </select>--%>
-<%--                                        </div>--%>
+                                <%--                                <td style="width: 25%;">--%>
+                                <%--                                    <div class="form-group">--%>
+                                <%--                                        <label style="width: 38%;"--%>
+                                <%--                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span--%>
+                                <%--                                                style="color: red;">*</span>窗口ID：</label>--%>
+                                <%--                                        <div class="col-sm-8">--%>
+                                <%--                                            <select class="form-control m-b table_content_zd"--%>
+                                <%--                                                    id="windowId" name="windowId">--%>
+                                <%--                                                <option value="0">请选择绑定窗口ID</option>--%>
+                                <%--                                            </select>--%>
+                                <%--                                        </div>--%>
 
-<%--                                    </div>--%>
-<%--                                </td>--%>
+                                <%--                                    </div>--%>
+                                <%--                                </td>--%>
 
 
                                 <td style="width: 25%;">
@@ -358,7 +343,22 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>绑定楼层：</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control m-b table_content_zd"
+                                                    id="floorId" name="floorId">
+                                                <option value="">请选择绑定楼层ID</option>
+                                            </select>
+                                        </div>
 
+                                    </div>
+                                </td>
+                            </tr>
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
@@ -368,19 +368,18 @@
                                            spellcheck="false" placeholder="" style="width: 25%;"
                                            class="form-control input_btn_input table_content_zd"
                                            name="inputCommitCamId" id="inputCommitCamId">
-<%--                                    <select--%>
-<%--                                            class="form-control table_content_zd" name="selectCommitWindowId"--%>
-<%--                                            id="selectCommitWindowId"--%>
-<%--                                            style="width: 25%; float: left; margin-right: 10px">--%>
-<%--                                        <option value="">请选择绑定窗口ID</option>--%>
-<%--                                    </select>--%>
+                                    <%--                                    <select--%>
+                                    <%--                                            class="form-control table_content_zd" name="selectCommitWindowId"--%>
+                                    <%--                                            id="selectCommitWindowId"--%>
+                                    <%--                                            style="width: 25%; float: left; margin-right: 10px">--%>
+                                    <%--                                        <option value="">请选择绑定窗口ID</option>--%>
+                                    <%--                                    </select>--%>
                                     <select
                                             class="form-control table_content_zd" name="selectCommitServerId"
                                             id="selectCommitServerId"
                                             style="width: 25%; float: left; margin-right: 10px">
                                         <option value="">请选择绑定服务器ID</option>
                                     </select>
-
 
 
                                     <button type="button"

@@ -67,12 +67,11 @@
                             {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
                             {'mData': 'windowDepartment', 'sTitle': '部门', 'sName': 'windowDepartment', 'sClass': 'center'},
                             {'mData': 'windowEvent', 'sTitle': '事项', 'sName': 'windowEvent', 'sClass': 'center'},
-                            {'mData': 'floorName', 'sTitle': '楼层', 'sName': 'floorName', 'sClass': 'center'},
+
                             {'mData': 'windowNinePalaces', 'sTitle': '九宫格监控', 'sName': 'windowNinePalaces', 'sClass': 'center'},
                             {'mData': 'windowActionAnalysis', 'sTitle': '行为分析', 'sName': 'windowActionAnalysis', 'sClass': 'center'},
                             {'mData': 'windowCoordinates', 'sTitle': '区域坐标', 'sName': 'windowCoordinates', 'sClass': 'center'},
-                            {'mData': 'floorHiddenId', 'sTitle': '楼层', 'sName': 'floorHiddenId', 'sClass': 'hidden'},
-                            {'mData': 'camHiddenId', 'sTitle': '楼层', 'sName': 'camHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'camHiddenId', 'sTitle': 'camHiddenId', 'sName': 'camHiddenId', 'sClass': 'hidden'},
 
 
 
@@ -278,18 +277,16 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">楼层：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>区域坐标：</label>
                                         <div class="col-sm-8">
-                                            <select
-                                                    class="form-control m-b table_content_zd"
-                                                    id="floorName">
-                                                <option value="">请选择楼层</option>
-
-                                            </select>
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   class="form-control table_content_zd"
+                                                   disabled="disabled"
+                                                   name="windowEvent" id="windowCoordinates">
                                         </div>
-
                                     </div>
-                                    <%--                                </td>--%>
+                                </td>
 
                                 <td style="width: 25%;">
                                     <div class="form-group">
@@ -371,21 +368,7 @@
                                 <%--                                                                </div>--%>
                                 <%--                                                            </td>--%>
                             </tr>
-                            <tr>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>区域坐标：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
-                                                   disabled="disabled"
-                                                   name="windowEvent" id="windowCoordinates">
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
