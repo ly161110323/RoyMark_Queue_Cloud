@@ -295,6 +295,14 @@ public class AnomalyController {
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
             }
+            for (int i=0; i<deletes.length; i++) {
+                Anomaly anomaly = anomalyService.getById(Long.valueOf(deletes[i]));
+                if (anomaly == null) {
+                    jsonObject.put("result", "error");
+                    jsonObject.put("msg", "数据不存在");
+                    return jsonObject;
+                }
+            }
             for (int i = 0; i < deletes.length; i++) {
                 anomalyService.removeById(Long.valueOf(deletes[i]));
             }

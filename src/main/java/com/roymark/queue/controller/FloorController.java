@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.ActionUser;
-import com.roymark.queue.entity.Camera;
-import com.roymark.queue.entity.Floor;
-import com.roymark.queue.entity.Window;
+import com.roymark.queue.entity.*;
 import com.roymark.queue.service.CameraService;
 import com.roymark.queue.service.FloorService;
 import com.roymark.queue.service.WindowService;
@@ -152,6 +149,14 @@ public class FloorController {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
+            }
+            for (int i=0; i<deletes.length; i++) {
+                Floor floor = floorService.getById(Long.valueOf(deletes[i]));
+                if (floor == null) {
+                    jsonObject.put("result", "error");
+                    jsonObject.put("msg", "数据不存在");
+                    return jsonObject;
+                }
             }
             for (int i = 0; i < deletes.length; i++) {
                 // 首先删除所有关联摄像头

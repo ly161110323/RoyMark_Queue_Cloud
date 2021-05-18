@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.Parameter;
 import com.roymark.queue.service.ParameterService;
 import com.alibaba.fastjson.JSONObject;
@@ -117,8 +118,15 @@ public class ParameterController {
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
             }
+            for (int i=0; i<deletes.length; i++) {
+                Parameter parameter = parameterService.getById(Long.valueOf(deletes[i]));
+                if (parameter == null) {
+                    jsonObject.put("result", "error");
+                    jsonObject.put("msg", "数据不存在");
+                    return jsonObject;
+                }
+            }
             for (int i = 0; i < deletes.length; i++) {
-                // 首先删除所有关联窗口
                 Long deleteFloorHiddenId = Long.valueOf(deletes[i]);
                 parameterService.removeById(deleteFloorHiddenId);
             }

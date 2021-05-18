@@ -165,6 +165,14 @@ public class CameraController {
 				jsonObject.put("msg", "没有选中的删除项");
 				return jsonObject;
 			}
+			for (int i=0; i<deletes.length; i++) {
+				Camera camera = cameraService.getById(Long.valueOf(deletes[i]));
+				if (camera == null) {
+					jsonObject.put("result", "error");
+					jsonObject.put("msg", "数据不存在");
+					return jsonObject;
+				}
+			}
 			for (int i = 0; i < deletes.length; i++) {
 				Long deleteCamHiddenId = Long.valueOf(deletes[i]);
 				List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, deleteCamHiddenId));

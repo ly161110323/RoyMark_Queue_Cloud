@@ -182,6 +182,14 @@ public class UserController {
 				jsonObject.put("msg", "没有选中的删除项");
 				return jsonObject;
 			}
+			for (int i=0; i<deletes.length; i++) {
+				ActionUser actionUser = userService.getById(Long.valueOf(deletes[i]));
+				if (actionUser == null) {
+					jsonObject.put("result", "error");
+					jsonObject.put("msg", "数据不存在");
+					return jsonObject;
+				}
+			}
 			for (int i = 0; i < deletes.length; i++) {
 				List<Anomaly> anomalyList = anomalyService.list(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getUserHiddenId, Long.valueOf(deletes[i])));
 				for (Anomaly anomaly : anomalyList) {

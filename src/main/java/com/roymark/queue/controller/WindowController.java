@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import com.roymark.queue.entity.Anomaly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,14 @@ public class WindowController {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
+            }
+            for (int i=0; i<deletes.length; i++) {
+                Window window = windowService.getById(Long.valueOf(deletes[i]));
+                if (window == null) {
+                    jsonObject.put("result", "error");
+                    jsonObject.put("msg", "数据不存在");
+                    return jsonObject;
+                }
             }
             for (int i = 0; i < deletes.length; i++) {
                 windowService.deletePreHiddenId(Long.valueOf(deletes[i]));
