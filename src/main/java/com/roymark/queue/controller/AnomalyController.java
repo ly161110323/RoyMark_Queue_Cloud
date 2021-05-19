@@ -241,11 +241,15 @@ public class AnomalyController {
     public Object update(Anomaly anomaly, String anomalyStartTime, String anomalyEndTime) {
         JSONObject jsonObject = new JSONObject();
 
-        Timestamp startTime = Timestamp.valueOf(anomalyStartTime);
-        Timestamp endTime = Timestamp.valueOf(anomalyEndTime);
+        if (!anomalyStartTime.equals("")) {
+            Timestamp startTime = Timestamp.valueOf(anomalyStartTime);
+            anomaly.setAnomalyStartDate(startTime);
+        }
+        if (!anomalyEndTime.equals("")) {
+            Timestamp endTime = Timestamp.valueOf(anomalyEndTime);
+            anomaly.setAnomalyEndDate(endTime);
+        }
 
-        anomaly.setAnomalyEndDate(endTime);
-        anomaly.setAnomalyStartDate(startTime);
         try {
 
             if (anomalyService.getById(anomaly.getAnomalyHiddenId()) == null) {
