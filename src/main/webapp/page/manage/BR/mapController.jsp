@@ -208,7 +208,7 @@
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="cameraEdit">摄像头编辑关闭
+                                                id="cameraEdit">关闭摄像头编辑
                                         </button>
                                     </div>
                                 </td>
@@ -246,7 +246,7 @@
             <button id="reviewVideo" onclick="reviewVideo()" value="录像回放">录像回放</button>
         </li>
         <li>
-            <button id="abnormalyComfirm" onclick="abnormalyComfirm()" value="异常确认">异常确认</button>
+            <button id="anomalyConfirm" onclick="anomalyConfirm()" value="异常确认">异常确认</button>
         </li>
         <li>
             <button id="deleteCamera" onclick="deleteCamera()" type="button"  value="删除">删除</button>

@@ -42,7 +42,7 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/param/getAll";
+            var tableUrl = "${ctx}/param/queryData";
             table = $('#itemResultTable')
                 .DataTable(
                     {
@@ -60,6 +60,7 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns" : [
+                            {'mData': 'paramHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'paramHiddenId', 'sClass': 'center'},
                             {'mData': 'paramHiddenId', 'sTitle': '序号', 'sName': 'paramHiddenId', 'sClass': 'center'},
                             {'mData': 'paramName', 'sTitle': '参数名称', 'sName': 'paramName', 'sClass': 'center'},
                             {'mData': 'paramValue', 'sTitle': '参数值', 'sName': 'paramValue', 'sClass': 'center'},
@@ -118,13 +119,13 @@
         }
 
         function loadData(sSource, aoData, fnCallback) {
-            console.log(sSource)
-            console.log(aoData)
+            // console.log(sSource)
+            // console.log(aoData)
 
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength+1  : aoData.iDisplayStart / aoData.iDisplayLength;
             var paramName = $("#inputCommitParamName").val();
-            var paramValue = $("#inputCommitParamValue").val();
+
             var params;
             params = {
 
@@ -136,10 +137,7 @@
                     params["paramName"] = paramName;
 
                 }
-                if(paramValue !=""){
-                    params["paramValue"] = paramValue;
 
-                }
 
             }
             dataId = "";
@@ -153,12 +151,12 @@
                 dataType : 'json',
                 data : params,
                 success : function(result) {
-                    console.log(result)
                     isSearch = "0";
-                    var pagelist = result.params;
-                    var datainfos = pagelist;
+                    var pagelist = result.pageList;
+                    var datainfos = pagelist.records
                     var obj = {};
                     obj['data'] = datainfos;
+                    console.log(obj)
                     if(typeof(datainfos)!="undefined"&&datainfos.length>0){
                         obj.iTotalRecords = pagelist.total;
                         obj.iTotalDisplayRecords = pagelist.total;
@@ -207,6 +205,19 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>参数值</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   placeholder="" class="form-control table_content_zd"
+                                                   name="paramValue" id="paramValue">
+                                        </div>
+
+                                    </div>
+                                </td>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">默认值</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
@@ -230,19 +241,7 @@
 
                                     </div>
                                 </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>参数值</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="paramValue" id="paramValue">
-                                        </div>
 
-                                    </div>
-                                </td>
                             </tr>
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">

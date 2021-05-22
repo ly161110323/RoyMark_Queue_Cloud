@@ -11,21 +11,19 @@ $(document).ready(function () {
     queryWindowList();
     queryUserList();
     // icon_operate();//部门图标处理
-
+    loadTimeSelect();
     // caseAreaClick();
     // selectAreaClick();
 });
 
-function icon_operate() {
-    $(document).on('click', '#btnChooseStaffPhoto', function () {
-        //让文件选择组件做一次点击
-        $("#staffPhoto").click();
+function loadTimeSelect() {
+    laydate.render({
+        elem: '#anomalyStartTime'
+        ,type: 'datetime'
     });
-    //为文件组合框绑定值改变事件
-    $(document).on('change', '#staffPhoto', function () {
-        var arrs = $(this).val().split('\\');
-        var filename = arrs[arrs.length - 1];
-        $("#staffPhotoFileName").val(filename);
+    laydate.render({
+        elem: '#anomalyEndTime'
+        ,type: 'datetime'
     });
 }
 
@@ -130,6 +128,11 @@ function trClick() {
             "color": "white"
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
+        var status={'待处理':'pending',"有效":"valid","无效":"invalid"};
+        var res = null;
+        if (!!$(this).find("td:eq(13)").text()){
+            var res = status[$(this).find("td:eq(13)").text()]
+        }
         selectInfo = {
             "anomalyHiddenId": dataId,
             "anomalyEvent": $(this).find("td:eq(5)").text(),
@@ -140,6 +143,7 @@ function trClick() {
             "anomalyConfidence": $(this).find("td:eq(8)").text(),
             "anomalyVideoPath": $(this).find("td:eq(11)").text(),
             "anomalyImagePath":$(this).find("td:eq(12)").text(),
+            "anomalyStatus":res
         }
 
         $("#windowId").val($(this).find("td:eq(9)").text());
@@ -149,6 +153,8 @@ function trClick() {
         $("#anomalyEvent").val($(this).find("td:eq(5)").text());
         $("#anomalyStartTime").val($(this).find("td:eq(6)").text());
         $("#anomalyEndTime").val($(this).find("td:eq(7)").text());
+
+        $("#anomalyStatus").val(status[$(this).find("td:eq(13)").text()])
 
 
     });
@@ -248,13 +254,14 @@ function validateData(isAdd) {
 //清除数据
 function clearData() {
 
-    $("#userName").val($(this).find("td:eq(2)").text());
-
-    $("#userSex").val("");
-    $("#userId").val("");
+    $("#windowName").val("");
     $("#windowId").val("");
-    $("#userDepartment").val("");
-    $("#userPost").val("");
+    $("#userName").val("");
+    $("#anomalyEvent").val("");
+    $("#anomalyStartTime").val("");
+    $("#anomalyEndTime").val("");
+    $("#anomalyStatus").val("");
+
 
 }
 
@@ -279,7 +286,7 @@ function addClick() {
         formData.append("windowHiddenId", $("#windowId").val());
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/user/insert";
+        var url = rootPath + "/anomaly/insert";
         $.ajax({
             type: 'POST',
             url: url,
@@ -321,13 +328,14 @@ function updateClick() {
         formData.append("anomalyStartTime", $('#anomalyStartTime').val());
         formData.append("anomalyEndTime", $("#anomalyEndTime").val());
 
-        formData.append("anomalyLink", selectInfo.anomalyLink);
-        formData.append("anomalyConfidence", selectInfo.anomalyConfidence);
+        // formData.append("anomalyLink", selectInfo.anomalyLink);
+        // formData.append("anomalyConfidence", selectInfo.anomalyConfidence);
 
         formData.append("windowHiddenId", $("#windowId").val());
         formData.append("userHiddenId", $("#userName").val());
-
-
+        if( $('#anomalyStatus').val()){
+            formData.append("anomalyStatus", $('#anomalyStatus').val());
+        }
         var rootPath = getWebRootPath();
         var url = rootPath + "/anomaly/update";
 

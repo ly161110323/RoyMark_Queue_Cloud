@@ -24,6 +24,8 @@
           type="image/x-icon"/>
     <script type="text/javascript" src="./js/anomalyMonitor.js">
     </script>
+    <script type="text/javascript" src="${ctx}/resources/js/layDate-v5.3.0/laydate/laydate.js">
+    </script>
 
     <script type="text/javascript">
         var table;
@@ -74,6 +76,7 @@
                             {'mData': 'userHiddenId', 'sTitle': 'userHiddenId', 'sName': 'userHiddenId', 'sClass': 'hidden'},
                             {'mData': 'anomalyVideoPath', 'sTitle': 'anomalyVideoPath', 'sName': 'anomalyVideoPath', 'sClass': 'hidden'},
                             {'mData': 'anomalyImagePath', 'sTitle': 'anomalyImagePath', 'sName': 'anomalyImagePath', 'sClass': 'hidden'},
+                            {'mData': 'anomalyStatus', 'sTitle': '确认结果', 'sName': 'anomalyStatus', 'sClass': 'center'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -182,8 +185,10 @@
                     var datainfos = pageList.records
                     var obj = {};
                     obj['data'] = datainfos;
-
-
+                    var status = {'pending':'待处理','valid':"有效","invalid":"无效"};
+                    obj['data'].forEach(function (item) {
+                        item['anomalyStatus'] =status[item.anomalyStatus];
+                    });
 
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
@@ -283,7 +288,7 @@
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
                                                 style="color: red;">*</span>开始时间：</label>
                                         <div class="col-sm-8">
-                                            <input type="datetime" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
                                                    name="anomalyStartTime" id="anomalyStartTime">
                                         </div>
@@ -294,9 +299,25 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">结束时间：</label>
                                         <div class="col-sm-8">
-                                            <input type="datetime" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
                                                    name="anomalyEndTime" id="anomalyEndTime">
+                                        </div>
+
+                                    </div>
+                                </td>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">确认结果：</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control m-b table_content_zd"
+                                                    id="anomalyStatus" name="anomalyStatus">
+                                                <option value="">请选择确认结果</option>
+                                                <option value="pending">待处理</option>
+                                                <option value="valid">有效</option>
+                                                <option value="invalid">无效</option>
+                                            </select>
                                         </div>
 
                                     </div>

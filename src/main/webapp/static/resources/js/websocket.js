@@ -7,7 +7,7 @@
     }, dftOpt = {
         protocol: (window.location.protocol == 'http:') ? 'ws://' : 'wss://'
         , host: window.location.host
-        , port: '80'
+        , port: window.location.port
         , path: ''
         , isReConect: false
         , wsMesEvent: Event.wsMesEvent
