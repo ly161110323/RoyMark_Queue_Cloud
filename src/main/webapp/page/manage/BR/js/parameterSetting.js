@@ -5,8 +5,8 @@ $(document).ready(function () {
     deleteClick();
     searchClick();
     clearClick();
-    configClick();
-    init_areaInfo();
+    // configClick();
+    // init_areaInfo();
     // queryCaseAreaList();
     // querySelectAreaList();
 
@@ -107,22 +107,13 @@ function trClick() {
             "color": "white"
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
-        $("#txtDeptLs").val(dataId);
-        $("#paramName").val($(this).find("td:eq(1)").text());
-        $("#paramValue").val($(this).find("td:eq(2)").text());
-        $("#paramDefault").val($(this).find("td:eq(3)").text());
-        $("#paramRemark").val($(this).find("td:eq(4)").text());
-        $("#txtDeptMaxappointment").val($(this).find("td:eq(6)").text());
-        var tempValue=$(this).find("td:eq(0) input[name='deptImagepath']").val();
+        // console.log($(this).find("td:eq(2)").text())
+        $("#paramName").val($(this).find("td:eq(2)").text());
+        $("#paramValue").val($(this).find("td:eq(3)").text());
+        $("#paramDefault").val($(this).find("td:eq(4)").text());
+        $("#paramRemark").val($(this).find("td:eq(5)").text());
 
-        if(tempValue!="null" && tempValue!='' && typeof(tempValue)!='undefined')
-        {
-            $("#departmentIconFileName").val(tempValue);
-        }
-        $("#txtDeptId").val($(this).find("td:eq(8)").text());
-        $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
-        $("#adjSelectArea").val($(this).find("td:eq(12)").text());
-        $("#otherId").val($(this).find("td:eq(13)").text());
+
     });
 
 }
@@ -170,7 +161,7 @@ function validateData(isAdd) {
         return;
     }
     var trs = $("#itemResultTable tr:gt(0)");
-    // var chooseName = $("#txtDeptName").val();
+
     var paramName = $("#paramName").val();
     var isExit = false;
 
@@ -182,6 +173,12 @@ function validateData(isAdd) {
                 isExit=true;
                 layer.alert("该参数名称已存在！");
                 return false;
+            }else {
+                if (objLs != dataId) {
+                    isExit = true;
+                    layer.alert("该参数名称已存在！");
+                    return false;
+                }
             }
         }
     });
@@ -215,7 +212,7 @@ function addClick() {
         formData.append("paramDefault",$("#paramDefault").val());
         formData.append("paramRemark",$("#paramRemark").val());
         formData.append("paramValue",$("#paramValue").val());
-        formData.append("paramHiddenId",dataId);
+
         // formData.append("deptPrint",$("#serverId").val());
         var rootPath = getWebRootPath();
         var url=rootPath+"/param/insert";
@@ -294,7 +291,7 @@ function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click','#deleteCommit',function() {
         var rootPath = getWebRootPath();
-        var url=rootPath+"/server/delete";
+        var url=rootPath+"/param/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {

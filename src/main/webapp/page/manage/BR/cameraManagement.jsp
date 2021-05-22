@@ -224,6 +224,7 @@
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
                                                 style="color: red;">*</span>摄像头ID：</label>
                                         <div class="col-sm-8">
+                                        <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
                                                    name="camId" id="camId">
