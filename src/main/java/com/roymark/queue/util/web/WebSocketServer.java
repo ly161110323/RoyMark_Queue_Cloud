@@ -346,11 +346,11 @@ public class WebSocketServer{
             }
             String host = "http://" + strings[1].split("/")[0];
             System.out.println(host);
-            try {
-                HttpUtils.isReachable(host, 3000);
-            }catch (IOException e) {
-                return null;
-            }
+//            try {
+//                HttpUtils.isReachable(host, 3000);
+//            }catch (IOException e) {
+//                return null;
+//            }
             FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(rtsp);
             grabber.setOption("rtsp_transport", "tcp");
             //设置帧率
@@ -362,7 +362,7 @@ public class WebSocketServer{
             //设置视频bit率
             grabber.setVideoBitrate(3000000);
             //设置超时
-            grabber.setTimeout(500);
+            grabber.setTimeout(5000);
             return grabber;
         } catch (FrameGrabber.Exception e) {
             log.error("创建解析rtsp FFmpegFrameGrabber 失败");
@@ -381,6 +381,7 @@ public class WebSocketServer{
             try {
                 if (grabbers.get(i) == null) {
                     readPicThreads.add(null);
+                    System.out.println("Grabber is null");
                 }
                 else {
                     grabbers.get(i).start();
