@@ -25,8 +25,8 @@
 <script>
     var videoPath = window.parent.videoPath;
     var grid = window.parent.grid;
-    var width = '1280';
-    var height = '720';
+    var width = window.parent.width?window.parent.width:"720";
+    var height = window.parent.height?window.parent.height:"405";
     var wsUrl = "${ctx}/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height;
     // var param = {"video_address": videoPath, "x": grid.x, "y": grid.y};
     //建立连接

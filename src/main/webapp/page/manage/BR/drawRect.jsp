@@ -22,8 +22,8 @@
 </head>
 <body>
 
-<div style="width:1280px;height:720px;">
-    <canvas id="myCanvas" width="1280" height="720" style="">
+<div width='720px' height='405px'>
+    <canvas id="myCanvas" width='720px' height='405px' style="">
         Your browser does not support the HTML5 canvas tag.
     </canvas>
 </div>
@@ -35,9 +35,9 @@
     const c=document.getElementById("myCanvas");
     const ctx=c.getContext("2d");
     const scaleStep=1.05;
-    const minWidth=1280,minHeight=720,maxWidth=9000,maxHeight=7000;
+    const minWidth=0,minHeight=0,maxWidth=9000,maxHeight=7000;
     const img=document.createElement('img');
-    const elementWidth=1280,elementHeight=720;
+    const elementWidth=720,elementHeight=405;
     const minDis = 10
     let startx,//起始x坐标
         starty,//起始y坐标
