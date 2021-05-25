@@ -210,7 +210,6 @@ public class WebSocketServer{
         for (ReadPicThread readPicThread : readPicThreads) {
             if (readPicThread != null)
                 readPicThread.flag = false;
-            readPicThreads.remove(readPicThread);
         }
 
         if (this.openFlag) {
@@ -410,16 +409,16 @@ public class WebSocketServer{
                 int rtspNum = rtspUrls.size();
                 for (int i=0; i<yPicNum; i++) {
                     for (int j=0; j<xPicNum; j++) {
-                        if (readPicThreads.get(induce) != null) {    // 当rtsp流正确时菜获取
+                        if (induce >= rtspNum) {
+                            break;
+                        }
+                        else if (readPicThreads.get(induce) != null) {    // 当rtsp流正确时菜获取
                             BufferedImage partImage = readPicThreads.get(induce).getImage();
                             int[] imageArray = new int[width * height];
                             imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                         }
                         induce++;
-                        if (induce >= rtspNum) {
-                            break;
-                        }
                     }
                     if (induce >= rtspNum) {
                         break;
