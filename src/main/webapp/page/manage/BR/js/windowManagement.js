@@ -430,7 +430,7 @@ function drawWindow()
                     layer.open({
                         type: 2,
                         title: false,
-                        area: ['1280px','760'],
+                        area: ['720px','445px'],
                         // skin: 'layui-layer-nobg', //没有背景色
                         shadeClose: true,
                         content: rootPath+'/page/manage/BR/drawRect.jsp'

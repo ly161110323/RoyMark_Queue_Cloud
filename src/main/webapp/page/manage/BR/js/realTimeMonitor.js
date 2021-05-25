@@ -40,8 +40,8 @@ $(function (){
 })
 var videoPath = "";
 var grid = {x:3,y:3};
-var width = '1280';
-var height = '720';
+var width = '960';
+var height = '540';
 var ws1 = null;
 function showVideoImg(){
     if(videoPath==""){

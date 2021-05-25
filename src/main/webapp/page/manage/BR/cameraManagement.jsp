@@ -65,7 +65,7 @@
                             {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
                             {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
                             {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                            {'mData': 'floorId', 'sTitle': '楼层ID', 'sName': 'floorId', 'sClass': 'center'},
+                            {'mData': 'floorId', 'sTitle': '地图ID', 'sName': 'floorId', 'sClass': 'center'},
                             {'mData': 'camStatus', 'sTitle': '设备状态', 'sName': 'camStatus', 'sClass': 'center'},
                             {'mData': 'camVideoAddr', 'sTitle': '视频流地址', 'sName': 'camVideoAddr', 'sClass': 'center'},
                             {'mData': 'camMacAddr', 'sTitle': 'mac地址', 'sName': 'camMacAddr', 'sClass': 'center'},

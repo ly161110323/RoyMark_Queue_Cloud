@@ -400,7 +400,7 @@ function queryMap(id = "", name = "") {
                 // curMap = mapList[curMapIndex]
                 loadMapAndCamera(mapList[curMapIndex].floorMapPath, mapList[curMapIndex].floorHiddenId); //加载背景图
                 loadMapOptions();
-                setInterval(queryAnomalyEvent,1000);
+                setInterval(queryAnomalyEvent,3000);
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
 
             } else {
@@ -724,10 +724,12 @@ function realtimeMinitor() {
     if (addr) {
         window.videoPath = addr;
         window.grid = {x: 1, y: 1};
+        window.width = '720';
+        window.height="405";
         layer.open({
             type: 2,
             title: false,
-            area: ['1280px', '720px'],
+            area: ['720px', '405px'],
             // skin: 'layui-layer-nobg', //没有背景色
             shadeClose: true,
             content: getWebRootPath() + '/page/manage/BR/playvideo.jsp'
