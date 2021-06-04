@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -392,10 +393,10 @@ public class AnomalyController {
     }
 
     @RequestMapping(value = "/getLatestAnomaly", produces = "application/json;charset=utf-8")
-    public Object getLatestAnomaly(Long floorHiddenId) {
+    public Object getLatestAnomaly(Long mapHiddenId) {
         JSONObject jsonObject = new JSONObject();
         try {
-            List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getFloorHiddenId, floorHiddenId));
+            List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getMapHiddenId, mapHiddenId));
             if (cameras.size() <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "当前楼层无摄像头");

@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.CameraService;
-import com.roymark.queue.service.FloorService;
-import com.roymark.queue.service.WindowService;
+import com.roymark.queue.service.MapService;
 import com.alibaba.fastjson.JSONObject;
 import com.roymark.queue.util.UploadUtil;
 import org.apache.logging.log4j.LogManager;
@@ -18,40 +17,38 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.List;
 
 @RestController
-@RequestMapping("/floor")
-public class FloorController {
+@RequestMapping("/map")
+public class MapController {
 
-    private static final Logger logger = LogManager.getLogger(FloorController.class);
+    private static final Logger logger = LogManager.getLogger(MapController.class);
 
     @Autowired
-    private FloorService floorService;
+    private MapService mapService;
 
     @Autowired
     private CameraService cameraService;
 
     @RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
-    public Object getAllFloors() {
+    public Object getAll() {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            List<Floor> floors = floorService.list();
-            if (floors.size() <= 0) {
-                jsonObject.put("floors", floors);
+            List<Map> maps = mapService.list();
+            if (maps.size() <= 0) {
+                jsonObject.put("maps", maps);
                 jsonObject.put("result", "ok");
-                jsonObject.put("msg", "暂无楼层");
+                jsonObject.put("msg", "暂无区域");
             }
-            jsonObject.put("floors", floors);
+            jsonObject.put("maps", maps);
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
             return jsonObject;
         } catch (Exception e) {
-            logger.error("/floor/getAllFloors 错误:" + e.getMessage(), e);
+            logger.error("/map/getAll 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
@@ -60,23 +57,23 @@ public class FloorController {
 
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
     public Object insert(HttpServletRequest request,
-                         Floor floor, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
+                         Map map, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            floor.setFloorHiddenId(Long.valueOf(0));
+            map.setMapHiddenId(Long.valueOf(0));
             if (uploadMap != null) {
-                String uploadPath = "/uploads/floor/";
+                String uploadPath = "/uploads/map/";
                 String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
-                floor.setFloorMapPath(filePath);
+                map.setMapPath(filePath);
             }
-            Floor queryFloor = floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, floor.getFloorId()));
-            if (queryFloor != null) {
+            Map queryMap = mapService.getOne(Wrappers.<Map>lambdaQuery().eq(Map::getMapId, map.getMapId()));
+            if (queryMap != null) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层ID已存在");
+                jsonObject.put("msg", "区域ID已存在");
                 return jsonObject;
             }
-            boolean result = floorService.save(floor);
+            boolean result = mapService.save(map);
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "添加成功");
@@ -88,7 +85,7 @@ public class FloorController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/floor/insert 错误:" + e.getMessage(), e);
+            logger.error("/map/insert 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "添加出现错误");
             return jsonObject;
@@ -97,30 +94,30 @@ public class FloorController {
 
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
     public Object update(HttpServletRequest request,
-                         Floor floor, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
+                         Map map, @RequestParam(value = "uploadMap", required = false) MultipartFile uploadMap) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            Floor queryFloor = floorService.getById(floor.getFloorHiddenId());
+            Map queryMap = mapService.getById(map.getMapHiddenId());
 
-            if (queryFloor == null) {
+            if (queryMap == null) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层不存在");
+                jsonObject.put("msg", "区域不存在");
                 return jsonObject;
             }
 
-            queryFloor = floorService.getOne(Wrappers.<Floor>lambdaQuery().eq(Floor::getFloorId, floor.getFloorId()));
-            if (queryFloor != null && !queryFloor.getFloorHiddenId().equals(floor.getFloorHiddenId())) {
+            queryMap = mapService.getOne(Wrappers.<Map>lambdaQuery().eq(Map::getMapId, map.getMapId()));
+            if (queryMap != null && !queryMap.getMapHiddenId().equals(map.getMapHiddenId())) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层ID已存在");
+                jsonObject.put("msg", "区域ID已存在");
                 return jsonObject;
             }
             if (uploadMap != null) {
-                String uploadPath = "/uploads/floor/";
+                String uploadPath = "/uploads/map/";
                 String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
-                floor.setFloorMapPath(filePath);
+                map.setMapPath(filePath);
             }
-            boolean result = floorService.update(floor, Wrappers.<Floor>lambdaUpdate().eq(Floor::getFloorHiddenId, floor.getFloorHiddenId()));
+            boolean result = mapService.update(map, Wrappers.<Map>lambdaUpdate().eq(Map::getMapHiddenId, map.getMapHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");
@@ -132,7 +129,7 @@ public class FloorController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/floor/update 错误:" + e.getMessage(), e);
+            logger.error("/map/update 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "修改出现错误");
             return jsonObject;
@@ -151,8 +148,8 @@ public class FloorController {
                 return jsonObject;
             }
             for (int i=0; i<deletes.length; i++) {
-                Floor floor = floorService.getById(Long.valueOf(deletes[i]));
-                if (floor == null) {
+                Map map = mapService.getById(Long.valueOf(deletes[i]));
+                if (map == null) {
                     jsonObject.put("result", "error");
                     jsonObject.put("msg", "数据不存在");
                     return jsonObject;
@@ -160,20 +157,20 @@ public class FloorController {
             }
             for (int i = 0; i < deletes.length; i++) {
                 // 首先删除所有关联摄像头
-                Long deleteFloorHiddenId = Long.valueOf(deletes[i]);
-                List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getFloorHiddenId, deleteFloorHiddenId));
+                Long deleteMapHiddenId = Long.valueOf(deletes[i]);
+                List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getMapHiddenId, deleteMapHiddenId));
                 for (Camera camera : cameras) {
-                    cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getFloorHiddenId, null)
+                    cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getMapHiddenId, null)
                             .eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
                 }
-                floorService.removeById(deleteFloorHiddenId);
+                mapService.removeById(deleteMapHiddenId);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");
             return jsonObject;
 
         } catch (Exception e) {
-            logger.error("/floor/delete 错误:" + e.getMessage(), e);
+            logger.error("/map/delete 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "删除出现错误");
             return jsonObject;
@@ -181,14 +178,14 @@ public class FloorController {
     }
 
     @RequestMapping(value = "/getOne", produces = "application/json;charset=utf-8")
-    public Object getOne(Long floorHiddenId) {
+    public Object getOne(Long mapHiddenId) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            Floor floor = floorService.getById(floorHiddenId);
-            if (floor != null) {
+            Map map = mapService.getById(mapHiddenId);
+            if (map != null) {
                 jsonObject.put("result", "ok");
-                jsonObject.put("floor", floor);
+                jsonObject.put("map", map);
                 jsonObject.put("msg", "获取成功");
                 return jsonObject;
             }
@@ -198,7 +195,7 @@ public class FloorController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/floor/getOne 错误:" + e.getMessage(), e);
+            logger.error("/map/getOne 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
@@ -212,11 +209,11 @@ public class FloorController {
 
         try {
             // 分页构造器
-            Page<Floor> page = new Page<Floor>(pageNo, pageSize);
-            QueryWrapper<Floor> queryWrapper = new QueryWrapper<Floor>();
-            queryWrapper.orderByAsc("floor_id");
+            Page<Map> page = new Page<Map>(pageNo, pageSize);
+            QueryWrapper<Map> queryWrapper = new QueryWrapper<Map>();
+            queryWrapper.orderByAsc("map_id");
             // 执行分页
-            IPage<Floor> pageList = floorService.page(page, queryWrapper);
+            IPage<Map> pageList = mapService.page(page, queryWrapper);
             // 返回结果
             if (pageList.getRecords().size() <= 0) {
                 jsonObject.put("result", "no");
@@ -231,7 +228,7 @@ public class FloorController {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.error("/floor/queryData 错误:" + e.getMessage(), e);
+            logger.error("/map/queryData 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "搜索出现错误");
             return jsonObject;

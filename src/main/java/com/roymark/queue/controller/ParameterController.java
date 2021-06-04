@@ -127,8 +127,8 @@ public class ParameterController {
                 }
             }
             for (int i = 0; i < deletes.length; i++) {
-                Long deleteFloorHiddenId = Long.valueOf(deletes[i]);
-                parameterService.removeById(deleteFloorHiddenId);
+                Long deleteParamHiddenId = Long.valueOf(deletes[i]);
+                parameterService.removeById(deleteParamHiddenId);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");

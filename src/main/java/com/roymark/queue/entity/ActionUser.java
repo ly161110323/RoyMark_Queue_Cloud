@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @TableName(value = "br_user")
 public class ActionUser implements Serializable {
@@ -41,75 +45,4 @@ public class ActionUser implements Serializable {
     @TableField(exist = false)
     private String windowId;
 
-    public String getWindowId() {
-        return windowId;
-    }
-
-    public void setWindowId(String windowId) {
-        this.windowId = windowId;
-    }
-
-    public Long getUserHiddenId() {
-        return userHiddenId;
-    }
-
-    public void setUserHiddenId(Long userHiddenId) {
-        this.userHiddenId = userHiddenId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserSex() {
-        return userSex;
-    }
-
-    public void setUserSex(String userSex) {
-        this.userSex = userSex;
-    }
-
-    public String getUserDepartment() {
-        return userDepartment;
-    }
-
-    public void setUserDepartment(String userDepartment) {
-        this.userDepartment = userDepartment;
-    }
-
-    public String getUserPost() {
-        return userPost;
-    }
-
-    public void setUserPost(String userPost) {
-        this.userPost = userPost;
-    }
-
-    public String getUserPhoto() {
-        return userPhoto;
-    }
-
-    public void setUserPhoto(String userPhoto) {
-        this.userPhoto = userPhoto;
-    }
-
-    public Long getWindowHiddenId() {
-        return windowHiddenId;
-    }
-
-    public void setWindowHiddenId(Long windowHiddenId) {
-        this.windowHiddenId = windowHiddenId;
-    }
 }

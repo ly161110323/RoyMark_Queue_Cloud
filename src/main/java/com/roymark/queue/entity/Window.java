@@ -7,8 +7,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @TableName(value = "br_window")
 public class Window implements Serializable {
@@ -51,99 +55,4 @@ public class Window implements Serializable {
     @TableField(exist = false)
 	private String camId;
 
-	public Date getUserUpdateTime() {
-		return userUpdateTime;
-	}
-
-	public void setUserUpdateTime(Date userUpdateTime) {
-		this.userUpdateTime = userUpdateTime;
-	}
-
-	public Long getUserHiddenId() {
-		return userHiddenId;
-	}
-
-	public void setUserHiddenId(Long userHiddenId) {
-		this.userHiddenId = userHiddenId;
-	}
-
-	public Long getCamHiddenId() {
-		return camHiddenId;
-	}
-
-	public void setCamHiddenId(Long camHiddenId) {
-		this.camHiddenId = camHiddenId;
-	}
-
-	public String getCamId() {
-		return camId;
-	}
-
-	public void setCamId(String camId) {
-		this.camId = camId;
-	}
-
-	public Long getWindowHiddenId() {
-		return windowHiddenId;
-	}
-
-	public void setWindowHiddenId(Long windowHiddenId) {
-		this.windowHiddenId = windowHiddenId;
-	}
-
-	public String getWindowId() {
-		return windowId;
-	}
-
-	public void setWindowId(String windowId) {
-		this.windowId = windowId;
-	}
-
-	public String getWindowName() {
-		return windowName;
-	}
-
-	public void setWindowName(String windowName) {
-		this.windowName = windowName;
-	}
-
-	public String getWindowDepartment() {
-		return windowDepartment;
-	}
-
-	public void setWindowDepartment(String windowDepartment) {
-		this.windowDepartment = windowDepartment;
-	}
-
-	public String getWindowEvent() {
-		return windowEvent;
-	}
-
-	public void setWindowEvent(String windowEvent) {
-		this.windowEvent = windowEvent;
-	}
-
-	public Boolean getWindowActionAnalysis() {
-		return windowActionAnalysis;
-	}
-
-	public void setWindowActionAnalysis(Boolean windowActionAnalysis) {
-		this.windowActionAnalysis = windowActionAnalysis;
-	}
-
-	public Boolean getWindowNinePalaces() {
-		return windowNinePalaces;
-	}
-
-	public void setWindowNinePalaces(Boolean windowNinePalaces) {
-		this.windowNinePalaces = windowNinePalaces;
-	}
-
-	public String getWindowCoordinates() {
-		return windowCoordinates;
-	}
-
-	public void setWindowCoordinates(String windowCoordinates) {
-		this.windowCoordinates = windowCoordinates;
-	}
 }

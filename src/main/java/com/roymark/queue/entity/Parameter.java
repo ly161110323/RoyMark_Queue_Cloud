@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @TableName(value = "br_param")
 public class Parameter implements Serializable {
@@ -29,43 +33,4 @@ public class Parameter implements Serializable {
     @TableField(value = "param_remark")
     private String paramRemark;
 
-	public Long getParamHiddenId() {
-		return paramHiddenId;
-	}
-
-	public void setParamHiddenId(Long paramHiddenId) {
-		this.paramHiddenId = paramHiddenId;
-	}
-
-	public String getParamName() {
-		return paramName;
-	}
-
-	public void setParamName(String paramName) {
-		this.paramName = paramName;
-	}
-
-	public String getParamValue() {
-		return paramValue;
-	}
-
-	public void setParamValue(String paramValue) {
-		this.paramValue = paramValue;
-	}
-
-	public String getParamDefault() {
-		return paramDefault;
-	}
-
-	public void setParamDefault(String paramDefault) {
-		this.paramDefault = paramDefault;
-	}
-
-	public String getParamRemark() {
-		return paramRemark;
-	}
-
-	public void setParamRemark(String paramRemark) {
-		this.paramRemark = paramRemark;
-	}
 }

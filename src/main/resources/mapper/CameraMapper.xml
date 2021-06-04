@@ -15,9 +15,9 @@
         <result column="cam_coordinates" property="camCoordinates" />
         <result column="server_hidden_id" property="serverHiddenId" />
         <result column="server_id" property="serverId" />
-        <result column="floor_hidden_id" property="floorHiddenId" />
-        <result column="floor_id" property="floorId" />
-        <result column="floor_name" property="floorName" />
+        <result column="map_hidden_id" property="mapHiddenId" />
+        <result column="map_id" property="mapId" />
+        <result column="map_name" property="mapName" />
         <result column="group_hidden_id" property="groupHiddenId" />
         <result column="group_id" property="groupId" />
     </resultMap>
@@ -26,20 +26,20 @@
     <!-- 通用查询结果列 -->
     <select id="getAllCamera" resultMap="BaseResultMap">
         SELECT * FROM (br_cam LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id)
-        LEFT JOIN br_floor ON br_cam.floor_hidden_id=br_floor.floor_hidden_id
+        LEFT JOIN br_map ON br_cam.map_hidden_id=br_map.map_hidden_id
         LEFT JOIN br_group ON br_cam.group_hidden_id=br_group.group_hidden_id
     </select>
 
     <select id="getCameraByHiddenId" parameterType="long" resultMap="BaseResultMap">
         SELECT * FROM (br_cam LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id)
-        LEFT JOIN br_floor ON br_cam.floor_hidden_id=br_floor.floor_hidden_id
+        LEFT JOIN br_map ON br_cam.map_hidden_id=br_map.map_hidden_id
         LEFT JOIN br_group ON br_cam.group_hidden_id=br_group.group_hidden_id
         WHERE cam_hidden_id = #{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
         SELECT * FROM (br_cam LEFT JOIN br_server ON br_cam.server_hidden_id=br_server.server_hidden_id)
-        LEFT JOIN br_floor ON br_cam.floor_hidden_id=br_floor.floor_hidden_id
+        LEFT JOIN br_map ON br_cam.map_hidden_id=br_map.map_hidden_id
         LEFT JOIN br_group ON br_cam.group_hidden_id=br_group.group_hidden_id
         ${ew.customSqlSegment}
     </select>

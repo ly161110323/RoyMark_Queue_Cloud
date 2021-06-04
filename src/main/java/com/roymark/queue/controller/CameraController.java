@@ -222,7 +222,7 @@ public class CameraController {
 	@RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
 	public Object search(@RequestParam(required = false) String camId,
 						 @RequestParam(required = false) String serverId,
-			             @RequestParam(required = false) Long floorHiddenId, int pageNo, int pageSize) {
+			             @RequestParam(required = false) Long mapHiddenId, int pageNo, int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
@@ -233,8 +233,8 @@ public class CameraController {
 				queryWrapper.like ("cam_id",camId);
 			if (serverId != null)
 				queryWrapper.like("server_id", serverId);
-			if (floorHiddenId != null)
-				queryWrapper.eq("br_cam.floor_hidden_id", floorHiddenId);
+			if (mapHiddenId != null)
+				queryWrapper.eq("br_cam.map_hidden_id", mapHiddenId);
 			queryWrapper.orderByAsc("cam_id");
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
@@ -441,7 +441,7 @@ public class CameraController {
 	}
 
 	@RequestMapping(value = "/getCamByGroup", produces = "application/json;charset=utf-8")
-	public Object getCamByGroup(Long groupHiddenId) {
+	public Object getCamByGroup(Long groupHiddenId, int pageNo, @RequestParam(required = false, defaultValue = "9") int pageSize) {
 		JSONObject jsonObject = new JSONObject();
 		try {
 			Group group = groupService.getById(groupHiddenId);
@@ -450,8 +450,13 @@ public class CameraController {
 				jsonObject.put("msg", "分组不存在");
 				return jsonObject;
 			}
-			List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getGroupHiddenId, groupHiddenId));
-			if (cameras.size() <= 0) {
+			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
+			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
+
+			queryWrapper.eq("br_cam.groupHiddenId", groupHiddenId);
+			queryWrapper.orderByAsc("cam_id");
+			IPage<Camera> cameras = cameraService.page(page, queryWrapper);
+			if (cameras.getRecords().size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "分组内无摄像头");
 				return jsonObject;

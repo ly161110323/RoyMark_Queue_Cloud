@@ -7,8 +7,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @TableName(value = "br_cam")
 public class Camera implements Serializable {
@@ -49,17 +53,17 @@ public class Camera implements Serializable {
 	@TableField(exist = false)
 	private String serverId;
 
-	@TableField(value = "floor_hidden_id")
-	private Long floorHiddenId;
+	@TableField(value = "map_hidden_id")
+	private Long mapHiddenId;
 
 	@TableField(value = "group_hidden_id")
 	private Long groupHiddenId;
 
 	@TableField(exist = false)
-	private String floorId;
+	private String mapId;
 
 	@TableField(exist = false)
-	private String floorName;
+	private String mapName;
 
 	@TableField(exist = false)
 	private String camStatus;
@@ -67,139 +71,4 @@ public class Camera implements Serializable {
 	@TableField(exist = false)
 	private String groupId;
 
-	public Long getCamHiddenId() {
-		return camHiddenId;
-	}
-
-	public void setCamHiddenId(Long camHiddenId) {
-		this.camHiddenId = camHiddenId;
-	}
-
-	public String getCamId() {
-		return camId;
-	}
-
-	public void setCamId(String camId) {
-		this.camId = camId;
-	}
-
-	public String getCamVideoAddr() {
-		return camVideoAddr;
-	}
-
-	public void setCamVideoAddr(String camVideoAddr) {
-		this.camVideoAddr = camVideoAddr;
-	}
-
-	public String getCamMacAddr() {
-		return camMacAddr;
-	}
-
-	public void setCamMacAddr(String camMacAddr) {
-		this.camMacAddr = camMacAddr;
-	}
-
-	public String getCamBrand() {
-		return camBrand;
-	}
-
-	public void setCamBrand(String camBrand) {
-		this.camBrand = camBrand;
-	}
-
-	public String getCamType() {
-		return camType;
-	}
-
-	public void setCamType(String camType) {
-		this.camType = camType;
-	}
-
-	public Date getCamBirth() {
-		return camBirth;
-	}
-
-	public void setCamBirth(Date camBirth) {
-		this.camBirth = camBirth;
-	}
-
-	public String getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
-	}
-
-	public String getCamStatus() {
-		return camStatus;
-	}
-
-	public void setCamStatus(String camStatus) {
-		this.camStatus = camStatus;
-	}
-
-	public String getCamIp() {
-		return camIp;
-	}
-
-	public void setCamIp(String camIp) {
-		this.camIp = camIp;
-	}
-
-	public Long getServerHiddenId() {
-		return serverHiddenId;
-	}
-
-	public void setServerHiddenId(Long serverHiddenId) {
-		this.serverHiddenId = serverHiddenId;
-	}
-
-	public String getCamCoordinates() {
-		return camCoordinates;
-	}
-
-	public void setCamCoordinates(String camCoordinates) {
-		this.camCoordinates = camCoordinates;
-	}
-
-	public Long getFloorHiddenId() {
-		return floorHiddenId;
-	}
-
-	public void setFloorHiddenId(Long floorHiddenId) {
-		this.floorHiddenId = floorHiddenId;
-	}
-
-	public String getFloorId() {
-		return floorId;
-	}
-
-	public void setFloorId(String floorId) {
-		this.floorId = floorId;
-	}
-
-	public String getFloorName() {
-		return floorName;
-	}
-
-	public void setFloorName(String floorName) {
-		this.floorName = floorName;
-	}
-
-	public Long getGroupHiddenId() {
-		return groupHiddenId;
-	}
-
-	public void setGroupHiddenId(Long groupHiddenId) {
-		this.groupHiddenId = groupHiddenId;
-	}
-
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
 }

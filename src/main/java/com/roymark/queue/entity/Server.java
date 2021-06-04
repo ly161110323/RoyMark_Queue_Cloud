@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @TableName(value = "br_server")
 public class Server implements Serializable {
@@ -36,59 +40,4 @@ public class Server implements Serializable {
 	@TableField(exist = false)
 	private String programStatus;
 
-	public Long getServerHiddenId() {
-		return serverHiddenId;
-	}
-
-	public void setServerHiddenId(Long serverHiddenId) {
-		this.serverHiddenId = serverHiddenId;
-	}
-
-	public String getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
-	}
-
-	public String getServerName() {
-		return serverName;
-	}
-
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
-	}
-
-	public String getServerIp() {
-		return serverIp;
-	}
-
-	public void setServerIp(String serverIp) {
-		this.serverIp = serverIp;
-	}
-
-	public Long getServerPort() {
-		return serverPort;
-	}
-
-	public void setServerPort(Long serverPort) {
-		this.serverPort = serverPort;
-	}
-
-	public String getServerStatus() {
-		return serverStatus;
-	}
-
-	public void setServerStatus(String serverStatus) {
-		this.serverStatus = serverStatus;
-	}
-
-	public String getProgramStatus() {
-		return programStatus;
-	}
-
-	public void setProgramStatus(String programStatus) {
-		this.programStatus = programStatus;
-	}
 }
