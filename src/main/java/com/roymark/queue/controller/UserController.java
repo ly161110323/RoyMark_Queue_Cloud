@@ -1,5 +1,6 @@
 package com.roymark.queue.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,9 +12,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.service.AnomalyService;
+import com.roymark.queue.util.HttpUtil;
+import com.roymark.queue.util.web.HttpUtils;
+import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -125,8 +132,25 @@ public class UserController {
 
 					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
 
+					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 
 
+					// 处理发送地址
+					String host = "http://10.249.43.140:5000";// 请求域名或ip
+					String path = "/insertFaceImage";// 请求路径
+
+					requestParams.add("image", uploadinfo.getResource());
+
+
+					try {
+						ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
+						System.out.println(response);
+						if(response.getStatusCodeValue()==200){
+							logger.info("启动成功;\n");
+						}
+					} catch (Exception e) {
+						logger.error(e.getMessage());
+					}
 
 					if (result) {
 						jsonObject.put("result", "ok");
@@ -275,6 +299,30 @@ public class UserController {
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/test", produces = "application/json;charset=utf-8")
+
+	public void test() {
+		JSONObject requestData = new JSONObject();
+		// 处理发送地址
+		String host = "http://10.249.43.140:5000";// 请求域名或ip
+		String path = "/createCollection";// 请求路径
+
+		requestData.put("collectionName", "test");
+		HashMap<String, String> header = new HashMap<>();
+		header.put("Content-Type", "application/json");// 设置请求头信息
+		String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
+
+		try {
+			HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+			if(response.getStatusLine().getStatusCode() == 200){
+				logger.info("启动成功;\n");
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
 	}
 

@@ -49,8 +49,11 @@ public class Camera implements Serializable {
 	@TableField(exist = false)
 	private String serverId;
 
-	@TableField(value = "floor_Hidden_id")
+	@TableField(value = "floor_hidden_id")
 	private Long floorHiddenId;
+
+	@TableField(value = "group_hidden_id")
+	private Long groupHiddenId;
 
 	@TableField(exist = false)
 	private String floorId;
@@ -60,6 +63,9 @@ public class Camera implements Serializable {
 
 	@TableField(exist = false)
 	private String camStatus;
+
+	@TableField(exist = false)
+	private String groupId;
 
 	public Long getCamHiddenId() {
 		return camHiddenId;
@@ -179,5 +185,21 @@ public class Camera implements Serializable {
 
 	public void setFloorName(String floorName) {
 		this.floorName = floorName;
+	}
+
+	public Long getGroupHiddenId() {
+		return groupHiddenId;
+	}
+
+	public void setGroupHiddenId(Long groupHiddenId) {
+		this.groupHiddenId = groupHiddenId;
+	}
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 }

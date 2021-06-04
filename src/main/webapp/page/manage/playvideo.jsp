@@ -21,9 +21,11 @@
         </video>--%>
         <img id="show_video" style="width: auto;height: 100%;object-fit:cover" src="">
     </div>
+    <button onclick="test();">Click</button>
+
 </div>
 <script>
-    var wsUrl = "${ctx}/webSocketService?video_address=rtsp://admin:1234qwer@172.16.1.67:171/h265/ch1/sub/av_stream,rtsp://admin:1234qwer@172.16.1.67:170/h265/ch1/sub/av_stream&x=4&y=3";
+    var wsUrl = "${ctx}/webSocketService?video_address=rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/101,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/201,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/301,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/401&cam_id=test1,test2,test3,test4&width=1280&height=960";
     //建立连接
     var ws1 = new Ws({
         host: window.location.host.split(":")[0]
@@ -41,6 +43,13 @@
             }
         }
     });
+
+    function test() {
+        alert("test");
+        ws1.send("test");
+        ws1.ws.send("testOr");
+    };
+
 
 </script>
 </body>

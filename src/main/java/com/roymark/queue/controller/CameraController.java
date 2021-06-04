@@ -11,10 +11,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Anomaly;
-import com.roymark.queue.entity.CamAndWinInfo;
-import com.roymark.queue.entity.Window;
-import com.roymark.queue.service.AnomalyService;
+import com.roymark.queue.entity.*;
+import com.roymark.queue.service.GroupService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +23,6 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.roymark.queue.entity.Camera;
 import com.roymark.queue.service.CameraService;
 
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +40,9 @@ public class CameraController {
 
 	@Autowired
 	private WindowService windowService;
+
+	@Autowired
+	private GroupService groupService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -402,5 +402,70 @@ public class CameraController {
 		}
 	}
 
+	@RequestMapping(value = "/batchGroup", produces = "application/json;charset=utf-8")
+	public Object batchGroup(String camHiddenIdList, Long groupHiddenId) {
+		JSONObject jsonObject = new JSONObject();
+		StringBuilder msg = new StringBuilder();
+		try {
+			Group group = groupService.getById(groupHiddenId);
+			if (group == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "分组不存在");
+				return jsonObject;
+			}
+			String[] camHiddenIds = camHiddenIdList.split(",");
+			for (int i=0; i<camHiddenIds.length; i++) {
+				Long camHiddenId = Long.valueOf(camHiddenIds[i]);
+				Camera camera = cameraService.getById(camHiddenId);
+				if (camera == null) {
+					msg.append("camHiddenId:"+camHiddenIds[i]+"不存在\n");
+				}
+				else {
+					camera.setGroupHiddenId(groupHiddenId);
+					cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camHiddenId));
+				}
+			}
+			if (msg.length() == 0) {
+				msg.append("全部分组成功");
+			}
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", msg.toString());
+			return jsonObject;
+		}catch (Exception e) {
+			logger.error("/camera/batchGroup 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "捕获出现错误");
+			return jsonObject;
+		}
 
+	}
+
+	@RequestMapping(value = "/getCamByGroup", produces = "application/json;charset=utf-8")
+	public Object getCamByGroup(Long groupHiddenId) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			Group group = groupService.getById(groupHiddenId);
+			if (group == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "分组不存在");
+				return jsonObject;
+			}
+			List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getGroupHiddenId, groupHiddenId));
+			if (cameras.size() <= 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "分组内无摄像头");
+				return jsonObject;
+			}
+			jsonObject.put("cameras", cameras);
+			jsonObject.put("result", "ok");
+			jsonObject.put("msg", "获取成功");
+			return jsonObject;
+		}catch (Exception e) {
+			logger.error("/camera/getCamByGroup 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "获取出现错误");
+			return jsonObject;
+		}
+
+	}
 }

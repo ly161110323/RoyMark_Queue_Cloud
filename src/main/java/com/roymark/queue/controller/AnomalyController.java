@@ -68,8 +68,8 @@ public class AnomalyController {
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
         try {
-            System.out.println("收到的东西！！！！：");
-            System.out.println(anomaly);
+            // System.out.println("收到的东西！！！！：");
+            // System.out.println(anomaly);
             if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
                 logger.info("回传格式有误");
                 return;

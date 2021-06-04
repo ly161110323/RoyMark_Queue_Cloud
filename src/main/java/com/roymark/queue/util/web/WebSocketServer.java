@@ -2,6 +2,11 @@ package com.roymark.queue.util.web;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.roymark.queue.entity.Camera;
+import com.roymark.queue.service.CameraService;
+import com.roymark.queue.service.GroupService;
+import com.roymark.queue.util.WaterMarkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -40,6 +45,12 @@ public class WebSocketServer{
     // rtsp服务器地址
     private List<String> rtspUrls;
 
+    // CameraId集合
+    private List<String> camIds;
+
+    // GroupHiddenId;
+    int groupHiddenId;
+
     private Boolean openFlag;
 
     // 读取帧的宽度
@@ -59,7 +70,14 @@ public class WebSocketServer{
     // y轴上的图片个数
     private int yPicNum;
 
+    // 当前页数
+    private int currentPage;
+
+    // 最大页数
+    private int maxPage;
+
     List<FFmpegFrameGrabber> grabbers;
+
 
     // 线程
     private List<ReadPicThread> readPicThreads;
@@ -72,8 +90,9 @@ public class WebSocketServer{
         private FFmpegFrameGrabber picGrabber;
         private String picRtspUrl;
         private BufferedImage image;
+        private WaterMarkUtil waterMarkUtil;
+        private String camId;
         public volatile boolean flag = true;
-        public volatile boolean exitFlag = false;
 
         public BufferedImage getImage() {
             return image;
@@ -87,12 +106,14 @@ public class WebSocketServer{
             }
         }
 
-        public ReadPicThread(String threadName, int picWidth, int picHeight, FFmpegFrameGrabber picGrabber, String picRtspUrl) {
+        public ReadPicThread(String threadName, int picWidth, int picHeight, FFmpegFrameGrabber picGrabber, String picRtspUrl, String camId) {
             this.threadName = threadName;
             this.picWidth = picWidth;
             this.picHeight = picHeight;
             this.picGrabber = picGrabber;
             this.picRtspUrl = picRtspUrl;
+            this.waterMarkUtil = new WaterMarkUtil();
+            this.camId = camId;
             image = new BufferedImage(picWidth, picHeight, BufferedImage.TYPE_INT_RGB);
         }
 
@@ -112,6 +133,8 @@ public class WebSocketServer{
                         if (frame == null)
                             return;
                         image = java2DFrameConverter.getBufferedImage(frame);
+                        if (camId != null && !camId.equals(""))
+                            waterMarkUtil.mark(image, Color.RED, camId);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         log.error(e.getMessage());
@@ -138,22 +161,24 @@ public class WebSocketServer{
         this.openFlag = true;
         grabbers = new ArrayList<>();
         rtspUrls = new ArrayList<>();
-        String rtspUrlsStr = "";
+        camIds = new ArrayList<>();
         this.session = session;
         Map<String, List<String>> map = session.getRequestParameterMap();
-        List<String> list = map.get("video_address");
+        List<String> rtspList = map.get("video_address");
+        List<String> camIdList = map.get("cam_id");
+
         // x和y轴上的图片个数
         if (map.containsKey("x")) {
             xPicNum = Integer.parseInt(map.get("x").get(0));
         }
         else {
-            xPicNum = 1;
+            xPicNum = 3;
         }
         if (map.containsKey("y")) {
             yPicNum = Integer.parseInt(map.get("y").get(0));
         }
         else {
-            yPicNum = 1;
+            yPicNum = 3;
         }
         if (map.containsKey("width")) {
             width = Integer.parseInt(map.get("width").get(0));
@@ -174,15 +199,20 @@ public class WebSocketServer{
         width = singleWidth * xPicNum;
         height = singleHeight * yPicNum;
 
-        if(list != null && list.size() > 0){
-            rtspUrlsStr = list.get(0);
+        String rtspUrlsStr = "";
+        if(rtspList != null && rtspList.size() > 0){
+            rtspUrlsStr = rtspList.get(0);
         }
-        log.info("rtsp:"+rtspUrlsStr);
+        String camIdStr = "";
+        if (camIdList != null && camIdList.size() > 0) {
+            camIdStr = camIdList.get(0);
+        }
+
         rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
-        if (rtspUrls.size() > xPicNum * yPicNum) {
-            log.info("显示个数小于rtsp流的个数");
-            return ;
-        }
+        camIds = Arrays.asList(camIdStr.split(","));
+
+        currentPage = 0;
+        maxPage = rtspUrls.size() / (xPicNum*yPicNum);
 
         log.info("用户连接");
         JSONObject jsonObject = new JSONObject();
@@ -230,6 +260,7 @@ public class WebSocketServer{
      */
     @OnMessage
     public void onMessage(String message, Session session) {
+        System.out.println("消息：" + message);
         log.info("用户消息,报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
@@ -269,7 +300,7 @@ public class WebSocketServer{
                     this.session.getBasicRemote().sendText(message);
                 }
             } catch (IOException e) {
-                log.error("发送信息失败 ，信息是：" + message);
+                // log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send str msg exception: ", e);
             }
         }
@@ -289,7 +320,7 @@ public class WebSocketServer{
 //                    }
 //                }
             } catch (IOException | EncodeException e) {
-                log.error("发送信息失败 ，信息是：" + message);
+                // log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send object msg exception: ", e);
             }
         }
@@ -301,7 +332,7 @@ public class WebSocketServer{
                 if (this.session.isOpen())
                     this.session.getBasicRemote().sendBinary(message);
             } catch (IOException e) {
-                log.error("发送信息失败 ，信息是：" + message);
+                // log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send byteBuffer msg exception: ", e);
             }
         }
@@ -384,7 +415,11 @@ public class WebSocketServer{
                 }
                 else {
                     grabbers.get(i).start();
-                    ReadPicThread readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
+                    ReadPicThread readPicThread = null;
+                    if (i < camIds.size())
+                        readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
+                    else
+                        readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), null);
                     readPicThread.start();
                     readPicThreads.add(readPicThread);
                 }
@@ -399,28 +434,26 @@ public class WebSocketServer{
         }
 
         while (this.openFlag) {
-            // System.out.println("push: "+this.thread.getId());
-            // System.out.println(Thread.currentThread().isInterrupted());
             try {
                 BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-                int induce = 0;             // 当前要写入图片索引0 - XpicNum*yPicNum
+                int currentIndex = currentPage*xPicNum*yPicNum; // 当前页的起始点
 
                 int rtspNum = rtspUrls.size();
                 for (int i=0; i<yPicNum; i++) {
                     for (int j=0; j<xPicNum; j++) {
-                        if (induce >= rtspNum) {
+                        if (currentIndex >= rtspNum) {
                             break;
                         }
-                        else if (readPicThreads.get(induce) != null) {    // 当rtsp流正确时菜获取
-                            BufferedImage partImage = readPicThreads.get(induce).getImage();
+                        else if (readPicThreads.get(currentIndex) != null) {    // 当rtsp流正确时菜获取
+                            BufferedImage partImage = readPicThreads.get(currentIndex).getImage();
                             int[] imageArray = new int[width * height];
                             imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                         }
-                        induce++;
+                        currentIndex++;
                     }
-                    if (induce >= rtspNum) {
+                    if (currentIndex >= rtspNum) {
                         break;
                     }
 
