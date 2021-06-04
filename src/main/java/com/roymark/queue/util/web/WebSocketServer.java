@@ -210,7 +210,6 @@ public class WebSocketServer{
         for (ReadPicThread readPicThread : readPicThreads) {
             if (readPicThread != null)
                 readPicThread.flag = false;
-            readPicThreads.remove(readPicThread);
         }
 
         if (this.openFlag) {

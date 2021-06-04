@@ -150,15 +150,15 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(inputUserName != "请输入人员姓名"){
+                if(inputUserName != ""){
                     params["userName"] = inputUserName;
 
                 }
-                if(inputUserId !="请输入人员编号"){
+                if(inputUserId !=""){
                     params["userId"] = inputUserId;
 
                 }
-                if(inputUserDepartment !="请输入所属部门"){
+                if(inputUserDepartment !=""){
                     params["userDepartment"] = inputUserDepartment;
                 }
 
