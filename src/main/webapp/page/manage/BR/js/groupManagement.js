@@ -6,135 +6,18 @@ $(document).ready(function () {
     searchClick();
     clearClick();
     // init_areaInfo();
-    queryMapList();
-    queryServerList();
-    queryGroupList();
+
     //
     // icon_operate();//部门图标处理
     //
-    groupManagementClick();
+
     // selectAreaClick();
 });
 
 
 
-function init_areaInfo() {
-    $("#Area_Ls").val(defaultAreaLs);
-    $("#Area_Name").val(defaultAreaName);
 
-}
 
-function queryMapList() {
-
-    var rootPath = getWebRootPath();
-    var url = rootPath + "/map/queryData"
-    var params = {
-        "pageNo": 1,
-        "pageSize": -1
-    }
-
-// //获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        data: params,
-        success: function (data) {
-// 调用成功时对返回的值进行解析
-            var list = data.pageList.records;
-//若未出错，则获取信息设置到控件中
-            var str = "";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].mapHiddenId + "'>" + list[i].mapId + "</option>";
-            }
-
-            // $("#formCaseAreaLs").empty();
-            // $("#formCaseAreaLs").append(str);
-            $("#mapId").empty();
-            $("#mapId").append("<option value=''>请选择绑定楼层ID</option>");
-            $("#mapId").append(str);
-            // $("#selectCommitWindowId").empty();
-            // $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
-            // $("#selectCommitWindowId").append(str);
-        }
-    });
-}
-function queryGroupList() {
-
-    var rootPath = getWebRootPath();
-    var url = rootPath + "/group/queryData"
-    var params = {
-        "pageNo": 1,
-        "pageSize": -1
-    }
-
-// //获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        data: params,
-        success: function (data) {
-// 调用成功时对返回的值进行解析
-            var list = data.pageList.records;
-//若未出错，则获取信息设置到控件中
-            var str = "";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].groupHiddenId + "'>" + list[i].groupId + "</option>";
-            }
-
-            // $("#formCaseAreaLs").empty();
-            // $("#formCaseAreaLs").append(str);
-            $("#groupId").empty();
-            $("#groupId").append("<option value=''>请选择所在分组</option>");
-            $("#groupId").append(str);
-            // $("#selectCommitWindowId").empty();
-            // $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
-            // $("#selectCommitWindowId").append(str);
-        }
-    });
-}
-function queryServerList() {
-
-    var rootPath = getWebRootPath();
-    var url = rootPath + "/server/queryData"
-    var params = {
-        "pageNo": 1,
-        "pageSize": -1
-    }
-
-// //获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        data: params,
-        success: function (data) {
-// 调用成功时对返回的值进行解析
-            var list = data.pageList.records;
-//若未出错，则获取信息设置到控件中
-            var str = "";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverId + "</option>";
-            }
-
-            // $("#formCaseAreaLs").empty();
-            // $("#formCaseAreaLs").append(str);
-            $("#serverId").empty();
-            $("#serverId").append("<option value=''>请选择绑定服务器ID</option>");
-            $("#serverId").append(str);
-            $("#selectCommitServerId").empty();
-            $("#selectCommitServerId").append("<option value=''>请选择绑定服务器ID</option>");
-            $("#selectCommitServerId").append(str);
-        }
-    });
-}
 
 
 
@@ -157,20 +40,20 @@ function trClick() {
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
 
-        $("#camId").val($(this).find("td:eq(2)").text());
+        $("#groupId").val($(this).find("td:eq(2)").text());
 
-        $("#camIp").val($(this).find("td:eq(3)").text());
+        $("#camNumber").val($(this).find("td:eq(3)").text());
         // $("#windowId").val($(this).find("td:eq(4)").text());
         // $("#serverId").val($(this).find("td:eq(4)").text());
         // $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camVideoAddr").val($(this).find("td:eq(8)").text());
-        $("#camMacAddr").val($(this).find("td:eq(9)").text());
-        $("#camBrand").val($(this).find("td:eq(10)").text());
-        $("#camType").val($(this).find("td:eq(11)").text());
-        $("#camBirth").val($(this).find("td:eq(12)").text());
-        $("#serverId").val($(this).find("td:eq(13)").text());
-        $("#mapId").val($(this).find("td:eq(14)").text());
-        $("#groupId").val($(this).find("td:eq(15)").text());
+        // $("#camVideoAddr").val($(this).find("td:eq(8)").text());
+        // $("#camMacAddr").val($(this).find("td:eq(9)").text());
+        // $("#camBrand").val($(this).find("td:eq(10)").text());
+        // $("#camType").val($(this).find("td:eq(11)").text());
+        // $("#camBirth").val($(this).find("td:eq(12)").text());
+        // $("#serverId").val($(this).find("td:eq(13)").text());
+        // $("#mapId").val($(this).find("td:eq(14)").text());
+        // $("#groupId").val($(this).find("td:eq(15)").text());
 
         // var tempValue = $(this).find("td:eq(0) input[name='deptImagepath']").val();
         //
@@ -231,14 +114,14 @@ function checkBoxStyle_Control() {
 
 //页面数据合法性验证
 function validateData(isAdd) {
-    if ($("#camId").val().trim() == "") {
-        layer.alert("摄像头ID不能为空！");
+    if ($("#groupId").val().trim() == "") {
+        layer.alert("分组ID不能为空！");
         return;
     }
 
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
-    var chooseId = $("#camId").val();
+    var chooseId = $("#groupId").val();
     var isExit = false;
 
 //循环列表判断是否已经存在,放在客户端校验
@@ -248,12 +131,12 @@ function validateData(isAdd) {
         if ($(element).find("td:eq(2)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;
-                layer.alert("摄像头ID已存在！");
+                layer.alert("分组ID已存在！");
                 return false;
             } else {
                 if (objLs != dataId) {
                     isExit = true;
-                    layer.alert("摄像头ID已存在！");
+                    layer.alert("分组ID已存在！");
                     return false;
                 }
             }
@@ -299,19 +182,11 @@ function addClick() {
 
 
         var formData = new FormData();
-        formData.append("camId", $('#camId').val());
-        formData.append("camIp", $("#camIp").val());
-        formData.append("camVideoAddr", $("#camVideoAddr").val());
-        formData.append("camMacAddr", $("#camMacAddr").val());
-        formData.append("camBrand", $("#camBrand").val());
-        formData.append("camType", $("#camType").val());
-        formData.append("mapHiddenId", $("#mapId").val());
-        formData.append("groupHiddenId", $("#groupId").val());
-        formData.append("serverHiddenId", $("#serverId").val());
-        formData.append("cameraBirthStr", $("#camBirth").val());
+        formData.append("groupId", $('#groupId').val());
+
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/insert";
+        var url = rootPath + "/group/insert";
         $.ajax({
             type: 'POST',
             url: url,
@@ -348,21 +223,13 @@ function updateClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("camHiddenId", dataId);
-        formData.append("camId", $('#camId').val());
-        formData.append("camIp", $("#camIp").val());
-        formData.append("camVideoAddr", $("#camVideoAddr").val());
-        formData.append("camMacAddr", $("#camMacAddr").val());
-        formData.append("camBrand", $("#camBrand").val());
-        formData.append("camType", $("#camType").val());
-        formData.append("mapHiddenId", $("#mapId").val());
-        formData.append("groupHiddenId", $("#groupId").val());
-        formData.append("serverHiddenId", $("#serverId").val());
-        formData.append("cameraBirthStr", $("#camBirth").val());
+        formData.append("groupHiddenId", dataId);
+        formData.append("groupId", $('#groupId').val());
+
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/update";
+        var url = rootPath + "/group/update";
 
         $.ajax({
             url: url,
@@ -392,7 +259,7 @@ function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click', '#deleteCommit', function () {
         var rootPath = getWebRootPath();
-        var url = rootPath + "/camera/delete";
+        var url = rootPath + "/group/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {

@@ -80,7 +80,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="floorId" id="floorId">
+                                                   name="mapId" id="mapId">
                                         </div>
                                     </div>
                                 </td>
@@ -92,7 +92,7 @@
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="floorName" id="floorName">
+                                                   name="mapName" id="mapName">
                                         </div>
                                     </div>
                                 </td>
@@ -140,7 +140,7 @@
                                            class="control-label input_lable_hm table_label_zd ">地图ID</label>
                                     <select
                                             class="form-control table_content_zd" name="selectCommitWindowId"
-                                            id="selectCommitFloorId"
+                                            id="selectCommitMapId"
                                             style="width: 20%; float: left; margin-right: 10px">
                                         <option value="">请选择地图ID</option>
                                     </select>
@@ -148,7 +148,7 @@
                                            class="control-label input_lable_hm table_label_zd ">地图名称</label>
                                     <select
                                             class="form-control table_content_zd" name="selectCommitServerId"
-                                            id="selectCommitFloorName"
+                                            id="selectCommitMapName"
                                             style="width: 20%; float: left; margin-right: 10px">
                                         <option value="">请选择地图名称</option>
                                     </select>

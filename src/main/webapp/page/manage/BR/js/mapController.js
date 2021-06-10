@@ -126,7 +126,7 @@ function loadDivNodes(cameraArray) {
 }
 
 //载入地图与摄像头信息
-function loadMapAndCamera(url, floorHiddenId) {
+function loadMapAndCamera(url, mapHiddenId) {
     if (url) {
         var rootPath = getWebRootPath()
         console.log(rootPath + url)
@@ -139,19 +139,19 @@ function loadMapAndCamera(url, floorHiddenId) {
             $('#main').css('height', img.height)
             // $('#main').append(img)
             $('#main').css('background', 'url(' + img.src + ')')
-            $('#floorId').val(mapList[curMapIndex]['floorId'])
-            $('#floorName').val(mapList[curMapIndex]['floorName'])
-            // $('#mapImageFileName').val(mapList[curMapIndex]['floorMapPath'])
+            $('#mapId').val(mapList[curMapIndex]['mapId'])
+            $('#mapName').val(mapList[curMapIndex]['mapName'])
+            // $('#mapImageFileName').val(mapList[curMapIndex]['mapMapPath'])
         }
     }
-    if (floorHiddenId) {
+    if (mapHiddenId) {
         // initDivNode
         var rootPath = getWebRootPath();
         var url = rootPath + "/camera/queryData"
         var params = {
             "pageNo": 1,
             "pageSize": -1,
-            "floorHiddenId": floorHiddenId
+            "mapHiddenId": mapHiddenId
         }
 
         $.ajax({
@@ -198,11 +198,11 @@ function flashAddibleCamera(noCoordCams) {
 }
 
 function validateData(isAdd) {
-    if ($("#floorId").val().trim() == "") {
+    if ($("#mapId").val().trim() == "") {
         layer.alert("地图ID不能为空！");
         return false;
     }
-    if ($("#floorName").val().trim() == "") {
+    if ($("#mapName").val().trim() == "") {
         layer.alert("地图名称不能为空！");
         return false;
     }
@@ -214,13 +214,13 @@ function validateData(isAdd) {
     }
 
 
-    var chooseId = $("#floorId").val();
-    var chooseName = $("#floorName").val();
+    var chooseId = $("#mapId").val();
+    var chooseName = $("#mapName").val();
     // var fileName = $("#mapImageFileName").val();
     // console.log(fileName)
     var isExit = false;
-    var idIndex = mapList.findIndex(e => e.floorId == chooseId)
-    var nameIndex = mapList.findIndex(e => e.floorName == chooseName)
+    var idIndex = mapList.findIndex(e => e.mapId == chooseId)
+    var nameIndex = mapList.findIndex(e => e.mapName == chooseName)
     if (isAdd) {
         if (idIndex != -1 || nameIndex != -1) {
             isExit = true;
@@ -253,16 +253,16 @@ function updateClick(callback) {
             return;
         }
         var formData = new FormData();
-        formData.append("floorHiddenId", mapList[curMapIndex].floorHiddenId);
-        formData.append("floorId", $('#floorId').val());
-        formData.append("floorName", $("#floorName").val());
+        formData.append("mapHiddenId", mapList[curMapIndex].mapHiddenId);
+        formData.append("mapId", $('#mapId').val());
+        formData.append("mapName", $("#mapName").val());
         if ($('#mapImageFileName').val() != "") {
             formData.append("uploadMap", $('#mapImage')[0].files[0]);
         }
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/floor/update";
+        var url = rootPath + "/map/update";
 
         $.ajax({
             url: url,
@@ -299,12 +299,12 @@ function addClick() {
         }
         var formData = new FormData();
         formData.append("uploadMap", $('#mapImage')[0].files[0]);
-        formData.append("floorId", $('#floorId').val());
-        formData.append("floorName", $("#floorName").val());
+        formData.append("mapId", $('#mapId').val());
+        formData.append("mapName", $("#mapName").val());
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/floor/insert";
+        var url = rootPath + "/map/insert";
         $.ajax({
             type: 'POST',
             url: url,
@@ -337,9 +337,9 @@ function clearData() {
     $file.after($file.clone().val(""));
     $file.remove();
 
-    $("#floorName").val("");
+    $("#mapName").val("");
 
-    $("#floorId").val("");
+    $("#mapId").val("");
 
 
 }
@@ -370,17 +370,17 @@ function uploadMap() {
 //查询所有地图
 function queryMap(id = "", name = "") {
     var rootPath = getWebRootPath();
-    var url = rootPath + "/floor/queryData"
+    var url = rootPath + "/map/queryData"
     var params = {
         "pageNo": 1,
         "pageSize": -1
     }
 
     if (id != "") {
-        params["floorId"] = id
+        params["mapId"] = id
     }
     if (name != "") {
-        params["floorName"] = name
+        params["mapName"] = name
     }
     $.ajax({
         type: 'POST',
@@ -398,7 +398,7 @@ function queryMap(id = "", name = "") {
             console.log(mapList)
             if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                 // curMap = mapList[curMapIndex]
-                loadMapAndCamera(mapList[curMapIndex].floorMapPath, mapList[curMapIndex].floorHiddenId); //加载背景图
+                loadMapAndCamera(mapList[curMapIndex].mapPath, mapList[curMapIndex].mapHiddenId); //加载背景图
                 loadMapOptions();
                 setInterval(queryAnomalyEvent,3000);
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
@@ -414,21 +414,21 @@ function queryMap(id = "", name = "") {
 function loadMapOptions() {
     var idstr = ""
     for (var i = 0; i < mapList.length; i++) {
-        idstr += "<option value='" + mapList[i].floorHiddenId + "'>" + mapList[i].floorId + "</option>";
+        idstr += "<option value='" + mapList[i].mapHiddenId + "'>" + mapList[i].mapId + "</option>";
     }
-    $("#selectCommitFloorId").empty();
-    // $("#selectCommitFloorId").append("<option value=''>请选择地图ID</option>");
-    $("#selectCommitFloorId").append(idstr);
-    $("#selectCommitFloorId").val(mapList[curMapIndex].floorHiddenId);
+    $("#selectCommitMapId").empty();
+    // $("#selectCommitmapId").append("<option value=''>请选择地图ID</option>");
+    $("#selectCommitMapId").append(idstr);
+    $("#selectCommitMapId").val(mapList[curMapIndex].mapHiddenId);
 
     var namestr = ""
     for (var i = 0; i < mapList.length; i++) {
-        namestr += "<option value='" + mapList[i].floorHiddenId + "'>" + mapList[i].floorName + "</option>";
+        namestr += "<option value='" + mapList[i].mapHiddenId + "'>" + mapList[i].mapName + "</option>";
     }
-    $("#selectCommitFloorName").empty();
-    // $("#selectCommitFloorName").append("<option value=''>请选择地图名称</option>");
-    $("#selectCommitFloorName").append(namestr);
-    $("#selectCommitFloorName").val(mapList[curMapIndex].floorHiddenId);
+    $("#selectCommitMapName").empty();
+    // $("#selectCommitmapName").append("<option value=''>请选择地图名称</option>");
+    $("#selectCommitMapName").append(namestr);
+    $("#selectCommitMapName").val(mapList[curMapIndex].mapHiddenId);
     // flashAddibleCamera(noCoordCams);
 }
 
@@ -473,15 +473,15 @@ function saveCamera(callback) {
 function bindEventListen() {
     $('#saveCameraCommit').click(saveCamera);
     $(document).on('click', '#changeCommit', function () {
-        var selectId = $('#selectCommitFloorId').val();
-        var selectName = $('#selectCommitFloorName').val();
+        var selectId = $('#selectCommitmapId').val();
+        var selectName = $('#selectCommitmapName').val();
 
-        if (selectId == mapList[curMapIndex].floorHiddenId) {
+        if (selectId == mapList[curMapIndex].mapHiddenId) {
             layer.msg("已选择当前地图！")
             return;
         }
-        var map = mapList.find(e => e.floorHiddenId == selectId)
-        curMapIndex = mapList.findIndex(e => e.floorHiddenId == selectId)
+        var map = mapList.find(e => e.mapHiddenId == selectId)
+        curMapIndex = mapList.findIndex(e => e.mapHiddenId == selectId)
         console.log(curMapIndex)
         if (isChange) {
             layer.confirm('是否保存当前摄像头位置修改？', {
@@ -490,27 +490,27 @@ function bindEventListen() {
             }, function () {
                 // $('#modifyCommit').trigger("click");
                 saveCamera(function () {
-                    loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+                    loadMapAndCamera(map.mapMapPath, map.mapHiddenId);
                     loadMapOptions();
                 });
 
             }, function () {
-                loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+                loadMapAndCamera(map.mapMapPath, map.mapHiddenId);
                 loadMapOptions();
             })
         } else {
-            loadMapAndCamera(map.floorMapPath, map.floorHiddenId);
+            loadMapAndCamera(map.mapMapPath, map.mapHiddenId);
             loadMapOptions();
         }
 
     })
-    $('#selectCommitFloorId').change(function () {
+    $('#selectCommitmapId').change(function () {
         var hiddenId = $(this).children('option:selected').val()
-        $('#selectCommitFloorName').val(hiddenId)
+        $('#selectCommitmapName').val(hiddenId)
     })
-    $('#selectCommitFloorName').change(function () {
+    $('#selectCommitmapName').change(function () {
         var hiddenId = $(this).children('option:selected').val()
-        $('#selectCommitFloorId').val(hiddenId)
+        $('#selectCommitmapId').val(hiddenId)
     })
     document.documentElement.onclick = function () {
         if (rm.style.display == "block") {
@@ -605,7 +605,7 @@ function queryAnomalyEvent() {
         cache: false,
 
         dataType: 'json',
-        data: {"floorHiddenId": mapList[curMapIndex].floorHiddenId},
+        data: {"mapHiddenId": mapList[curMapIndex].mapHiddenId},
         success: function (data) {
             console.log(data)
             if (data.result == "error") {
