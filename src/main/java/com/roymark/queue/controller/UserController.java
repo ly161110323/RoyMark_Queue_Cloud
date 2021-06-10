@@ -177,8 +177,7 @@ public class UserController {
 				if(response.getStatusCodeValue() == 200){
 					logger.info("向服务器发送图片;");
 					HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
-					System.out.println(String.valueOf(hashMap.get("info")));
-					FaceVector faceVector = new FaceVector();
+					// System.out.println(String.valueOf(hashMap.get("info")));
 
 					// 添加用户
 					tempActionUser.setUserHiddenId(Long.valueOf(0));
@@ -199,6 +198,7 @@ public class UserController {
 					}
 					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
 
+					FaceVector faceVector = new FaceVector();
 					faceVector.setFaceVectorId(Long.valueOf(0));
 					faceVector.setFaceId(String.valueOf(hashMap.get("info")));
 					faceVector.setUserHiddenId(queryUser.getUserHiddenId());
