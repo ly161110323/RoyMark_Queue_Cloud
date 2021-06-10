@@ -5,13 +5,18 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
+import com.roymark.queue.entity.FaceVector;
+import com.roymark.queue.entity.Parameter;
 import com.roymark.queue.service.AnomalyService;
+import com.roymark.queue.service.FaceVectorService;
+import com.roymark.queue.service.ParameterService;
 import com.roymark.queue.util.HttpUtil;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
@@ -44,6 +49,12 @@ public class UserController {
 
 	@Autowired
 	private AnomalyService anomalyService;
+
+	@Autowired
+	private ParameterService parameterService;
+
+	@Autowired
+	private FaceVectorService faceVectorService;
 	
 	@RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
 	public Object update(ActionUser tempActionUser,
@@ -105,19 +116,70 @@ public class UserController {
 		HttpServletRequest request = attributes.getRequest();
 		
 		try {
+			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
+
 			List<ActionUser> existActionUsers = userService.getAllUser();
 					
 			int repeatId = 0;
-				for (ActionUser actionUser : existActionUsers) {
-					if (actionUser.getUserId().equals(tempActionUser.getUserId())) {
-						repeatId++;
-					}
+			for (ActionUser actionUser : existActionUsers) {
+				if (actionUser.getUserId().equals(tempActionUser.getUserId())) {
+					repeatId++;
 				}
-				if (repeatId > 0) {
-					jsonObject.put("result", "no");
-					jsonObject.put("msg", "用户ID已存在");
-					return jsonObject;
-				} else {
+			}
+			if (repeatId > 0) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "用户ID已存在");
+				return jsonObject;
+			}
+			// 处理发送地址
+			Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
+			Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_port"));
+			if (faceServerIp == null || faceServerPort == null) {
+				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			String host = "http://";
+			if (!faceServerIp.getParamValue().equals("")) {
+				host += faceServerIp.getParamValue();
+			}
+			else if (!faceServerIp.getParamDefault().equals("")) {
+				host += faceServerIp.getParamDefault();
+			}
+			else {
+				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			host += ":";
+			if (!faceServerPort.getParamValue().equals("")) {
+				host += faceServerPort.getParamValue();
+			}
+			else if (!faceServerPort.getParamDefault().equals("")) {
+				host += faceServerPort.getParamDefault();
+			}
+			else {
+				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+
+			String path = "/insertFaceImage";// 请求路径
+
+			if (uploadinfo != null) {
+				requestParams.add("image", uploadinfo.getResource());
+				// System.out.println(uploadinfo.getResource());
+			}
+
+			try {
+				ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
+				// System.out.println(response);
+				if(response.getStatusCodeValue() == 200){
+					logger.info("向服务器发送图片;");
+					HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
+					// System.out.println(String.valueOf(hashMap.get("info")));
+
+					// 添加用户
 					tempActionUser.setUserHiddenId(Long.valueOf(0));
 					String filePath = "";
 					if (uploadinfo != null) {
@@ -129,40 +191,35 @@ public class UserController {
 					}
 
 					boolean result = userService.save(tempActionUser);
-
-					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
-
-					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
-
-
-					// 处理发送地址
-					String host = "http://10.249.43.140:5000";// 请求域名或ip
-					String path = "/insertFaceImage";// 请求路径
-
-					requestParams.add("image", uploadinfo.getResource());
-
-
-					try {
-						ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
-						System.out.println(response);
-						if(response.getStatusCodeValue()==200){
-							logger.info("启动成功;\n");
-						}
-					} catch (Exception e) {
-						logger.error(e.getMessage());
-					}
-
-					if (result) {
-						jsonObject.put("result", "ok");
-						jsonObject.put("msg", "添加成功");
-						return jsonObject;
-					} else {
+					if (!result) {
 						jsonObject.put("result", "no");
 						jsonObject.put("msg", "添加失败");
 						return jsonObject;
 					}
+					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
+
+					FaceVector faceVector = new FaceVector();
+					faceVector.setFaceVectorId(Long.valueOf(0));
+					faceVector.setFaceId(String.valueOf(hashMap.get("info")));
+					faceVector.setUserHiddenId(queryUser.getUserHiddenId());
+
+					faceVectorService.save(faceVector);
+					jsonObject.put("result", "ok");
+					jsonObject.put("msg", "添加成功");
+					return jsonObject;
 				}
-			
+				else {
+					logger.info("服务器拒绝;");
+					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
 		} catch (Exception e) {
 			logger.error("/user/insert 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
@@ -299,30 +356,6 @@ public class UserController {
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "搜索出现错误");
 			return jsonObject;
-		}
-	}
-
-	@RequestMapping(value = "/test", produces = "application/json;charset=utf-8")
-
-	public void test() {
-		JSONObject requestData = new JSONObject();
-		// 处理发送地址
-		String host = "http://10.249.43.140:5000";// 请求域名或ip
-		String path = "/createCollection";// 请求路径
-
-		requestData.put("collectionName", "test");
-		HashMap<String, String> header = new HashMap<>();
-		header.put("Content-Type", "application/json");// 设置请求头信息
-		String body = JSONObject.toJSONString(requestData);// 设置请求体信息
-
-
-		try {
-			HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-			if(response.getStatusLine().getStatusCode() == 200){
-				logger.info("启动成功;\n");
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
 		}
 	}
 
