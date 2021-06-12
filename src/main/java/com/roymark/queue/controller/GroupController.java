@@ -213,6 +213,10 @@ public class GroupController {
                 return jsonObject;
             }
             else {
+                for (Group group: pageList.getRecords()) {
+                    group.setCamNumber((long) cameraService.count(Wrappers.<Camera>lambdaQuery()
+                            .eq(Camera::getGroupHiddenId, group.getGroupHiddenId())));
+                }
                 jsonObject.put("pageList", pageList);
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "搜索成功");

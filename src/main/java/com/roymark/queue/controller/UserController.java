@@ -131,48 +131,24 @@ public class UserController {
 				jsonObject.put("msg", "用户ID已存在");
 				return jsonObject;
 			}
-			// 处理发送地址
-			Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-			Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_port"));
-			if (faceServerIp == null || faceServerPort == null) {
-				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
-				jsonObject.put("result", "no");
-				return jsonObject;
-			}
-			String host = "http://";
-			if (!faceServerIp.getParamValue().equals("")) {
-				host += faceServerIp.getParamValue();
-			}
-			else if (!faceServerIp.getParamDefault().equals("")) {
-				host += faceServerIp.getParamDefault();
-			}
-			else {
-				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
-				jsonObject.put("result", "no");
-				return jsonObject;
-			}
-			host += ":";
-			if (!faceServerPort.getParamValue().equals("")) {
-				host += faceServerPort.getParamValue();
-			}
-			else if (!faceServerPort.getParamDefault().equals("")) {
-				host += faceServerPort.getParamDefault();
-			}
-			else {
-				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
-				jsonObject.put("result", "no");
+
+			if (uploadinfo == null) {
+				boolean result = userService.save(tempActionUser);
+				if (!result) {
+					jsonObject.put("result", "no");
+					jsonObject.put("msg", "添加失败");
+					return jsonObject;
+				}
+				jsonObject.put("result", "ok");
+				jsonObject.put("msg", "添加成功");
 				return jsonObject;
 			}
 
-			String path = "/insertFaceImage";// 请求路径
-
-			if (uploadinfo != null) {
-				requestParams.add("image", uploadinfo.getResource());
-				// System.out.println(uploadinfo.getResource());
-			}
+			String url = getURLFromDB("/insertFaceImage");
+			requestParams.add("image", uploadinfo.getResource());
 
 			try {
-				ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
+				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
 				// System.out.println(response);
 				if(response.getStatusCodeValue() == 200){
 					logger.info("向服务器发送图片;");
@@ -182,13 +158,10 @@ public class UserController {
 					// 添加用户
 					tempActionUser.setUserHiddenId(Long.valueOf(0));
 					String filePath = "";
-					if (uploadinfo != null) {
-						// 上传文件
-						String uploadPath = "/uploads/user/";
-						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
-						tempActionUser.setUserPhoto(filePath);
+					String uploadPath = "/uploads/user/";
+					filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+					tempActionUser.setUserPhoto(filePath);
 						// System.out.println(filePath);
-					}
 
 					boolean result = userService.save(tempActionUser);
 					if (!result) {
@@ -359,5 +332,96 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/insertFace", produces = "application/json;charset=utf-8")
+	public Object insertFace(Long userHiddenId, @RequestParam(value = "uploadinfo") MultipartFile uploadinfo) {
+		JSONObject jsonObject = new JSONObject();
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = attributes.getRequest();
+
+		try {
+			ActionUser queryUser = userService.getById(userHiddenId);
+			if (queryUser == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "用户不存在");
+				return jsonObject;
+			}
+			// 处理发送地址
+			String url = getURLFromDB("/insertFaceImage");
+			if (url.equals("")) {
+				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+
+			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
+
+			if (uploadinfo != null) {
+				requestParams.add("image", uploadinfo.getResource());
+			}
+
+			try {
+				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
+				// System.out.println(response);
+				if(response.getStatusCodeValue() == 200){
+					logger.info("向服务器发送图片;");
+					HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
+					FaceVector faceVector = new FaceVector();
+					faceVector.setFaceVectorId((long)0);
+					faceVector.setFaceId(String.valueOf(hashMap.get("info")));
+					faceVector.setUserHiddenId(userHiddenId);
+					faceVectorService.save(faceVector);
+					jsonObject.put("result", "ok");
+					jsonObject.put("msg", "添加成功");
+					return jsonObject;
+				}
+				else {
+					logger.info("服务器拒绝;");
+					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+		} catch (Exception e) {
+			logger.error("/user/insertFace 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "添加出现错误");
+			return jsonObject;
+		}
+	}
+
+	public String getURLFromDB(String path) {
+		// 处理发送地址
+		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
+		Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_port"));
+		if (faceServerIp == null || faceServerPort == null) {
+			return "";
+		}
+		String host = "http://";
+		if (!faceServerIp.getParamValue().equals("")) {
+			host += faceServerIp.getParamValue();
+		}
+		else if (!faceServerIp.getParamDefault().equals("")) {
+			host += faceServerIp.getParamDefault();
+		}
+		else {
+			return "";
+		}
+		host += ":";
+		if (!faceServerPort.getParamValue().equals("")) {
+			host += faceServerPort.getParamValue();
+		}
+		else if (!faceServerPort.getParamDefault().equals("")) {
+			host += faceServerPort.getParamDefault();
+		}
+		else {
+			return "";
+		}
+		return host + path;
+	}
 }
 

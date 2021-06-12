@@ -22,4 +22,6 @@ public class Group implements Serializable {
     @TableField(value = "group_id")
     private String groupId;
 
+    @TableField(exist = false)
+    private Long camNumber;
 }
