@@ -134,8 +134,8 @@ public class AnomalyController {
             Window window = windowService.getById(anomaly.getWindowHiddenId());
             if (window != null) {
                 anomaly.setAnomalyFaceConfidence(window.getUserFaceConfidence());
-                Date lastUpdateTime = window.getUserUpdateTime();
-                Date currentTime = new Date();
+                // Date lastUpdateTime = window.getUserUpdateTime();
+                // Date currentTime = new Date();
 //                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 1 * 1000 * 60) // 10分钟以内以更新的用户为准
                 anomaly.setUserHiddenId(window.getUserHiddenId());
 //                else {              // 否则以window默认绑定的用户为准
