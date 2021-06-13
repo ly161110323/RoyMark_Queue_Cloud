@@ -379,14 +379,25 @@ public class UserController {
 						jsonObject.put("result", "no");
 						return jsonObject;
 					}
-					String filePath = "";
+
 					String uploadPath = "/uploads/user/";
-					filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 					String existPath = queryUser.getUserPhoto();
-					if (existPath==null || existPath.equals(""))
+					String filePath = "";
+					if (existPath==null || existPath.equals("")) {
+						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 						queryUser.setUserPhoto(filePath);
-					else
+					}
+
+					else {
+						String[] existPaths = existPath.split(",");
+						if (existPaths.length >= 9) {
+							jsonObject.put("msg", "图片数量已经超过10个");
+							jsonObject.put("result", "no");
+							return jsonObject;
+						}
+						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 						queryUser.setUserPhoto(existPath+","+filePath);
+					}
 
 					userService.saveOrUpdate(queryUser);
 					FaceVector faceVector = new FaceVector();
