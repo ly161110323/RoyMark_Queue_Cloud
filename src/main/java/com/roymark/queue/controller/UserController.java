@@ -154,7 +154,12 @@ public class UserController {
 					logger.info("向服务器发送图片;");
 					HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
 					// System.out.println(String.valueOf(hashMap.get("info")));
-
+					// 可能
+					if (hashMap.get("status").equals("False")) {
+						jsonObject.put("msg", hashMap.get("info"));
+						jsonObject.put("result", "no");
+						return jsonObject;
+					}
 					// 添加用户
 					tempActionUser.setUserHiddenId(Long.valueOf(0));
 					String filePath = "";
@@ -172,8 +177,9 @@ public class UserController {
 					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
 
 					FaceVector faceVector = new FaceVector();
-					faceVector.setFaceVectorId(Long.valueOf(0));
+					faceVector.setFaceVectorId((long)0);
 					faceVector.setFaceId(String.valueOf(hashMap.get("info")));
+					faceVector.setImgPath(filePath);
 					faceVector.setUserHiddenId(queryUser.getUserHiddenId());
 
 					faceVectorService.save(faceVector);
@@ -339,6 +345,11 @@ public class UserController {
 		HttpServletRequest request = attributes.getRequest();
 
 		try {
+			if (uploadinfo == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "上传图片有误，请重新上传");
+				return jsonObject;
+			}
 			ActionUser queryUser = userService.getById(userHiddenId);
 			if (queryUser == null) {
 				jsonObject.put("result", "no");
@@ -355,9 +366,7 @@ public class UserController {
 
 			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 
-			if (uploadinfo != null) {
-				requestParams.add("image", uploadinfo.getResource());
-			}
+			requestParams.add("image", uploadinfo.getResource());
 
 			try {
 				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
@@ -365,10 +374,27 @@ public class UserController {
 				if(response.getStatusCodeValue() == 200){
 					logger.info("向服务器发送图片;");
 					HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
+					if (hashMap.get("status").equals("False")) {
+						jsonObject.put("msg", hashMap.get("info"));
+						jsonObject.put("result", "no");
+						return jsonObject;
+					}
+					String filePath = "";
+					String uploadPath = "/uploads/user/";
+					filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+					String existPath = queryUser.getUserPhoto();
+					if (existPath==null || existPath.equals(""))
+						queryUser.setUserPhoto(filePath);
+					else
+						queryUser.setUserPhoto(existPath+","+filePath);
+
+					userService.saveOrUpdate(queryUser);
 					FaceVector faceVector = new FaceVector();
 					faceVector.setFaceVectorId((long)0);
 					faceVector.setFaceId(String.valueOf(hashMap.get("info")));
+					faceVector.setImgPath(filePath);
 					faceVector.setUserHiddenId(userHiddenId);
+
 					faceVectorService.save(faceVector);
 					jsonObject.put("result", "ok");
 					jsonObject.put("msg", "添加成功");

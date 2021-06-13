@@ -20,6 +20,9 @@ public class FaceVector implements Serializable {
     @TableField(value = "face_id")
     private String faceId;
 
+    @TableField(value = "img_path")
+    private String imgPath;
+
     @TableField(value = "user_hidden_id")
     private Long userHiddenId;
 }
