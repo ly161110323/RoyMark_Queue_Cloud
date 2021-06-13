@@ -22,6 +22,7 @@ import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opencv.face.Face;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -426,7 +427,84 @@ public class UserController {
 		} catch (Exception e) {
 			logger.error("/user/insertFace 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
-			jsonObject.put("msg", "添加出现错误");
+			jsonObject.put("msg", "添加人脸出现错误");
+			return jsonObject;
+		}
+	}
+
+	@RequestMapping(value = "/deleteFace", produces = "application/json;charset=utf-8")
+	public Object deleteFace(Long userHiddenId, String imgPath) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			ActionUser queryUser = userService.getById(userHiddenId);
+
+			if (queryUser == null) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "用户不存在");
+				return jsonObject;
+			}
+			// 获得现有的imgPath
+			String curImgPath = queryUser.getUserPhoto();
+
+			String[] curImgPaths = curImgPath.split(",");
+
+			StringBuilder newImgPath = new StringBuilder();
+
+			// 确定已有的path中是否包含并构造新path
+			boolean existFlag = false;
+			for (String path: curImgPaths) {
+				if (path.equals(imgPath)) {
+					existFlag = true;
+					continue;
+				}
+				newImgPath.append(path).append(",");
+			}
+			if (!existFlag) {
+				jsonObject.put("msg", "图片不存在");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+
+			// 对用户进行修改
+			if (newImgPath.length() > 0)								// 如果新路径不为空，去掉最后一个,号
+				newImgPath.deleteCharAt(newImgPath.length()-1);
+			queryUser.setUserPhoto(newImgPath.toString());
+			userService.saveOrUpdate(queryUser);
+
+			// 对人脸向量表进行处理
+			FaceVector queryFaceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery()
+					.eq(FaceVector::getImgPath, imgPath).eq(FaceVector::getUserHiddenId, userHiddenId));
+
+			if (queryFaceVector != null) {
+				String faceId = queryFaceVector.getFaceId();
+				faceVectorService.removeById(queryFaceVector.getFaceVectorId());
+				MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
+				requestParams.add("faceId", faceId);
+				String url = getURLFromDB("/deleteFaceImage");
+				try {
+					ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
+					if(response.getStatusCodeValue() == 200) {
+						HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
+						if (hashMap.get("status").equals("False")) {
+							jsonObject.put("msg", hashMap.get("info"));
+							jsonObject.put("result", "no");
+							return jsonObject;
+						}
+					}
+				}catch (Exception e) {
+					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
+			}
+			jsonObject.put("msg", "删除成功");
+			jsonObject.put("result", "ok");
+			return jsonObject;
+		} catch (Exception e) {
+			logger.error("/user/deleteFace 错误:" + e.getMessage(), e);
+			jsonObject.put("result", "error");
+			jsonObject.put("msg", "删除人脸出现错误");
 			return jsonObject;
 		}
 	}

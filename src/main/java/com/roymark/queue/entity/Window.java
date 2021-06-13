@@ -52,6 +52,9 @@ public class Window implements Serializable {
     @TableField(value = "user_update_time")
 	private Date userUpdateTime;
 
+    @TableField(value = "user_face_confidence")
+    private double userFaceConfidence;
+
     @TableField(exist = false)
 	private String camId;
 

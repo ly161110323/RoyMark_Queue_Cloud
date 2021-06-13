@@ -32,12 +32,12 @@ public class FaceController {
     private WindowService windowService;
 
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
-    public Object insert(String faceId, Long windowHiddenId, String reId) {
+    public Object insert(String faceId, Long windowHiddenId, String reId, double faceConf) {
         JSONObject jsonObject = new JSONObject();
         try {
-            System.out.println("faceId:"+faceId);
-            System.out.println("windowHiddenId:" + windowHiddenId);
-            System.out.println("reId:"+ reId);
+            // System.out.println("faceId:"+faceId);
+            // System.out.println("windowHiddenId:" + windowHiddenId);
+            // System.out.println("reId:"+ reId);
             // faceId不为空，则利用faceId在faceVector中获取uId，且保存faceId和reId的对应关系
             if (!faceId.equals("")) {
                 FaceFeature faceFeature = new FaceFeature(Long.valueOf(0), faceId, reId);
@@ -70,6 +70,7 @@ public class FaceController {
                 Long userHiddenId = faceVector.getUserHiddenId();
                 window.setUserHiddenId(userHiddenId);
                 window.setUserUpdateTime(new Date());
+                window.setUserFaceConfidence(faceConf);
                 windowService.update(window, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, windowHiddenId));
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "上传成功");

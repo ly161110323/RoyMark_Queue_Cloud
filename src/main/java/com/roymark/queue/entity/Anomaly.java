@@ -59,6 +59,9 @@ public class Anomaly implements Serializable {
     @TableField(value = "anomaly_status")
 	private String anomalyStatus;
 
+    @TableField(value = "anomaly_face_confidence")
+    private double anomalyFaceConfidence;
+
     @TableField(exist =  false)
 	private String windowId;
 
