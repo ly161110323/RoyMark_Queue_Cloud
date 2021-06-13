@@ -22,7 +22,14 @@
     <title>禾麦智能大厅管理系统</title>
     <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
           type="image/x-icon"/>
-    <script type="text/javascript" src="./js/cameraManagement.js">
+    <style type="text/css">
+        .table {
+            width: 98% !important;
+            max-width: 98% !important;
+            margin: auto !important;
+        }
+    </style>
+    <script type="text/javascript" src="./js/groupManagement.js">
     </script>
 
     <script type="text/javascript">
@@ -42,12 +49,12 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/camera/queryData";
+            var tableUrl = "${ctx}/group/queryData";
             table = $('#itemResultTable')
                 .DataTable(
                     {
-                        "bPaginate": true, //开关，是否显示分页器
-                        "paging": true,
+                        "bPaginate": false, //开关，是否显示分页器
+                        "paging": false,
                         "lengthChange": true,
                         "searching": false,
                         "ordering": false,
@@ -60,22 +67,10 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns": [
-                            {'mData': 'camHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'camHiddenId', 'sClass': 'center'},
-                            {'mData': 'camHiddenId', 'sTitle': '序号', 'sName': 'camHiddenId', 'sClass': 'center'},
-                            {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
-                            {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
-                            {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                            {'mData': 'mapId', 'sTitle': '地图ID', 'sName': 'mapId', 'sClass': 'center'},
-                            {'mData': 'groupId', 'sTitle': '所在分组', 'sName': 'groupId', 'sClass': 'center'},
-                            {'mData': 'camStatus', 'sTitle': '设备状态', 'sName': 'camStatus', 'sClass': 'center'},
-                            {'mData': 'camVideoAddr', 'sTitle': '视频流地址', 'sName': 'camVideoAddr', 'sClass': 'center'},
-                            {'mData': 'camMacAddr', 'sTitle': 'mac地址', 'sName': 'camMacAddr', 'sClass': 'center'},
-                            {'mData': 'camBrand', 'sTitle': '厂商', 'sName': 'camBrand', 'sClass': 'center'},
-                            {'mData': 'camType', 'sTitle': '型号', 'sName': 'camType', 'sClass': 'center'},
-                            {'mData': 'camBirth', 'sTitle': '出厂日期', 'sName': 'camBirth', 'sClass': 'center'},
-                            {'mData': 'serverHiddenId', 'sTitle': 'serverHiddenId', 'sName': 'serverHiddenId', 'sClass': 'hidden'},
-                            {'mData': 'mapHiddenId', 'sTitle': 'mapHiddenId', 'sName': 'mapHiddenId', 'sClass': 'hidden'},
-                            {'mData': 'groupHiddenId', 'sTitle': 'groupHiddenId', 'sName': 'groupHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'groupHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'groupHiddenId', 'sClass': 'center'},
+                            {'mData': 'groupHiddenId', 'sTitle': '序号', 'sName': 'groupHiddenId', 'sClass': 'center'},
+                            {'mData': 'groupId', 'sTitle': '分组ID', 'sName': 'groupId', 'sClass': 'center'},
+                            {'mData': 'camNumber', 'sTitle': '已绑定摄像头数量', 'sName': 'camNumber', 'sClass': 'center'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -115,10 +110,10 @@
                         },
                         "columnDefs": [
                             {
-                                targets: 0, data: "camHiddenId", title: "操作",
+                                targets: 0, data: "groupHiddenId", title: "操作",
                                 render: function (data, type, row, meta) {
-                                    var html = "<input type='checkbox' value=" + row.camHiddenId + " class='lsCheck' name='choice' />";
-                                    html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
+                                    var html = "<input type='checkbox' value=" + row.groupHiddenId + " class='lsCheck' name='choice' />";
+                                    // html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
                                 }
                             },
@@ -145,8 +140,7 @@
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
-            var inputCamId = $("#inputCommitCamId").val();
-            var selectServerId = $("#selectCommitServerId").find("option:selected").text();
+
             // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
             var params;
             params = {
@@ -154,20 +148,7 @@
                 "pageSize": pageSize,
                 "pageNo": pageNo,
             };
-            if (isSearch == "1") {
-                if (selectServerId != "请选择绑定服务器ID") {
-                    params["serverId"] = selectServerId;
 
-                }
-                // if(selectWindowId !="请选择绑定窗口ID"){
-                //     params["windowId"] = selectWindowId;
-                //
-                // }
-                if (inputCamId != "") {
-                    params["camId"] = inputCamId;
-                }
-
-            }
             dataId = "";
 
 
@@ -224,12 +205,12 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>摄像头ID：</label>
+                                                style="color: red;">*</span>分组ID：</label>
 
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
-                                                   name="camId" id="camId">
+                                                   name="groupId" id="groupId">
                                         </div>
                                     </div>
                                 </td>
@@ -237,28 +218,16 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>摄像头IP：</label>
+                                                style="color: red;">*</span>该分组摄像头数量：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
-                                                   name="camIp" id="camIp">
+                                                   disabled="disabled"
+                                                   name="camNumber" id="camNumber">
                                         </div>
                                     </div>
                                 </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器ID：</label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
-                                                    id="serverId" name="serverId">
-                                                <option value="0">请选择绑定服务器ID</option>
-                                            </select>
-                                        </div>
 
-                                    </div>
-                                </td>
                                 <%--                                <td style="width: 25%;">--%>
                                 <%--                                    <div class="form-group">--%>
                                 <%--                                        <label style="width: 38%;"--%>
@@ -273,137 +242,14 @@
 
                                 <%--                                    </div>--%>
                                 <%--                                </td>--%>
-
-
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>mac地址：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
-                                                   name="camMacAddr" id="camMacAddr">
-                                        </div>
-                                    </div>
-                                </td>
-
                             </tr>
-                            <tr>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>视频流地址：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camVideoAddr" id="camVideoAddr">
-                                        </div>
-                                        <%--                                                                        <input type="hidden" name="queueDept.deptLs" id="txtDeptLs" />--%>
-                                    </div>
-                                </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">厂商：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camBrand" id="camBrand">
-                                        </div>
-
-                                    </div>
-                                </td>
-
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>型号：</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camType" id="camType">
-                                        </div>
-
-                                    </div>
-                                </td>
 
 
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>生产日期：</label>
-                                        <div class="col-sm-8">
-                                            <input type="date" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camBirth" id="camBirth">
-                                        </div>
-
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>绑定地图：</label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
-                                                    id="mapId" name="mapId">
-                                                <option value="">请选择绑定地图ID</option>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>所在分组：</label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
-                                                    id="groupId" name="groupId">
-                                                <option value="">请选择所在分组</option>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                </td>
-                            </tr>
                         </table>
                         <table class="table_zd" align="center" width="100%" style="margin-bottom:-12px;">
                             <tbody>
                             <tr class="table_menu_tr_zd">
-                                <td class="table_menu_tr_td_left_zd" colspan="2">
-                                    <input type="text" placeholder="摄像头ID" autocomplete="off"
-                                           spellcheck="false" placeholder="" style="width: 25%;"
-                                           class="form-control input_btn_input table_content_zd"
-                                           name="inputCommitCamId" id="inputCommitCamId">
-                                    <%--                                    <select--%>
-                                    <%--                                            class="form-control table_content_zd" name="selectCommitWindowId"--%>
-                                    <%--                                            id="selectCommitWindowId"--%>
-                                    <%--                                            style="width: 25%; float: left; margin-right: 10px">--%>
-                                    <%--                                        <option value="">请选择绑定窗口ID</option>--%>
-                                    <%--                                    </select>--%>
-                                    <select
-                                            class="form-control table_content_zd" name="selectCommitServerId"
-                                            id="selectCommitServerId"
-                                            style="width: 25%; float: left; margin-right: 10px">
-                                        <option value="">请选择绑定服务器ID</option>
-                                    </select>
 
-
-                                    <button type="button"
-                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
-                                            style="margin-top: 2.5px; margin-bottom: 2px;"
-                                            id="queCommit">查询
-                                    </button>
-                                </td>
 
                                 <td class="table_menu_tr_td_right_zd" colspan="2">
                                     <div style="float: right;">
@@ -427,33 +273,14 @@
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="deleteCommit">删除
                                         </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="groupManagementButton">分组管理
-                                        </button>
+
                                     </div>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                     </form>
-                    <div id="configTr" class="table_menu_tr_zd"
-                         style="height: 35px; display: none; margin-top: 0px; border: 1px solid white;">
-                        <span style="padding-left: 45px;">&nbsp;&nbsp;</span>
-                        <div class="optionRow-right" style="margin-right: 10px">
-                            <button type="button"
-                                    class="btn btn-primary btn-sm input_btn_btn list_btn"
-                                    style="float: left; margin-bottom: 2px;"
-                                    id="caseArea_administration">办事区域管理
-                            </button>
-                            <button type="button"
-                                    class="btn btn-primary btn-sm input_btn_btn list_btn"
-                                    style="float: left; margin-bottom: 2px;"
-                                    id="selectArea_administration">行政区域管理
-                            </button>
-                        </div>
-                    </div>
+
                     <table id="itemResultTable" class="table table-bordered"></table>
                 </div>
             </div>

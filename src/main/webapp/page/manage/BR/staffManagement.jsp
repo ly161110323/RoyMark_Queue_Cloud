@@ -176,7 +176,7 @@
                 success: function (result) {
                     isSearch = "0";
                     var pageList = result.pageList;
-                    var datainfos = pageList.records
+                    var datainfos = pageList.records;
                     var obj = {};
                     obj['data'] = datainfos;
 
