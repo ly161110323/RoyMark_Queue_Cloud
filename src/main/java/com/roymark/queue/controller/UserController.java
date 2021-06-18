@@ -134,6 +134,7 @@ public class UserController {
 			}
 
 			if (uploadinfo == null) {
+				tempActionUser.setUserHiddenId((long)0);
 				boolean result = userService.save(tempActionUser);
 				if (!result) {
 					jsonObject.put("result", "no");
@@ -234,6 +235,8 @@ public class UserController {
 	@RequestMapping(value = "/delete", produces = "application/json;charset=utf-8")
 	public Object delete(String deleteId) {
 		JSONObject jsonObject = new JSONObject();
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = attributes.getRequest();
 
 		try {
 			String[] deletes = deleteId.split(",");
@@ -257,7 +260,41 @@ public class UserController {
 					anomalyService.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
 							.eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
 				}
-				userService.removeById(Long.valueOf(deletes[i]));
+				Long userHiddenId = Long.valueOf(deletes[i]);
+				ActionUser queryUser = userService.getById(userHiddenId);
+				String imgPath = queryUser.getUserPhoto();
+				String[] imgPaths = imgPath.split(",");
+				// 删除图片
+				for (String path: imgPaths) {
+					UploadUtil.fileDelete(request, path);
+				}
+				// 删除人脸向量以及向服务器删除
+				List<FaceVector> faceVectors = faceVectorService.list(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getUserHiddenId, userHiddenId));
+				StringBuilder msg = new StringBuilder();
+				for (FaceVector faceVector: faceVectors) {
+					String faceId = faceVector.getFaceId();
+					faceVectorService.removeById(faceVector.getFaceVectorId());
+					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
+					requestParams.add("faceId", faceId);
+					String url = getURLFromDB("/deleteFaceImage");
+					try {
+						ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
+						if(response.getStatusCodeValue() == 200) {
+							HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
+							if (hashMap.get("status").equals("False")) {
+								msg.append(hashMap.get("info")).append("\n");
+							}
+						}
+						else {
+							msg.append("服务器返回状态异常\n");
+						}
+					}catch (Exception e) {
+						logger.error(e.getMessage());
+
+					}
+				}
+				logger.info(msg);
+				userService.removeById(userHiddenId);
 			}
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "删除成功");
@@ -435,6 +472,8 @@ public class UserController {
 	@RequestMapping(value = "/deleteFace", produces = "application/json;charset=utf-8")
 	public Object deleteFace(Long userHiddenId, String imgPath) {
 		JSONObject jsonObject = new JSONObject();
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = attributes.getRequest();
 
 		try {
 			ActionUser queryUser = userService.getById(userHiddenId);
@@ -454,6 +493,8 @@ public class UserController {
 			// 确定已有的path中是否包含并构造新path
 			boolean existFlag = false;
 			for (String path: curImgPaths) {
+				System.out.println(path);
+				System.out.println(imgPath);
 				if (path.equals(imgPath)) {
 					existFlag = true;
 					continue;
@@ -470,7 +511,16 @@ public class UserController {
 			if (newImgPath.length() > 0)								// 如果新路径不为空，去掉最后一个,号
 				newImgPath.deleteCharAt(newImgPath.length()-1);
 			queryUser.setUserPhoto(newImgPath.toString());
-			userService.saveOrUpdate(queryUser);
+			if (!UploadUtil.fileDelete(request, imgPath)) {
+				jsonObject.put("msg", "删除文件资源失败");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			if (!userService.saveOrUpdate(queryUser)) {
+				jsonObject.put("msg", "修改数据失败");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
 
 			// 对人脸向量表进行处理
 			FaceVector queryFaceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery()
@@ -491,6 +541,11 @@ public class UserController {
 							jsonObject.put("result", "no");
 							return jsonObject;
 						}
+					}
+					else {
+						jsonObject.put("msg", "人脸服务器返回异常");
+						jsonObject.put("result", "no");
+						return jsonObject;
 					}
 				}catch (Exception e) {
 					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");

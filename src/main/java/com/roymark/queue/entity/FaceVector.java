@@ -1,6 +1,7 @@
 package com.roymark.queue.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
@@ -14,7 +15,7 @@ public class FaceVector implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableField(value = "face_vector_id")
+    @TableId(value = "face_vector_id")
     private Long faceVectorId;
 
     @TableField(value = "face_id")

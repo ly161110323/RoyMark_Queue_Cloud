@@ -175,4 +175,20 @@ public class UploadUtil {
 			file.delete();
 		}
 	}
+
+	public static boolean fileDelete(HttpServletRequest request, String uploadPath) {
+		try {
+			// 上传的位置
+			String path = request.getSession().getServletContext().getRealPath("")+uploadPath;
+			File file = new File(path);
+			if (!file.exists()) {
+				return false;
+			}
+			return file.delete();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return false;
+		}
+
+	}
 }
