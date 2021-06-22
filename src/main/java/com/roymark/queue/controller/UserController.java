@@ -511,16 +511,6 @@ public class UserController {
 			if (newImgPath.length() > 0)								// 如果新路径不为空，去掉最后一个,号
 				newImgPath.deleteCharAt(newImgPath.length()-1);
 			queryUser.setUserPhoto(newImgPath.toString());
-			if (!UploadUtil.fileDelete(request, imgPath)) {
-				jsonObject.put("msg", "删除文件资源失败");
-				jsonObject.put("result", "no");
-				return jsonObject;
-			}
-			if (!userService.saveOrUpdate(queryUser)) {
-				jsonObject.put("msg", "修改数据失败");
-				jsonObject.put("result", "no");
-				return jsonObject;
-			}
 
 			// 对人脸向量表进行处理
 			FaceVector queryFaceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery()
@@ -548,10 +538,22 @@ public class UserController {
 						return jsonObject;
 					}
 				}catch (Exception e) {
+					logger.error(e.getMessage());
 					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
+			}
+			// 只有服务器删除成功或人脸向量表中无该项才会到达此处
+			if (!UploadUtil.fileDelete(request, imgPath)) {
+				jsonObject.put("msg", "删除文件资源失败");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			if (!userService.saveOrUpdate(queryUser)) {
+				jsonObject.put("msg", "修改数据失败");
+				jsonObject.put("result", "no");
+				return jsonObject;
 			}
 			jsonObject.put("msg", "删除成功");
 			jsonObject.put("result", "ok");

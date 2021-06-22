@@ -182,7 +182,7 @@ public class UploadUtil {
 			String path = request.getSession().getServletContext().getRealPath("")+uploadPath;
 			File file = new File(path);
 			if (!file.exists()) {
-				return false;
+				return true;
 			}
 			return file.delete();
 		} catch (Exception e) {

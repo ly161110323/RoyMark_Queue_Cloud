@@ -153,17 +153,15 @@ public class AnomalyController {
                     .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
                     .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
 
-            if (queryAnomaly != null && queryAnomaly.equals(anomaly)) {     // 如果与该项完全相同，不做处理
-                return;
-            }
-            else if (queryAnomaly != null) {         // 如果存在且不同，则对该项进行更新
+            if (queryAnomaly != null) {         // 如果存在，则对该项进行更新
                 anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
                 anomalyService.updateById(anomaly);
             }
             else {
                 // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
                 Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
-                queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTime)
+                Date startTimeThreshold = new Date(startTime.getTime() + 60 * 100);
+                queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTimeThreshold)
                         .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
                         .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
 
