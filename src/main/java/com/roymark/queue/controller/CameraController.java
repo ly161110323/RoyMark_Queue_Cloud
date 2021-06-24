@@ -453,7 +453,7 @@ public class CameraController {
 			Page<Camera> page = new Page<Camera>(pageNo, pageSize);
 			QueryWrapper<Camera> queryWrapper = new QueryWrapper<Camera>();
 
-			queryWrapper.eq("br_cam.groupHiddenId", groupHiddenId);
+			queryWrapper.eq("br_cam.group_hidden_id", groupHiddenId);
 			queryWrapper.orderByAsc("cam_id");
 			IPage<Camera> cameras = cameraService.page(page, queryWrapper);
 			if (cameras.getRecords().size() <= 0) {
