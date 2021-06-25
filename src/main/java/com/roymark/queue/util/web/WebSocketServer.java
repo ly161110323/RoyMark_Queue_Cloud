@@ -9,6 +9,7 @@ import com.roymark.queue.service.GroupService;
 import com.roymark.queue.util.WaterMarkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
@@ -159,6 +160,7 @@ public class WebSocketServer{
     @OnOpen
     public void onOpen(Session session){
         this.openFlag = true;
+        avutil.av_log_set_level(avutil.AV_LOG_ERROR);
         grabbers = new ArrayList<>();
         rtspUrls = new ArrayList<>();
         camIds = new ArrayList<>();
