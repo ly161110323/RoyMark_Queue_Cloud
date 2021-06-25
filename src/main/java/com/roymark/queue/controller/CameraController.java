@@ -455,13 +455,14 @@ public class CameraController {
 
 			queryWrapper.eq("br_cam.group_hidden_id", groupHiddenId);
 			queryWrapper.orderByAsc("cam_id");
-			IPage<Camera> cameras = cameraService.page(page, queryWrapper);
-			if (cameras.getRecords().size() <= 0) {
+			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
+			if (pageList.getRecords().size() <= 0) {
 				jsonObject.put("result", "no");
 				jsonObject.put("msg", "分组内无摄像头");
+				jsonObject.put("pageList", pageList);
 				return jsonObject;
 			}
-			jsonObject.put("cameras", cameras);
+			jsonObject.put("pageList", pageList);
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "获取成功");
 			return jsonObject;
