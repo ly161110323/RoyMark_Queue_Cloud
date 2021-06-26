@@ -380,7 +380,9 @@ public class ServerController {
 						}
 					} catch (IOException e) {
 						msg.append(serverName+"启动失败,服务器不可用;\n");
+						logger.error(e.getMessage());
 					} catch (Exception e) {
+						logger.error(e.getMessage());
 						msg.append(serverName+"启动失败,启动过程出现异常;\n");
 						jsonObject.put("result", "error");
 						jsonObject.put("msg", msg);
@@ -436,7 +438,9 @@ public class ServerController {
 						}
 					} catch (IOException e) {
 						msg.append(serverName+"停止失败,服务器不可用;\n");
+						logger.error(e.getMessage());
 					} catch (Exception e) {
+						logger.error(e.getMessage());
 						msg.append(serverName+"停止失败,停止过程出现异常;\n");
 						jsonObject.put("result", "error");
 						jsonObject.put("msg", msg);
