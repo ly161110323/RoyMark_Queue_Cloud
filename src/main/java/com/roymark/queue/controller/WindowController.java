@@ -235,37 +235,32 @@ public class WindowController {
         }
     }
 
-    @RequestMapping(value = "/batchUpdateCoordinates", produces = "application/json;charset=utf-8")
-    @ResponseBody
-    public Object batchUpdateCoordinates(@RequestBody(required = false) Map<Long, String> coordinateMap) {
+    @RequestMapping(value = "/updateCoordinates", produces = "application/json;charset=utf-8")
+    public Object updateCoordinates(Long windowHiddenId, String windowCoordinates) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            if (coordinateMap.isEmpty()) {
+            Window queryWindow = windowService.getById(windowHiddenId);
+
+            if (queryWindow == null) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "数据为空");
+                jsonObject.put("msg", "窗口不存在");
+                return jsonObject;
+            }
+            queryWindow.setWindowCoordinates(windowCoordinates);
+            Boolean result = windowService.update(queryWindow, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, windowHiddenId));
+
+            if (result) {
+                jsonObject.put("result", "ok");
+                jsonObject.put("msg", "修改成功");
             }
             else {
-                StringBuilder msg = new StringBuilder();
-                for (Map.Entry<Long, String> entry : coordinateMap.entrySet()) {
-                    Long windowHiddenId = entry.getKey();
-                    Window queryWindow = windowService.getById(windowHiddenId);
-                    if (queryWindow == null)
-                        msg.append("窗口不存在\n");
-                    else {
-                        queryWindow.setWindowCoordinates(entry.getValue());
-                        windowService.update(queryWindow, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, windowHiddenId));
-                    }
-                }
-                if (msg.length() == 0) {
-                    msg.append("全部修改成功");
-                }
-                jsonObject.put("result", "ok");
-                jsonObject.put("msg", msg);
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "修改失败");
             }
             return jsonObject;
         } catch (Exception e) {
-            logger.error("/window/batchUpdateCoordinates 错误:" + e.getMessage(), e);
+            logger.error("/window/updateCoordinates 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "捕获出现错误");
             return jsonObject;
