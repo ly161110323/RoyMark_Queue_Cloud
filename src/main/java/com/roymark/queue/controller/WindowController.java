@@ -1,6 +1,7 @@
 package com.roymark.queue.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -8,12 +9,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.roymark.queue.entity.Anomaly;
+import com.roymark.queue.entity.Camera;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.roymark.queue.entity.Window;
 import com.roymark.queue.service.WindowService;
@@ -235,4 +235,40 @@ public class WindowController {
         }
     }
 
+    @RequestMapping(value = "/batchUpdateCoordinates", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public Object batchUpdateCoordinates(@RequestBody(required = false) Map<Long, String> coordinateMap) {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (coordinateMap.isEmpty()) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "数据为空");
+            }
+            else {
+                StringBuilder msg = new StringBuilder();
+                for (Map.Entry<Long, String> entry : coordinateMap.entrySet()) {
+                    Long windowHiddenId = entry.getKey();
+                    Window queryWindow = windowService.getById(windowHiddenId);
+                    if (queryWindow == null)
+                        msg.append("窗口不存在\n");
+                    else {
+                        queryWindow.setWindowCoordinates(entry.getValue());
+                        windowService.update(queryWindow, Wrappers.<Window>lambdaUpdate().eq(Window::getWindowHiddenId, windowHiddenId));
+                    }
+                }
+                if (msg.length() == 0) {
+                    msg.append("全部修改成功");
+                }
+                jsonObject.put("result", "ok");
+                jsonObject.put("msg", msg);
+            }
+            return jsonObject;
+        } catch (Exception e) {
+            logger.error("/window/batchUpdateCoordinates 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "捕获出现错误");
+            return jsonObject;
+        }
+    }
 }
