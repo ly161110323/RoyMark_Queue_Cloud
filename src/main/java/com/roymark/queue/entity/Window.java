@@ -37,9 +37,6 @@ public class Window implements Serializable {
 	@TableField(value = "window_action_analysis")
 	private Boolean windowActionAnalysis;
 
-    @TableField(value = "window_nine_palaces")
-	private Boolean windowNinePalaces;
-
     @TableField(value = "window_coordinates")
 	private String windowCoordinates;
 

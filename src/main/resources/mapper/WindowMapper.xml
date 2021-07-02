@@ -10,7 +10,6 @@
         <result column="window_department" property="windowDepartment" />
         <result column="window_event" property="windowEvent" />
         <result column="window_action_analysis" property="windowActionAnalysis" />
-        <result column="window_nine_palaces" property="windowNinePalaces" />
         <result column="window_coordinates" property="windowCoordinates" />
         <result column="cam_hidden_id" property="camHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />
