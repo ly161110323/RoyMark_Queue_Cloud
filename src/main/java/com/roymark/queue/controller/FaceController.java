@@ -2,13 +2,13 @@ package com.roymark.queue.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.roymark.queue.entity.FaceFeature;
-import com.roymark.queue.entity.FaceVector;
-import com.roymark.queue.entity.ReceivedFace;
-import com.roymark.queue.entity.Window;
+import com.roymark.queue.dao.AnomalyUserMapper;
+import com.roymark.queue.entity.*;
+import com.roymark.queue.service.AnomalyUserService;
 import com.roymark.queue.service.FaceFeatureService;
 import com.roymark.queue.service.FaceVectorService;
 import com.roymark.queue.service.WindowService;
+import com.roymark.queue.util.AnomalyMsgUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +34,17 @@ public class FaceController {
     @Autowired
     private WindowService windowService;
 
+    @Autowired
+    private AnomalyUserService anomalyUserService;
+
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
     public Object insert(@RequestBody List<ReceivedFace> receivedFaces) {
         JSONObject jsonObject = new JSONObject();
         Date date = new Date();
         try {
+            // 接收消息时清空无效信息
+            AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+            anomalyMsgUtil.deleteInvalidMsg();
             // System.out.println("faceId:"+faceId);
             // System.out.println("windowHiddenId:" + windowHiddenId);
             // System.out.println("reId:"+ reId);
@@ -78,7 +84,10 @@ public class FaceController {
                     msg.append("faceId:").append(faceId).append("找不到用户\n");
                 }
                 else {
+                    Long anomalyHiddenId = anomalyMsgUtil.addMap(receivedFace.getBoxId(), faceId, faceConf);
                     Long userHiddenId = faceVector.getUserHiddenId();
+                    // 如果获取到了，加入到表中。checkInsert其中任一为空，则不会加入
+                    anomalyUserService.checkInsert(new AnomalyUser((long)0, anomalyHiddenId, userHiddenId, faceConf));
                     window.setUserHiddenId(userHiddenId);
                     window.setUserUpdateTime(date);
                     window.setUserFaceConfidence(faceConf);

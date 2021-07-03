@@ -18,23 +18,38 @@
         <result column="window_id" property="windowId" />
         <result column="window_name" property="windowName" />
         <result column="user_name" property="userName" />
+        <collection property="userIds" ofType="java.lang.Long" javaType="java.util.List">
+            <result column="uid" />
+        </collection>
+        <collection property="userNames" ofType="java.lang.String" javaType="java.util.List">
+            <result column="uname" />
+        </collection>
+        <collection property="faceConfs" ofType="java.lang.Double" javaType="java.util.List">
+            <result column="fc" />
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <select id="getAllAnomaly" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (br_anomaly LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id)
+        SELECT br_anomaly.*, br_anomaly_user.face_conf as fc, br_user.user_hidden_id as uid, br_user.user_name as uname, br_window.window_id, br_window.window_name FROM br_anomaly
             LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
+            LEFT JOIN br_anomaly_user ON br_anomaly.anomaly_hidden_id=br_anomaly_user.anomaly_hidden_id
+            LEFT JOIN br_user ON br_anomaly_user.user_hidden_id=br_user.user_hidden_id
     </select>
 
     <select id="getAnomalyByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (br_anomaly LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id)
+        SELECT br_anomaly.*, br_anomaly_user.face_conf as fc, br_user.user_hidden_id as uid, br_user.user_name as uname, br_window.window_id, br_window.window_name FROM br_anomaly
             LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
+            LEFT JOIN br_anomaly_user ON br_anomaly.anomaly_hidden_id=br_anomaly_user.anomaly_hidden_id
+            LEFT JOIN br_user ON br_anomaly_user.user_hidden_id=br_user.user_hidden_id
         WHERE br_anomaly.anomaly_hidden_id=#{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_id, br_user.user_name, br_window.window_id, br_window.window_name FROM (br_anomaly LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id)
-            LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
+        SELECT br_anomaly.*, br_anomaly_user.face_conf as fc, br_user.user_hidden_id as uid, br_user.user_name as uname, br_window.window_id, br_window.window_name FROM br_anomaly
+           LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
+           LEFT JOIN br_anomaly_user ON br_anomaly.anomaly_hidden_id=br_anomaly_user.anomaly_hidden_id
+           LEFT JOIN br_user ON br_anomaly_user.user_hidden_id=br_user.user_hidden_id
         ${ew.customSqlSegment}
     </select>
 

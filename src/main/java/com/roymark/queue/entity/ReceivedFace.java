@@ -14,4 +14,5 @@ public class ReceivedFace implements Serializable {
     private Long windowHiddenId;
     private String reId;
     private double faceConf;
+    private String boxId;
 }

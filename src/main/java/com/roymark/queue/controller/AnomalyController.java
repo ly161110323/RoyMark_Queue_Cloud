@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.roymark.queue.dao.AnomalyUserMapper;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.util.AnomalyMsgUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,9 +35,6 @@ public class AnomalyController {
     private AnomalyService anomalyService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private CameraService cameraService;
 
     @Autowired
@@ -41,6 +42,12 @@ public class AnomalyController {
 
     @Autowired
     private WindowService windowService;
+
+    @Autowired
+    private FaceVectorService faceVectorService;
+
+    @Autowired
+    private AnomalyUserService anomalyUserService;
 
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
@@ -67,10 +74,18 @@ public class AnomalyController {
     }
 
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
-    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath) {
+    public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath,
+                                        String boxIds) {
+
         try {
-            // System.out.println("收到的东西！！！！：");
-            // System.out.println(anomaly);
+//            System.out.println(anomaly);
+//            System.out.println(imagePath);
+//            System.out.println(videoPath);
+//            System.out.println(boxIds);
+            String[] boxIdArray = boxIds.split(",");
+            List<String> boxIdList = Arrays.asList(boxIdArray);
+
+            System.out.println(anomaly);
             if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
                 logger.info("回传格式有误");
                 return;
@@ -110,6 +125,7 @@ public class AnomalyController {
                     }
                 }
             }
+
             if (anomalyImagePath.length() > 0)
                 anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
 
@@ -138,13 +154,10 @@ public class AnomalyController {
                 // Date currentTime = new Date();
 //                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 1 * 1000 * 60) // 10分钟以内以更新的用户为准
                 anomaly.setUserHiddenId(window.getUserHiddenId());
-//                else {              // 否则以window默认绑定的用户为准
-//                    ActionUser user = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getWindowHiddenId, anomaly.getWindowHiddenId()));
-//                    if (user != null) {
-//                        anomaly.setUserHiddenId(user.getUserHiddenId());
-//                    }
-//                }
+//            }
             }
+
+            Long boxAnomalyHiddenId;         // 记录box对应的Anomaly
 
             // 首先检查是否有与开始时间完全相同的一项
             Timestamp startTime = anomaly.getAnomalyStartDate();
@@ -156,6 +169,7 @@ public class AnomalyController {
             if (queryAnomaly != null) {         // 如果存在，则对该项进行更新
                 anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
                 anomalyService.updateById(anomaly);
+                boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
             }
             else {
                 // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
@@ -169,10 +183,33 @@ public class AnomalyController {
                     anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
                     anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
                     anomalyService.updateById(anomaly);
+                    boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
                 }
                 else {
-                    anomaly.setAnomalyHiddenId(Long.valueOf(0));
+                    anomaly.setAnomalyHiddenId((long)0);
                     anomalyService.save(anomaly);
+                    Anomaly newAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent())
+                            .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
+                            .eq(Anomaly::getAnomalyStartDate, anomaly.getAnomalyStartDate()));
+                    boxAnomalyHiddenId = newAnomaly.getAnomalyHiddenId();
+                }
+            }
+
+            // 存入消息留待匹配人脸
+            AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+
+            // 获取的已匹配的faceId与anomalyHiddenId的Map
+            Map<String, Double> anomalyFaceMap = anomalyMsgUtil.addMap(boxIdList, boxAnomalyHiddenId);
+            if (anomalyFaceMap == null || anomalyFaceMap.entrySet().size() == 0) {
+                return;
+            }
+            // 向异常与用户的中间表中加入匹配的信息
+            for (Map.Entry<String, Double> entry : anomalyFaceMap.entrySet()) {
+                String faceId = entry.getKey();
+                FaceVector faceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getFaceId, faceId));
+                if (faceVector != null) {
+                    Long userHiddenId = faceVector.getUserHiddenId();
+                    anomalyUserService.checkInsert(new AnomalyUser((long)0, boxAnomalyHiddenId, userHiddenId, entry.getValue()));
                 }
             }
 

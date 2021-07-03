@@ -8,8 +8,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.List;
 
 @Setter
 @Getter
@@ -71,4 +70,12 @@ public class Anomaly implements Serializable {
     @TableField(exist = false)
 	private String userName;
 
+    @TableField(exist = false)
+    private List<Long> userIds;
+
+    @TableField(exist = false)
+    private List<String> userNames;
+
+    @TableField(exist = false)
+    private List<Double> faceConfs;
 }
