@@ -69,8 +69,10 @@ public class AnomalyMsgUtil {
     // 删除Map中无效的信息，指AnomalyMsg为空或其中时间为空或其中时间已过去一分钟
     public void deleteInvalidMsg() {
         Date curDate = new Date();
-        anomalyMessageMap.entrySet().removeIf(entry -> entry.getValue() == null
-                || entry.getValue().getUpdateTime() == null
-                || curDate.getTime()-entry.getValue().getUpdateTime().getTime() > 1000*60);
+        if (anomalyMessageMap != null) {
+            anomalyMessageMap.entrySet().removeIf(entry -> entry.getValue() == null
+                    || entry.getValue().getUpdateTime() == null
+                    || curDate.getTime()-entry.getValue().getUpdateTime().getTime() > 1000*60);
+        }
     }
 }

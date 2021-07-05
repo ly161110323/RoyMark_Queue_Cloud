@@ -319,21 +319,14 @@ public class HttpUtils {
 			ClientConnectionManager ccm = httpClient.getConnectionManager();
 			SchemeRegistry registry = ccm.getSchemeRegistry();
 			registry.register(new Scheme("https", 443, ssf));
-		} catch (KeyManagementException ex) {
-			throw new RuntimeException(ex);
-		} catch (NoSuchAlgorithmException ex) {
+		} catch (KeyManagementException | NoSuchAlgorithmException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
 	public static boolean isHostReachable(String host, Integer timeOut) {
 		try {
-			boolean re =  InetAddress.getByName(host).isReachable(timeOut);
-			System.out.println("ssss:");
-			System.out.println(re);
-			return re;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			return InetAddress.getByName(host).isReachable(timeOut);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

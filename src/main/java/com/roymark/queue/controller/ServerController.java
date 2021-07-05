@@ -353,11 +353,7 @@ public class ServerController {
 								CamAndWinInfo temp = new CamAndWinInfo();
 								List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
 								// 移除未开启行为分析的
-								for (Window window : windows) {
-									if (!window.getWindowActionAnalysis()) {
-										windows.remove(window);
-									}
-								}
+								windows.removeIf(window -> !window.getWindowActionAnalysis());
 								if (windows.size() > 0) {
 									temp.setCamera(camera);
 									temp.setWindows(windows);

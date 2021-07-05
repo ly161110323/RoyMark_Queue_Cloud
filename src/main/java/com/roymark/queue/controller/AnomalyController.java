@@ -346,6 +346,8 @@ public class AnomalyController {
             }
             for (int i = 0; i < deletes.length; i++) {
                 anomalyService.removeById(Long.valueOf(deletes[i]));
+                anomalyUserService.remove(Wrappers.<AnomalyUser>lambdaUpdate().eq(AnomalyUser::getAnomalyHiddenId
+                        ,Long.valueOf(deletes[i])));
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");
