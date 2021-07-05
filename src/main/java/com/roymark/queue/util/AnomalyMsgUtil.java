@@ -33,6 +33,9 @@ public class AnomalyMsgUtil {
         for (String boxId: boxIdList) {
             if (anomalyMessageMap.containsKey(boxId)) {     // 已存在（表明人脸端已添加过了，获取对应结果并删除
                 AnomalyMessage anomalyMessage = anomalyMessageMap.get(boxId);
+                if (anomalyMessage.getFaceId()==null || anomalyMessage.getFaceId().equals("")) {        // 重复但人脸端结果未到
+                    continue;
+                }
                 returnMap.put(anomalyMessage.getFaceId(), anomalyMessage.getFaceConf());
                 anomalyMessageMap.remove(boxId);
             }
@@ -53,6 +56,9 @@ public class AnomalyMsgUtil {
         }
         if (anomalyMessageMap.containsKey(boxId)) {     // 已存在（表明行为端已添加过了，获取对应结果并删除
             Long anomalyHiddenId = anomalyMessageMap.get(boxId).getAnomalyHiddenId();
+            if (anomalyHiddenId == null || anomalyHiddenId == 0) {          // 重复但行为端结果未到
+                return null;
+            }
             anomalyMessageMap.remove(boxId);
             return anomalyHiddenId;
         }
