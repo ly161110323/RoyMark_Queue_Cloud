@@ -56,6 +56,7 @@ public class FaceController {
             }
             StringBuilder msg = new StringBuilder();
             for (ReceivedFace receivedFace: receivedFaces) {
+                System.out.println("faceBoxId:"+receivedFace.getBoxId());
                 String faceId = receivedFace.getFaceId();
                 Long windowHiddenId = receivedFace.getWindowHiddenId();
                 String reId = receivedFace.getReId();

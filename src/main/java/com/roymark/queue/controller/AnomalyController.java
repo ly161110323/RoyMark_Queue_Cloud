@@ -81,7 +81,7 @@ public class AnomalyController {
 //            System.out.println(anomaly);
 //            System.out.println(imagePath);
 //            System.out.println(videoPath);
-//            System.out.println(boxIds);
+            System.out.println("BR:"+boxIds);
             String[] boxIdArray = boxIds.split(",");
             List<String> boxIdList = Arrays.asList(boxIdArray);
 

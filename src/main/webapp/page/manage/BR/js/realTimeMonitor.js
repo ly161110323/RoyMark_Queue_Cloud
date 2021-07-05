@@ -38,8 +38,8 @@ $(function (){
 })
 var videoPath = "";
 var grid = {x:3,y:3};
-var width = '960';
-var height = '540';
+var width = '1280';
+var height = '720';
 var ws1 = null;
 var curPage = 1;
 var totalPage = 1;
@@ -95,11 +95,15 @@ function queryCamByGroup(groupHiddenId,pageNo){
             var pageList = result.pageList;
             var list = pageList.records;
             var urls = [];
+            var ids = []
             totalPage = pageList.pages;
             list.forEach(function (item){
-                urls.push(item['camVideoAddr'])
+                urls.push(item['camVideoAddr']);
+                ids.push(item['camId']);
             })
+
             videoPath = urls.toString();
+            logids = ids.toString();
             if(videoPath==""){
                 layer.msg("当前分组无摄像头！");
                 return ;
@@ -113,7 +117,7 @@ function showVideoImg(){
         layer.msg("视频地址为空！");
         return ;
     }
-    var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height;
+    var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height+'&cam_id='+logids;
 
     ws1 = new Ws({
         host: window.location.host.split(":")[0]

@@ -24,6 +24,9 @@ public class AnomalyMsgUtil {
 
     // 行为端添加
     public Map<String, Double> addMap(List<String> boxIdList, Long anomalyHiddenId) {
+        for (Map.Entry<String, AnomalyMessage> entry : anomalyMessageMap.entrySet()) {
+            System.out.println("boxId:"+entry.getKey());
+        }
         if (anomalyMessageMap == null) {
             init();
         }
@@ -34,7 +37,7 @@ public class AnomalyMsgUtil {
             if (anomalyMessageMap.containsKey(boxId)) {     // 已存在（表明人脸端已添加过了，获取对应结果并删除
                 AnomalyMessage anomalyMessage = anomalyMessageMap.get(boxId);
                 returnMap.put(anomalyMessage.getFaceId(), anomalyMessage.getFaceConf());
-                anomalyMessageMap.remove(boxId);
+                //anomalyMessageMap.remove(boxId);
             }
             else {
                 AnomalyMessage curMsg = new AnomalyMessage();
@@ -48,13 +51,15 @@ public class AnomalyMsgUtil {
 
     // 人脸端添加
     public Long addMap(String boxId, String faceId, double faceConf) {
+        for (Map.Entry<String, AnomalyMessage> entry : anomalyMessageMap.entrySet()) {
+            System.out.println("boxId:"+entry.getKey());
+        }
         if (anomalyMessageMap == null) {
             init();
         }
         if (anomalyMessageMap.containsKey(boxId)) {     // 已存在（表明行为端已添加过了，获取对应结果并删除
-            Long anomalyHiddenId = anomalyMessageMap.get(boxId).getAnomalyHiddenId();
-            anomalyMessageMap.remove(boxId);
-            return anomalyHiddenId;
+            //anomalyMessageMap.remove(boxId);
+            return anomalyMessageMap.get(boxId).getAnomalyHiddenId();
         }
         else {
             AnomalyMessage curMsg = new AnomalyMessage();
