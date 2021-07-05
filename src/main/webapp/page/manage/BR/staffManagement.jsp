@@ -22,6 +22,7 @@
     <title>禾麦智能大厅管理系统</title>
     <link rel="shortcut icon" href="${ctx}/resources/images/favicon.ico"
           type="image/x-icon"/>
+
     <script type="text/javascript" src="./js/staffManagement.js">
     </script>
 
@@ -314,7 +315,13 @@
 
                                     </div>
                                 </td>
-
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="insertPhoto">添加照片
+                                    </button>
+                                </td>
 
                             </tr>
 
@@ -392,6 +399,7 @@
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="showPhoto">查看照片
                                         </button>
+
                                     </div>
                                 </td>
                             </tr>

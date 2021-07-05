@@ -121,22 +121,23 @@ function trClick() {
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         // $("#txtDeptLs").val(dataId);
         selectInfo = {
-            "camHiddenId":$(this).find("td:eq(10)").text(),
+            "camHiddenId":$(this).find("td:eq(9)").text(),
             "windowId":$(this).find("td:eq(2)").text(),
-            "windowCoordinates":$(this).find("td:eq(9)").text()
+            "windowCoordinates":$(this).find("td:eq(8)").text(),
+            "windowHiddenId":dataId
         }
 
         $("#windowId").val($(this).find("td:eq(2)").text());
 
         $("#windowName").val($(this).find("td:eq(3)").text());
-        $('#camId').val($(this).find("td:eq(10)").text())
+        $('#camId').val($(this).find("td:eq(9)").text())
         $("#windowDepartment").val($(this).find("td:eq(5)").text());
         $("#windowEvent").val($(this).find("td:eq(6)").text());
 
 
-        $("#windowNinePalaces").val(val=($(this).find("td:eq(7)").text()==="开").toString())
-        $("#windowActionAnalysis").val(val=($(this).find("td:eq(8)").text()==="开").toString())
-        $("#windowCoordinates").val($(this).find("td:eq(9)").text());
+        // $("#windowNinePalaces").val(val=($(this).find("td:eq(7)").text()==="开").toString())
+        $("#windowActionAnalysis").val(val=($(this).find("td:eq(7)").text()==="开").toString())
+        $("#windowCoordinates").val($(this).find("td:eq(8)").text());
         // $("#formCaseAreaLs").val($(this).find("td:eq(9)").text());
         // $("#adjSelectArea").val($(this).find("td:eq(12)").text());
         // $("#otherId").val($(this).find("td:eq(13)").text());
@@ -186,10 +187,7 @@ function validateData(isAdd) {
         layer.alert("请选择行为分析开启或关闭！");
         return;
     }
-    if($("#windowNinePalaces").val().trim()==""){
-        layer.alert("请选择监控开启或关闭！");
-        return;
-    }
+
     var trs = $("#itemResultTable tr:gt(0)");
     var chooseName = $("#windowName").val();
     var chooseId = $("#windowId").val();
@@ -296,7 +294,35 @@ function addClick() {
         });
     });
 }
+function updateCoord(Coord){
+    var formData = new FormData();
+    formData.append("windowHiddenId", dataId);
+    formData.append("windowCoordinates",Coord);
+    var rootPath = getWebRootPath();
+    var url = rootPath + "/window/updateCoordinates";
+    $.ajax({
+        url: url,
+        type: "post",
+        datatype: "json",
+        processData : false, // 使数据不做处理
+        contentType : false, // 不要设置Content-Type请求头
+        data: formData,
+        success: function (data) {
+            if (data.result == "error") {
+                layer.alert("后台服务器错误！");
+                return;
+            }
+            if (data.result == "ok") {
+                layer.msg("坐标修改成功！");
+            } else if (data.result == "no") {
+                layer.msg("坐标修改失败！");
+            }
+            table.draw(false);
+            clearData();
+        }
+    });
 
+}
 function updateClick() {
 //为修改绑定点击事件
     $(document).on('click', '#modifyCommit', function () {
@@ -427,6 +453,7 @@ function drawWindow()
                     window.imgPath = path
                     window.windowId = selectInfo.windowId
                     window.windowCoordinates = selectInfo.windowCoordinates
+                    window.windowHiddenId = selectInfo.windowHiddenId
                     layer.open({
                         type: 2,
                         title: false,
@@ -446,7 +473,7 @@ function drawWindow()
 function setCoordinate(coord){
     selectInfo["windowCoordinates"] = coord;
     $("#windowCoordinates").val(coord);
-
+    updateCoord(coord)
 }
 
 

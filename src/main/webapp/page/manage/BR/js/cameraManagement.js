@@ -452,7 +452,7 @@ function clearClick() {
     });
 }
 
-
+//分组管理
 function groupManagementClick() {
     var rootPath = getWebRootPath();
 //字典类型管理按钮

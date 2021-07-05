@@ -130,31 +130,32 @@ function trClick() {
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         var status={'待处理':'pending',"有效":"valid","无效":"invalid"};
         var res = null;
-        if (!!$(this).find("td:eq(13)").text()){
-            var res = status[$(this).find("td:eq(13)").text()]
+        if (!!$(this).find("td:eq(14)").text()){
+            var res = status[$(this).find("td:eq(14)").text()]
         }
         selectInfo = {
             "anomalyHiddenId": dataId,
             "anomalyEvent": $(this).find("td:eq(5)").text(),
             "anomalyStartTime": $(this).find("td:eq(6)").text(),
             "anomalyEndTime": $(this).find("td:eq(7)").text(),
-            "windowHiddenId": $(this).find("td:eq(9)").text(),
-            "userHiddenId": $(this).find("td:eq(10)").text(),
+            "windowHiddenId": $(this).find("td:eq(10)").text(),
+            "userHiddenId": $(this).find("td:eq(11)").text(),
             "anomalyConfidence": $(this).find("td:eq(8)").text(),
-            "anomalyVideoPath": $(this).find("td:eq(11)").text(),
-            "anomalyImagePath":$(this).find("td:eq(12)").text(),
+            "anomalyFaceConfidence": $(this).find("td:eq(9)").text(),
+            "anomalyVideoPath": $(this).find("td:eq(12)").text(),
+            "anomalyImagePath":$(this).find("td:eq(13)").text(),
             "anomalyStatus":res
         }
 
-        $("#windowId").val($(this).find("td:eq(9)").text());
+        $("#windowId").val($(this).find("td:eq(10)").text());
 
         $("#windowName").val($(this).find("td:eq(3)").text());
-        $("#userName").val($(this).find("td:eq(10)").text());
+        $("#userName").val($(this).find("td:eq(11)").text());
         $("#anomalyEvent").val($(this).find("td:eq(5)").text());
         $("#anomalyStartTime").val($(this).find("td:eq(6)").text());
         $("#anomalyEndTime").val($(this).find("td:eq(7)").text());
 
-        $("#anomalyStatus").val(status[$(this).find("td:eq(13)").text()])
+        $("#anomalyStatus").val(status[$(this).find("td:eq(14)").text()])
 
 
     });

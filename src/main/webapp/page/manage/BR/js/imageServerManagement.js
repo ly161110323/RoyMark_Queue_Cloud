@@ -328,19 +328,29 @@ function startClick(){
         var url=rootPath+"/server/batchStartServers";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
-        if (cBox.length == 0) {
+        console.log(dataId)
+        if (cBox.length == 0&&dataId=='') {
             layer.alert("请勾选您所要启动的服务器！");
             return;
         }
-        layer.confirm("您确定要" +"启动" + "这" + cBox.length+ "台服务器吗？",
+        var total_len = 0;
+
+        if (cBox.length>0){
+            for (var i = 0; i < cBox.length; i++) {
+                items.push(cBox.eq(i).val());
+            }
+            total_len = cBox.length;
+        }else {
+            items.push(dataId);
+            total_len = 1;
+        }
+        var data = {"startId" : items.toString()};
+        layer.confirm("您确定要" +"启动" + "这" + total_len+ "台服务器吗？",
             {
                 btn : [ '确定', '取消' ]
             },
             function() {
-                for (var i = 0; i < cBox.length; i++) {
-                    items.push(cBox.eq(i).val());
-                }
-                var data = {"startId" : items.toString()};
+
 
                 $.ajax({
                     type : 'POST',
@@ -352,7 +362,7 @@ function startClick(){
                             return;
                         }
                         if (data.result == "ok") {
-                            layer.alert(data.msg);
+                            layer.msg(data.msg);
                         }
                         table.draw(false);
                         // clearData();
@@ -372,19 +382,28 @@ function stopClick(){
         var url=rootPath+"/server/batchStopServers";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
-        if (cBox.length == 0) {
+        if (cBox.length == 0&& dataId=="") {
             layer.alert("请勾选您所要启动的服务器！");
             return;
         }
-        layer.confirm("您确定要" +"停止" + "这" + cBox.length+ "台服务器吗？",
+
+        var total_len = 0;
+
+        if (cBox.length>0){
+            for (var i = 0; i < cBox.length; i++) {
+                items.push(cBox.eq(i).val());
+            }
+            total_len = cBox.length;
+        }else {
+            items.push(dataId);
+            total_len = 1;
+        }
+        var data = {"stopId" : items.toString()};
+        layer.confirm("您确定要" +"停止" + "这" + total_len+ "台服务器吗？",
             {
                 btn : [ '确定', '取消' ]
             },
             function() {
-                for (var i = 0; i < cBox.length; i++) {
-                    items.push(cBox.eq(i).val());
-                }
-                var data = {"stopId" : items.toString()};
 
                 $.ajax({
                     type : 'POST',
@@ -396,7 +415,7 @@ function stopClick(){
                             return;
                         }
                         if (data.result == "ok") {
-                            layer.alert(data.msg);
+                            layer.msg(data.msg);
                         }
                         table.draw(false);
                         // clearData();

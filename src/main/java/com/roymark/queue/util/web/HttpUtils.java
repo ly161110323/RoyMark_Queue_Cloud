@@ -328,7 +328,10 @@ public class HttpUtils {
 
 	public static boolean isHostReachable(String host, Integer timeOut) {
 		try {
-			return InetAddress.getByName(host).isReachable(timeOut);
+			boolean re =  InetAddress.getByName(host).isReachable(timeOut);
+			System.out.println("ssss:");
+			System.out.println(re);
+			return re;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

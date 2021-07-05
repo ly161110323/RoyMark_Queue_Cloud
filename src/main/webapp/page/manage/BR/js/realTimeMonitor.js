@@ -1,40 +1,38 @@
 $(function (){
+    groupManagementClick();
+    prevButton();
+    nextButton();
+    var rootPath = getWebRootPath();
+    var url = rootPath + "/group/queryData"
+    var params = {
+        "pageNo": 1,
+        "pageSize": -1
+    }
+
+
     $.ajax({
         type: 'POST',
-        url: getWebRootPath()+'/camera/queryData',
+        url: url,
         cache: false,
         async: true,
         dataType: 'json',
-        data: {pageSize:-1,pageNo:1},
+        data: params,
         success: function (result) {
-            var maxVideoNum =parseInt(grid.x)*parseInt(grid.y);
+
             var pageList = result.pageList;
-            var datainfos = pageList.records
-            var videoPathList = [];
-            if (typeof (datainfos) == "undefined" ) {
-                layer.msg("查询摄像头数据异常！");
+            var list = pageList.records
+            var str = "";
+            for (var i = 0; i < list.length; i++) {
+                str += "<option value='" + list[i].groupHiddenId + "'>" + list[i].groupId + "</option>";
+            }
+            if(list.length==0){
+                layer.msg("无可用分组")
                 return ;
             }
-            datainfos.some(function (item){
-                if(item.camVideoAddr){
-                    videoPathList.push(item.camVideoAddr);
-                    if(videoPathList.length>=maxVideoNum){
-                        return true;
-                    }
-                }
-            });
-            videoPath = "";
-            videoPathList.forEach(function (item,index){
-                videoPath+=item.toString();
-                if(index!=maxVideoNum){
-                    videoPath+=',';
-                }
-            })
-            if(videoPath){
-                showVideoImg();
-            }else {
-                layer.msg("无可用摄像头！");
-            }
+            $("#selectCommitGroupId").empty();
+            // $("#groupId").append("<option value=''>请选择绑定服务器ID</option>");
+            $("#selectCommitGroupId").append(str);
+            queryCamByGroup($("#selectCommitGroupId").val(),curPage);
         }
     });
 })
@@ -43,6 +41,73 @@ var grid = {x:3,y:3};
 var width = '960';
 var height = '540';
 var ws1 = null;
+var curPage = 1;
+var totalPage = 1;
+function groupManagementClick() {
+    var rootPath = getWebRootPath();
+//字典类型管理按钮
+    $(document).on('click', '#groupManagement', function () {
+        var targetUrl = rootPath + "/page/manage/BR/groupManagement.jsp";
+        var argTitle = "摄像头分组管理";
+        openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
+    });
+}
+function prevButton(){
+    $('#prevPage').click(function (){
+        if(curPage==1){
+            layer.msg("已经是第一页了！")
+        }else{
+            curPage-=1;
+            queryCamByGroup($("#selectCommitGroupId").val(),curPage)
+        }
+    })
+}
+function nextButton(){
+    $('#nextPage').click(function (){
+        if(curPage==totalPage){
+            layer.msg("已经是最后一页了！")
+        }else{
+            curPage+=1;
+            queryCamByGroup($("#selectCommitGroupId").val(),curPage)
+        }
+    })
+}
+function queryCamByGroup(groupHiddenId,pageNo){
+    var rootPath = getWebRootPath();
+    var url = rootPath + "/camera/getCamByGroup"
+    var params = {
+        "groupHiddenId": groupHiddenId,
+        'pageNo':pageNo,
+        "pageSize": 9
+    }
+    $.ajax({
+        type: 'POST',
+        url: url,
+        cache: false,
+        async: true,
+        dataType: 'json',
+        data: params,
+        success: function (result) {
+            if(result.result =='error'){
+                layer.msg(result.msg);
+                return ;
+            }
+            var pageList = result.pageList;
+            var list = pageList.records;
+            var urls = [];
+            totalPage = pageList.pages;
+            list.forEach(function (item){
+                urls.push(item['camVideoAddr'])
+            })
+            videoPath = urls.toString();
+            if(videoPath==""){
+                layer.msg("当前分组无摄像头！");
+                return ;
+            }
+            showVideoImg()
+        }
+    });
+}
 function showVideoImg(){
     if(videoPath==""){
         layer.msg("视频地址为空！");
@@ -69,5 +134,6 @@ function showVideoImg(){
         }
     });
 }
+
 // var param = {"video_address": videoPath, "x": grid.x, "y": grid.y};
 //建立连接

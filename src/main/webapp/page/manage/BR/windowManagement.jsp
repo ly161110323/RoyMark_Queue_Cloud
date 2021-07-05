@@ -68,7 +68,7 @@
                             {'mData': 'windowDepartment', 'sTitle': '部门', 'sName': 'windowDepartment', 'sClass': 'center'},
                             {'mData': 'windowEvent', 'sTitle': '事项', 'sName': 'windowEvent', 'sClass': 'center'},
 
-                            {'mData': 'windowNinePalaces', 'sTitle': '九宫格监控', 'sName': 'windowNinePalaces', 'sClass': 'center'},
+                            // {'mData': 'windowNinePalaces', 'sTitle': '九宫格监控', 'sName': 'windowNinePalaces', 'sClass': 'center'},
                             {'mData': 'windowActionAnalysis', 'sTitle': '行为分析', 'sName': 'windowActionAnalysis', 'sClass': 'center'},
                             {'mData': 'windowCoordinates', 'sTitle': '区域坐标', 'sName': 'windowCoordinates', 'sClass': 'center'},
                             {'mData': 'camHiddenId', 'sTitle': 'camHiddenId', 'sName': 'camHiddenId', 'sClass': 'hidden'},
@@ -184,7 +184,7 @@
                     obj['data'] = datainfos;
                     obj['data'].forEach(function (item) {
                         item['windowActionAnalysis'] = item["windowActionAnalysis"]?"开":"关";
-                        item['windowNinePalaces'] = item["windowNinePalaces"]?"开":"关";
+                        // item['windowNinePalaces'] = item["windowNinePalaces"]?"开":"关";
                     })
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
@@ -288,21 +288,7 @@
                                     </div>
                                 </td>
 
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>九宫格监控：</label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd" id="windowNinePalaces">
-                                                <option value="">请选择开启或关闭</option>
-                                                <option value="true">开</option>
-                                                <option value="false">关</option>
-                                            </select>
-                                        </div>
 
-                                    </div>
-                                </td>
 
                                 <%--                                <td style="width: 25%;">--%>
                                 <%--                                    <div class="form-group">--%>

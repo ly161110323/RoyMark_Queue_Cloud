@@ -47,21 +47,14 @@
                             <tr class="table_menu_tr_zd">
                                 <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 35%">
                                     <label type="text"  style="width: 10%; float: left; margin-right: 10px"
-                                           class="control-label input_lable_hm table_label_zd ">地图ID</label>
+                                           class="control-label input_lable_hm table_label_zd ">分组ID</label>
                                     <select
                                             class="form-control table_content_zd" name="selectCommitWindowId"
-                                            id="selectCommitFloorId"
+                                            id="selectCommitGroupId"
                                             style="width: 20%; float: left; margin-right: 10px">
-                                        <option value="">请选择地图ID</option>
+                                        <option value="">请选择分组ID</option>
                                     </select>
-                                    <label type="text"  style="width: auto; float: left; margin-right: 10px"
-                                           class="control-label input_lable_hm table_label_zd ">地图名称</label>
-                                    <select
-                                            class="form-control table_content_zd" name="selectCommitServerId"
-                                            id="selectCommitFloorName"
-                                            style="width: 20%; float: left; margin-right: 10px">
-                                        <option value="">请选择地图名称</option>
-                                    </select>
+
 
 
                                     <button type="button"
@@ -69,56 +62,27 @@
                                             style="margin-top: 2.5px; margin-bottom: 2px;"
                                             id="changeCommit">切换地图
                                     </button>
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="prevPage">上一页
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                            style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="nextPage">下一页
+                                    </button>
 
 
 
                                 </td>
-                                <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 35%">
-                                    <label type="text"  style="width: 15%; float: left; margin-right: 10px"
-                                           class="control-label input_lable_hm table_label_zd ">添加摄像头</label>
-                                    <select
-                                            class="form-control table_content_zd" name="selectCommitServerId"
-                                            id="selectCameraAdd"
-                                            style="width: 25%; float: left; margin-right: 10px">
-                                        <option value=""></option>
-                                    </select>
-                                    <button type="button"
-                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
-                                            style="margin-top: 2.5px; margin-bottom: 2px;"
-                                            id="addCameraCommit">添加
-                                    </button>
-                                    <button type="button"
-                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
-                                            style="margin-top: 2.5px; margin-bottom: 2px;"
-                                            id="saveCameraCommit">保存摄像头编辑
-                                    </button>
-                                </td>
+
                                 <td class="table_menu_tr_td_right_zd" colspan="2">
                                     <div style="float: right;">
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="addCommit">新增
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="modifyCommit">修改
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="clearData">清除
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="deleteCommit">删除
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="cameraEdit">摄像头编辑关闭
+                                                id="groupManagement">分组管理
                                         </button>
                                     </div>
                                 </td>

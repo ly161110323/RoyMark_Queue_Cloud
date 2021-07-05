@@ -8,7 +8,7 @@ $(document).ready(function () {
     configClick();
     init_areaInfo();
     queryWindowList();
-
+    insertPhoto()
     icon_operate();//部门图标处理
 
     caseAreaClick();
@@ -273,7 +273,7 @@ function addClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        // formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
         formData.append("userId", $('#userId').val());
         formData.append("userName", $("#userName").val());
         formData.append("userSex", $("#userSex").val());
@@ -320,7 +320,7 @@ function updateClick() {
         }
         var formData = new FormData();
         formData.append("userHiddenId", dataId);
-        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        // formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
         formData.append("userId", $('#userId').val());
         formData.append("userName", $("#userName").val());
         formData.append("userSex", $("#userSex").val());
@@ -359,42 +359,66 @@ function updateClick() {
 }
 function showPhotos(){
     var rootPath = getWebRootPath();
-    var url = rootPath + staffInfo['userPhoto'];
-    var img = new Image()
+    var urls =  staffInfo['userPhoto'];
+    // var img = new Image()
     if(dataId==''){
         layer.alert("请选择人员信息！");
         return
     }
 
-    img.onload = function (){
-        wh = img.width/img.height
-        layerWidth = 300
-        layerHeight = layerWidth/wh
-        var imgdom = '<img id="img" src='+url+' style="width: 300px">'
-        layer.open({
-            type: 1,
-            title: false,
-            area: [layerWidth+'px',layerHeight+'px'],
-            // skin: 'layui-layer-nobg', //没有背景色
-            shadeClose: true,
-            content: imgdom
-        });
+    window.dataId = dataId;
+    window.imgs = urls;
 
-    }
-    img.onerror = function (){
-        layer.alert("图片不存在！")
-    }
-    if(staffInfo['userPhoto']!=""){
-        img.src =url
-    }else {
-        layer.alert("未保存图片！")
-    }
+    layer.open({
+        type: 2,
+        title: false,
+        area: ['820px','560px'],
+        // skin: 'layui-layer-nobg', //没有背景色
+        shadeClose: true,
+        content: getWebRootPath()+'/page/manage/BR/showFacePhoto.jsp'
+    });
 
 
 
 
 }
+function insertPhoto(){
+    $(document).on('click', '#insertPhoto', function () {
+        var rootPath = getWebRootPath();
+        // var img = new Image()
+        if(dataId==''){
+            layer.alert("请选择人员信息！");
+            return
+        }
+        var formData = new FormData();
+        formData.append("userHiddenId", dataId);
+        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        var rootPath = getWebRootPath();
+        var url = rootPath + "/user/insertFace";
 
+        $.ajax({
+            url: url,
+            type: "post",
+            datatype: "json",
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
+            data: formData,
+            success: function (data) {
+                if (data.result == "error") {
+                    layer.alert("服务器错误！");
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.alert("上传成功！");
+                } else if (data.result == "no") {
+                    layer.alert("上传失败！");
+                }
+
+            }
+        });
+
+    });
+}
 function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click', '#deleteCommit', function () {
@@ -422,7 +446,7 @@ function deleteClick() {
                     data: data,
                     success: function (data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert("错误！"+data.msg);
                             return;
                         }
                         if (data.result == "ok") {
@@ -432,7 +456,7 @@ function deleteClick() {
                         clearData();
                     },
                     error: function (data) {
-                        layer.alert("错误！");
+                        layer.alert("错误:"+data.msg);
                     }
                 });
             }, function () {

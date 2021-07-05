@@ -127,6 +127,7 @@
             let coord = ""
             window.parent.setCoordinate(coord)
         }
+
         let index = parent.layer.getFrameIndex(window.name);
         parent.layer.close(index);//关闭当前页
         // reshow();
@@ -340,6 +341,7 @@
         }else if(op>=3){
             fixPosition(currentR)
         }
+
         currentR=null;
         flag=0;
         reshow(x,y);
