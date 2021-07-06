@@ -420,8 +420,11 @@ public class AnomalyController {
                 return jsonObject;
             }
             else {
-
                 for (Anomaly anomaly: pageList.getRecords()) {
+                    // 必删除
+                    if (anomaly.getUserIds().size() < anomaly.getFaceConfs().size()) {
+                        anomaly.setFaceConfs(anomaly.getFaceConfs().subList(0, anomaly.getUserIds().size()));
+                    }
                     // 如果获取到的UserIds为空，则填入默认的user（根据userHiddenId
                     if (anomaly.getUserIds().size() == 0 && anomaly.getUserHiddenId() != null) {
                         ActionUser user = userService.getById(anomaly.getUserHiddenId());
