@@ -49,6 +49,9 @@ public class AnomalyController {
     @Autowired
     private AnomalyUserService anomalyUserService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
         JSONObject jsonObject = new JSONObject();
@@ -146,14 +149,14 @@ public class AnomalyController {
             }
             anomaly.setAnomalyVideoPath(anomalyVideoPath.toString());
 
-            // 根据windowHiddenId查询userHiddenId
+            // 根据windowHiddenId查询默认的最新的userHiddenId
             Window window = windowService.getById(anomaly.getWindowHiddenId());
             if (window != null) {
                 anomaly.setAnomalyFaceConfidence(window.getUserFaceConfidence());
-                // Date lastUpdateTime = window.getUserUpdateTime();
-                // Date currentTime = new Date();
-//                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 1 * 1000 * 60) // 10分钟以内以更新的用户为准
-                anomaly.setUserHiddenId(window.getUserHiddenId());
+                Date lastUpdateTime = window.getUserUpdateTime();
+                 Date currentTime = new Date();
+                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 10 * 1000 * 60) // 10分钟以内以更新的用户为准
+                    anomaly.setUserHiddenId(window.getUserHiddenId());
 //            }
             }
 
@@ -417,6 +420,17 @@ public class AnomalyController {
                 return jsonObject;
             }
             else {
+                for (Anomaly anomaly: pageList.getRecords()) {
+                    // 必删除
+                    if (anomaly.getUserIds().size() < anomaly.getFaceConfs().size()) {
+                        anomaly.setFaceConfs(anomaly.getFaceConfs().subList(0, anomaly.getUserIds().size()));
+                    }
+                    // 如果获取到的UserIds为空，则填入默认的user（根据userHiddenId
+                    if (anomaly.getUserIds().size() == 0 && anomaly.getUserHiddenId() != null) {
+                        ActionUser user = userService.getById(anomaly.getUserHiddenId());
+                        addDefaultUser(anomaly, user);
+                    }
+                }
                 jsonObject.put("pageList", pageList);
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "搜索成功");
@@ -452,8 +466,12 @@ public class AnomalyController {
                             .ne(Anomaly::getAnomalyStatus, "invalid")
                             .orderByDesc(Anomaly::getAnomalyStartDate));
                     if (anomalies.size() > 0) {
-                        anomalyOfWindowList.add(anomalyService
-                                .getByHiddenId(anomalies.get(0).getAnomalyHiddenId()));
+                        Anomaly anomaly = anomalyService.getByHiddenId(anomalies.get(0).getAnomalyHiddenId());
+                        if (anomaly.getUserIds().size() == 0 && anomaly.getUserHiddenId() != null) {
+                            ActionUser user = userService.getById(anomaly.getUserHiddenId());
+                            addDefaultUser(anomaly, user);
+                        }
+                        anomalyOfWindowList.add(anomaly);
                     }
                 }
                 map.put(camHiddenId, anomalyOfWindowList);
@@ -468,6 +486,20 @@ public class AnomalyController {
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
+        }
+    }
+
+    public void addDefaultUser(Anomaly anomaly, ActionUser user) {
+        if (user != null) {
+            List<Long> userIds = new ArrayList<>();
+            List<String> userNames = new ArrayList<>();
+            List<Double> faceConfs = new ArrayList<>();
+            userIds.add(user.getUserHiddenId());
+            userNames.add(user.getUserName());
+            faceConfs.add(anomaly.getAnomalyFaceConfidence());
+            anomaly.setUserIds(userIds);
+            anomaly.setUserNames(userNames);
+            anomaly.setFaceConfs(faceConfs);
         }
     }
 }

@@ -52,6 +52,7 @@ public class Anomaly implements Serializable {
     @TableField(value = "window_hidden_id")
     private Long windowHiddenId;
 
+    // 默认异常的发生用户，根据窗口的最新人脸检测结果填入
     @TableField(value = "user_hidden_id")
     private Long userHiddenId;
 
