@@ -189,6 +189,21 @@
                     var status = {'pending':'待处理','valid':"有效","invalid":"无效"};
                     obj['data'].forEach(function (item) {
                         item['anomalyStatus'] =status[item.anomalyStatus];
+                        item['anomalyConfidence'] = parseFloat(item.anomalyConfidence).toFixed(3).toString();
+
+                        if(item.faceConfs.length==0){ // 保留三位小数
+                            item['faceConfs'] = '';
+                        }else {
+                            let faceConfs = item.faceConfs.toString();
+                            let re = []
+                            faceConfs.split(',').forEach(function (i){
+                                re.push(parseFloat(i).toFixed(3))
+                            });
+                            item['faceConfs'] = re.toString()
+                        }
+
+
+
                     });
 
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
