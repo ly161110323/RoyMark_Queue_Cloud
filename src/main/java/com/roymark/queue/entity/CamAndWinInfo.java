@@ -2,6 +2,7 @@ package com.roymark.queue.entity;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -9,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-public class CamAndWinInfo {
+public class CamAndWinInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Camera camera;
     private List<Window> windows;

@@ -61,13 +61,12 @@ public class AnomalyController {
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");
-            }
-            else {
+            } else {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "修改失败");
             }
             return jsonObject;
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("/anomaly/updateAnomalyStatus 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
@@ -84,7 +83,7 @@ public class AnomalyController {
 //            System.out.println(anomaly);
 //            System.out.println(imagePath);
 //            System.out.println(videoPath);
-            System.out.println("BR:"+boxIds);
+            System.out.println("BR:" + boxIds);
             String[] boxIdArray = boxIds.split(",");
             List<String> boxIdList = Arrays.asList(boxIdArray);
 
@@ -113,7 +112,7 @@ public class AnomalyController {
                 if (camera != null) {
                     Server server = serverService.getById(camera.getServerHiddenId());
                     if (server != null) {
-                        for (int i=0; i<imagePaths.length; i++) {
+                        for (int i = 0; i < imagePaths.length; i++) {
                             if (!imagePaths[i].equals("")) {
                                 StringBuilder str = new StringBuilder();
                                 str.append("http://");
@@ -130,7 +129,7 @@ public class AnomalyController {
             }
 
             if (anomalyImagePath.length() > 0)
-                anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length()-1).toString());
+                anomaly.setAnomalyImagePath(anomalyImagePath.deleteCharAt(anomalyImagePath.length() - 1).toString());
 
             // 将服务器信息加到视频路径中
             StringBuilder anomalyVideoPath = new StringBuilder();
@@ -152,11 +151,11 @@ public class AnomalyController {
             // 根据windowHiddenId查询默认的最新的userHiddenId
             Window window = windowService.getById(anomaly.getWindowHiddenId());
             if (window != null) {
-                anomaly.setAnomalyFaceConfidence(window.getUserFaceConfidence());
                 Date lastUpdateTime = window.getUserUpdateTime();
-                 Date currentTime = new Date();
+                Date currentTime = new Date();
                 if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 10 * 1000 * 60) // 10分钟以内以更新的用户为准
                     anomaly.setUserHiddenId(window.getUserHiddenId());
+                    anomaly.setAnomalyFaceConfidence(window.getUserFaceConfidence());
 //            }
             }
 
@@ -173,8 +172,7 @@ public class AnomalyController {
                 anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
                 anomalyService.updateById(anomaly);
                 boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
-            }
-            else {
+            } else {
                 // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
                 Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
                 Date startTimeThreshold = new Date(startTime.getTime() + 60 * 100);
@@ -187,9 +185,8 @@ public class AnomalyController {
                     anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
                     anomalyService.updateById(anomaly);
                     boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
-                }
-                else {
-                    anomaly.setAnomalyHiddenId((long)0);
+                } else {
+                    anomaly.setAnomalyHiddenId((long) 0);
                     anomalyService.save(anomaly);
                     Anomaly newAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent())
                             .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
@@ -212,7 +209,7 @@ public class AnomalyController {
                 FaceVector faceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getFaceId, faceId));
                 if (faceVector != null) {
                     Long userHiddenId = faceVector.getUserHiddenId();
-                    anomalyUserService.checkInsert(new AnomalyUser((long)0, boxAnomalyHiddenId, userHiddenId, entry.getValue()));
+                    anomalyUserService.checkInsert(new AnomalyUser((long) 0, boxAnomalyHiddenId, userHiddenId, entry.getValue()));
                 }
             }
 
@@ -300,14 +297,11 @@ public class AnomalyController {
             boolean result;
             if (anomaly.getUserHiddenId() != null && anomaly.getWindowHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-            }
-            else if (anomaly.getUserHiddenId() != null) {
+            } else if (anomaly.getUserHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-            }
-            else if (anomaly.getWindowHiddenId() != null) {
+            } else if (anomaly.getWindowHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-            }
-            else {
+            } else {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null).set(Anomaly::getWindowHiddenId, null).eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
             }
             if (result) {
@@ -333,13 +327,12 @@ public class AnomalyController {
 
         try {
             String[] deletes = deleteId.split(",");
-            if (deletes.length <= 0)
-            {
+            if (deletes.length <= 0) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
             }
-            for (int i=0; i<deletes.length; i++) {
+            for (int i = 0; i < deletes.length; i++) {
                 Anomaly anomaly = anomalyService.getById(Long.valueOf(deletes[i]));
                 if (anomaly == null) {
                     jsonObject.put("result", "error");
@@ -350,7 +343,7 @@ public class AnomalyController {
             for (int i = 0; i < deletes.length; i++) {
                 anomalyService.removeById(Long.valueOf(deletes[i]));
                 anomalyUserService.remove(Wrappers.<AnomalyUser>lambdaUpdate().eq(AnomalyUser::getAnomalyHiddenId
-                        ,Long.valueOf(deletes[i])));
+                        , Long.valueOf(deletes[i])));
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");
@@ -398,7 +391,7 @@ public class AnomalyController {
             Page<Anomaly> page = new Page<Anomaly>(pageNo, pageSize);
             QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<Anomaly>();
             if (event != null)
-                queryWrapper.like ("anomaly_event",event);
+                queryWrapper.like("anomaly_event", event);
             if (windowId != null)
                 queryWrapper.like("window_id", windowId);
             if (date != null) {
@@ -418,15 +411,10 @@ public class AnomalyController {
                 jsonObject.put("msg", "搜素结果为空");
                 jsonObject.put("pageList", pageList);
                 return jsonObject;
-            }
-            else {
-                for (Anomaly anomaly: pageList.getRecords()) {
-                    // 必删除
-                    if (anomaly.getUserIds().size() < anomaly.getFaceConfs().size()) {
-                        anomaly.setFaceConfs(anomaly.getFaceConfs().subList(0, anomaly.getUserIds().size()));
-                    }
+            } else {
+                for (Anomaly anomaly : pageList.getRecords()) {
                     // 如果获取到的UserIds为空，则填入默认的user（根据userHiddenId
-                    if (anomaly.getUserIds().size() == 0 && anomaly.getUserHiddenId() != null) {
+                    if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
                         ActionUser user = userService.getById(anomaly.getUserHiddenId());
                         addDefaultUser(anomaly, user);
                     }
@@ -459,7 +447,7 @@ public class AnomalyController {
                 Long camHiddenId = camera.getCamHiddenId();
                 List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
                 List<Anomaly> anomalyOfWindowList = new ArrayList<>();
-                for (Window window: windows) {
+                for (Window window : windows) {
                     List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
                             .eq(Anomaly::getWindowHiddenId, window.getWindowHiddenId())
                             .isNull(Anomaly::getAnomalyEndDate)
@@ -467,7 +455,7 @@ public class AnomalyController {
                             .orderByDesc(Anomaly::getAnomalyStartDate));
                     if (anomalies.size() > 0) {
                         Anomaly anomaly = anomalyService.getByHiddenId(anomalies.get(0).getAnomalyHiddenId());
-                        if (anomaly.getUserIds().size() == 0 && anomaly.getUserHiddenId() != null) {
+                        if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
                             ActionUser user = userService.getById(anomaly.getUserHiddenId());
                             addDefaultUser(anomaly, user);
                         }
@@ -481,7 +469,7 @@ public class AnomalyController {
             jsonObject.put("data", map);
 
             return jsonObject;
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("/camera/getLatestAnomaly 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
@@ -491,15 +479,25 @@ public class AnomalyController {
 
     public void addDefaultUser(Anomaly anomaly, ActionUser user) {
         if (user != null) {
-            List<Long> userIds = new ArrayList<>();
-            List<String> userNames = new ArrayList<>();
-            List<Double> faceConfs = new ArrayList<>();
-            userIds.add(user.getUserHiddenId());
-            userNames.add(user.getUserName());
-            faceConfs.add(anomaly.getAnomalyFaceConfidence());
-            anomaly.setUserIds(userIds);
-            anomaly.setUserNames(userNames);
-            anomaly.setFaceConfs(faceConfs);
+            List<UserShortInfo> userShortInfos = new ArrayList<>();
+            userShortInfos.add(new UserShortInfo(user.getUserHiddenId(), user.getUserName(), anomaly.getAnomalyFaceConfidence()));
+            anomaly.setUserShortInfos(userShortInfos);
         }
+    }
+
+    @RequestMapping(value = "/getCount", produces = "application/json;charset=utf-8")
+    public Object Test() {
+        JSONObject jsonObject = new JSONObject();
+        AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+        jsonObject.put("msg", anomalyMsgUtil.getResult());
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/setCount", produces = "application/json;charset=utf-8")
+    public Object Test1() {
+        JSONObject jsonObject = new JSONObject();
+        AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+        anomalyMsgUtil.setCount();
+        return jsonObject;
     }
 }

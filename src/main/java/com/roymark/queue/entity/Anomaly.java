@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @TableName(value = "br_anomaly")
+@JsonIgnoreProperties(value = {"handler"})
 public class Anomaly implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -52,7 +54,7 @@ public class Anomaly implements Serializable {
     @TableField(value = "window_hidden_id")
     private Long windowHiddenId;
 
-    // 默认异常的发生用户，根据窗口的最新人脸检测结果填入
+    // 默认的绑定用户
     @TableField(value = "user_hidden_id")
     private Long userHiddenId;
 
@@ -72,11 +74,5 @@ public class Anomaly implements Serializable {
 	private String userName;
 
     @TableField(exist = false)
-    private List<Long> userIds;
-
-    @TableField(exist = false)
-    private List<String> userNames;
-
-    @TableField(exist = false)
-    private List<Double> faceConfs;
+    private List<UserShortInfo> userShortInfos;
 }

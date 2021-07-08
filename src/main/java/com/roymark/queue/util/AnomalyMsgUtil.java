@@ -12,6 +12,11 @@ public class AnomalyMsgUtil {
     // 以String boxId为索引快速查找
     private static Map<String, AnomalyMessage> anomalyMessageMap;
 
+    private static int correctCount = 0;
+
+    private static int faceCount = 0;
+
+
     // 初始化
     public void init() {
         anomalyMessageMap = new HashMap<>();
@@ -36,6 +41,7 @@ public class AnomalyMsgUtil {
                 if (anomalyMessage.getFaceId()==null || anomalyMessage.getFaceId().equals("")) {        // 重复但人脸端结果未到
                     continue;
                 }
+                correctCount++;
                 returnMap.put(anomalyMessage.getFaceId(), anomalyMessage.getFaceConf());
                 anomalyMessageMap.remove(boxId);
             }
@@ -51,6 +57,7 @@ public class AnomalyMsgUtil {
 
     // 人脸端添加
     public Long addMap(String boxId, String faceId, double faceConf) {
+        faceCount++;
         if (anomalyMessageMap == null) {
             init();
         }
@@ -59,6 +66,7 @@ public class AnomalyMsgUtil {
             if (anomalyHiddenId == null || anomalyHiddenId == 0) {          // 重复但行为端结果未到
                 return null;
             }
+            correctCount++;
             anomalyMessageMap.remove(boxId);
             return anomalyHiddenId;
         }
@@ -80,5 +88,17 @@ public class AnomalyMsgUtil {
                     || entry.getValue().getUpdateTime() == null
                     || curDate.getTime()-entry.getValue().getUpdateTime().getTime() > 1000*60);
         }
+    }
+
+    public String getResult() {
+        StringBuilder str = new StringBuilder();
+        str.append("正确匹配：").append(correctCount).append("\n");
+        str.append("收到人脸：").append(faceCount).append("\n");
+        return str.toString();
+    }
+
+    public void setCount() {
+        correctCount = 0;
+        faceCount = 0;
     }
 }
