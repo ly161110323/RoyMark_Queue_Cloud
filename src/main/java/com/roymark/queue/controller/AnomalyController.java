@@ -52,6 +52,7 @@ public class AnomalyController {
     @Autowired
     private UserService userService;
 
+    /* 快速更新异常记录的状态 */
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
         JSONObject jsonObject = new JSONObject();
@@ -75,6 +76,7 @@ public class AnomalyController {
 
     }
 
+    /* 接受从服务器端传来的消息 */
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath,
                                         String boxIds) {

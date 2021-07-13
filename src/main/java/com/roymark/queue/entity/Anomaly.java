@@ -71,8 +71,5 @@ public class Anomaly implements Serializable {
 	private String windowName;
 
     @TableField(exist = false)
-	private String userName;
-
-    @TableField(exist = false)
     private List<UserShortInfo> userShortInfos;
 }

@@ -18,7 +18,6 @@
         <result column="anomaly_status" property="anomalyStatus" />
         <result column="window_id" property="windowId" />
         <result column="window_name" property="windowName" />
-        <result column="user_name" property="userName" />
         <!--用户id 用户名 人脸置信度的信息结构体-->
         <collection property="userShortInfos" column="anomaly_hidden_id" select="selectUserShortInfo">
         </collection>
@@ -32,21 +31,19 @@
 
     <!-- 通用查询结果列 -->
     <select id="getAllAnomaly" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_name, br_window.window_id, br_window.window_name FROM br_anomaly
-            LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
-            LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id
+        SELECT br_anomaly.*,  br_window.window_id, br_window.window_name FROM br_anomaly
+        LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
     </select>
 
     <select id="getAnomalyByHiddenId" parameterType="long" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_name, br_window.window_id, br_window.window_name FROM br_anomaly
-            LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
-            LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id
+        SELECT br_anomaly.*, br_window.window_id, br_window.window_name FROM br_anomaly
+        LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
+        WHERE br_anomaly.anomaly_hidden_id=#{VALUE }
     </select>
 
     <select id="page" resultMap="BaseResultMap">
-        SELECT br_anomaly.*, br_user.user_name, br_window.window_id, br_window.window_name FROM br_anomaly
-           LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
-           LEFT JOIN br_user ON br_anomaly.user_hidden_id=br_user.user_hidden_id
+        SELECT br_anomaly.*, br_window.window_id, br_window.window_name FROM br_anomaly
+        LEFT JOIN br_window ON br_anomaly.window_hidden_id=br_window.window_hidden_id
         ${ew.customSqlSegment}
     </select>
 
