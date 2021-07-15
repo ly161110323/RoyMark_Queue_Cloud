@@ -346,10 +346,10 @@ public class ServerController {
 							List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
 							for (Camera camera : cameras) {
 								// 异常的摄像头不处理
-//								boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
-//								if (!result) {
-//									continue;
-//								}
+								boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
+								if (!result) {
+									continue;
+								}
 								CamAndWinInfo temp = new CamAndWinInfo();
 								List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
 								// 移除未开启行为分析的

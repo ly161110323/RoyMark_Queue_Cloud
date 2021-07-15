@@ -16,6 +16,7 @@
         <result column="window_hidden_id" property="windowHiddenId" />
         <result column="user_hidden_id" property="userHiddenId" />
         <result column="anomaly_status" property="anomalyStatus" />
+        <result column="default_user_flag" property="defaultUserFlag" />
         <result column="window_id" property="windowId" />
         <result column="window_name" property="windowName" />
         <!--用户id 用户名 人脸置信度的信息结构体-->

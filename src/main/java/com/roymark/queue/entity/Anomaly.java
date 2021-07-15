@@ -64,6 +64,10 @@ public class Anomaly implements Serializable {
     @TableField(value = "anomaly_face_confidence")
     private double anomalyFaceConfidence;
 
+    // 是否是默认用户的标志,默认为真
+    @TableField(value = "default_user_flag")
+    private Boolean defaultUserFlag;
+
     @TableField(exist =  false)
 	private String windowId;
 
@@ -72,4 +76,5 @@ public class Anomaly implements Serializable {
 
     @TableField(exist = false)
     private List<UserShortInfo> userShortInfos;
+
 }

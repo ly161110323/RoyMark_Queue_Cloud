@@ -385,9 +385,8 @@ public class AnomalyController {
 
     @RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
     public Object search(@RequestParam(required = false) String event, @RequestParam(required = false) String windowId,
-                         @RequestParam(required = false) String date, int pageNo, int pageSize) {
+                         @RequestParam(required = false) String date, @RequestParam(required=false) String userName, int pageNo, int pageSize) {
         JSONObject jsonObject = new JSONObject();
-
         try {
             // 分页构造器
             Page<Anomaly> page = new Page<Anomaly>(pageNo, pageSize);
@@ -399,10 +398,33 @@ public class AnomalyController {
             if (date != null) {
                 String start = date + " 00:00:00";
                 String end = date + " 23:59:59";
-                // System.out.println(end);
-                Timestamp startTime = Timestamp.valueOf(start);
-                Timestamp endTime = Timestamp.valueOf(end);
                 queryWrapper.between("anomaly_start_date", start, end);
+            }
+            if (userName != null) {
+                // 查询模糊用户
+                List<ActionUser> users = userService.list(Wrappers.<ActionUser>lambdaQuery().like(ActionUser::getUserName, userName));
+                Set<Long> anomalyHiddenIdSet = new HashSet<>();     // 去除重复
+                for (ActionUser user: users) {
+                    // 获取用户Id对应的多个AnomalyUser(通过行为和人脸进行绑定的)
+                    List<AnomalyUser> anomalyUsers = anomalyUserService.list(Wrappers.<AnomalyUser>lambdaQuery().eq(AnomalyUser::getUserHiddenId, user.getUserHiddenId()));
+                    for (AnomalyUser anomalyUser: anomalyUsers) {
+                        // 存储用户所对应的anomalyHiddenId
+                        anomalyHiddenIdSet.add(anomalyUser.getAnomalyHiddenId());
+                    }
+                    // 处理窗口中默认的
+                    List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
+                            .eq(Anomaly::getUserHiddenId, user.getUserHiddenId())
+                            .eq(Anomaly::getDefaultUserFlag, true));
+                    for (Anomaly anomaly: anomalies) {
+                        anomalyHiddenIdSet.add(anomaly.getAnomalyHiddenId());
+                    }
+
+                }
+                // 选择选中的anomalyHiddenId
+                if (anomalyHiddenIdSet.size() > 0) {
+                    queryWrapper.in("anomaly_hidden_id", anomalyHiddenIdSet);
+                }
+
             }
             queryWrapper.orderByDesc("anomaly_start_date");
             // 执行分页
