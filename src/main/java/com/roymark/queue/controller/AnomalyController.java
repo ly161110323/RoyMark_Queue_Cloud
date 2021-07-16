@@ -404,6 +404,7 @@ public class AnomalyController {
                 // 查询模糊用户
                 List<ActionUser> users = userService.list(Wrappers.<ActionUser>lambdaQuery().like(ActionUser::getUserName, userName));
                 Set<Long> anomalyHiddenIdSet = new HashSet<>();     // 去除重复
+                anomalyHiddenIdSet.add((long)-1);                   // 该Set不能为空，加入-1值，若users为空则以-1查询为空
                 for (ActionUser user: users) {
                     // 获取用户Id对应的多个AnomalyUser(通过行为和人脸进行绑定的)
                     List<AnomalyUser> anomalyUsers = anomalyUserService.list(Wrappers.<AnomalyUser>lambdaQuery().eq(AnomalyUser::getUserHiddenId, user.getUserHiddenId()));
@@ -421,9 +422,7 @@ public class AnomalyController {
 
                 }
                 // 选择选中的anomalyHiddenId
-                if (anomalyHiddenIdSet.size() > 0) {
-                    queryWrapper.in("anomaly_hidden_id", anomalyHiddenIdSet);
-                }
+                queryWrapper.in("anomaly_hidden_id", anomalyHiddenIdSet);
 
             }
             queryWrapper.orderByDesc("anomaly_start_date");
