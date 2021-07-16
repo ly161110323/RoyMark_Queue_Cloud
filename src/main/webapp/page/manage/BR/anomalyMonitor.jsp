@@ -122,6 +122,7 @@
                                     var html = "<input type='checkbox' value=" + row.anomalyHiddenId + " class='lsCheck' name='choice' />";
                                     html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
+
                                 }
                             },
                             // {
@@ -148,8 +149,17 @@
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
             var inputWindowId = $("#inputCommitWindowId").val();
+            var inputUserName = $("#inputCommitUserName").val();
             var selectAnomalyEvent = $("#selectCommitAnomalyEvent").find("option:selected").text();
             var selectDate = $("#selectCommitDate").val();
+            var showPendingList = [];
+            $("input[name='filter']").each(function (index,ele){
+                if($(ele).is(":checked")){
+                    showPendingList.push($(ele).val())
+                }
+            })
+            var showPending = showPendingList.toString();
+            // console.log(showPending);
             var params;
             params = {
 
@@ -161,12 +171,18 @@
                     params["windowId"] = inputWindowId;
 
                 }
+                if(inputUserName!=""){
+                    params["userName"] = inputUserName;
+                }
                 if(selectAnomalyEvent !="请选择异常事件"){
                     params["event"] = selectAnomalyEvent;
 
                 }
                 if(selectDate !=""){
                     params["date"] = selectDate;
+                }
+                if(showPending!= ''){
+                    params["anomalyStatus"] = showPending;
                 }
 
             }
@@ -189,18 +205,25 @@
                     var status = {'pending':'待处理','valid':"有效","invalid":"无效"};
                     obj['data'].forEach(function (item) {
                         item['anomalyStatus'] =status[item.anomalyStatus];
-                        item['anomalyConfidence'] = parseFloat(item.anomalyConfidence).toFixed(3).toString();
-
-                        if(item.faceConfs.length==0){ // 保留三位小数
-                            item['faceConfs'] = '';
-                        }else {
-                            let faceConfs = item.faceConfs.toString();
-                            let re = []
-                            faceConfs.split(',').forEach(function (i){
-                                re.push(parseFloat(i).toFixed(3))
-                            });
-                            item['faceConfs'] = re.toString()
-                        }
+                        item['anomalyConfidence'] = parseFloat(item.anomalyConfidence).toFixed(2).toString();
+                        let faceConfs = [];
+                        let userNames = [];
+                        item.userShortInfos.forEach(function (x){
+                            faceConfs.push(parseFloat(x['faceConf']).toFixed(2));
+                            userNames.push(x['userName']);
+                        });
+                        item['faceConfs'] = faceConfs.toString();
+                        item['userNames'] = userNames.toString()
+                        // if(faceConfs.length==0){ // 保留2位小数
+                        //     item['faceConfs'] = '';
+                        // }else {
+                        //     let faceConfsStr = item.faceConfs.toString();
+                        //     let re = []
+                        //     faceConfsStr.split(',').forEach(function (i){
+                        //         re.push(parseFloat(i).toFixed(2))
+                        //     });
+                        //     item['faceConfs'] = re.toString()
+                        // }
 
 
 
@@ -286,11 +309,11 @@
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="anomalyEvent" name="anomalyEvent">
-                                                <option value="0">请选择异常事件</option>
+                                                <option value="">请选择异常事件</option>
                                                 <option value="离岗">离岗</option>
                                                 <option value="睡觉">睡觉</option>
                                                 <option value="玩手机">玩手机</option>
-                                                <option value="聚众">聚众</option>
+                                                <option value="聚众聊天">聚众聊天</option>
                                             </select>
                                         </div>
 
@@ -359,16 +382,25 @@
                                             class="form-control input_btn_input table_content_zd"
                                             name="inputCommitWindowId"
                                             id="inputCommitWindowId">
-
+                                    <input
+                                            type="text"
+                                            placeholder="请输入人员姓名"
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder=""
+                                            style="width: 25%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="inputCommitUserName"
+                                            id="inputCommitUserName">
                                     <select
                                             class="form-control table_content_zd" name="selectCommitAnomalyEvent"
                                             id="selectCommitAnomalyEvent"
                                             style="width: 25%; float: left; margin-right: 10px">
-                                        <option value="0">请选择异常事件</option>
+                                        <option value="">请选择异常事件</option>
                                         <option value="离岗">离岗</option>
                                         <option value="睡觉">睡觉</option>
                                         <option value="玩手机">玩手机</option>
-                                        <option value="聚众">聚众</option>
+                                        <option value="聚众聊天">聚众聊天</option>
                                     </select>
 
                                     <input
@@ -381,6 +413,10 @@
                                             class="form-control input_btn_input table_content_zd"
                                             name="selectCommitDate"
                                             id="selectCommitDate">
+
+                                    <input type="checkbox" name="filter" id="showPending"  value="pending" checked="" >显示待处理
+                                    <input type="checkbox" name="filter"  id="showValid" value="valid" checked="">显示有效
+                                    <input type="checkbox" name="filter"  id="showInvalid" value="invalid" checked="">显示无效
 
                                     <button type="button"
                                             class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"

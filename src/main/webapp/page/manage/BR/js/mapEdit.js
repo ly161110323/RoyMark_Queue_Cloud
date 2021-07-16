@@ -13,7 +13,7 @@ var rm = null
 
 var mapList = null
 var anomalyRecord = {}//只保存最新的异常
-var curMapIndex = 0;
+var curMapIndex = window.parent.curMapIndex;
 var curMap = null
 var hasCoordCams = []
 var noCoordCams = []
@@ -34,14 +34,13 @@ var status_src = {'play':yellow_src,'sleep':red_src,'leave':gray_src,'gather':bl
 $(document).ready(function () {
     queryMap();
     icon_operate();
-    // addClick();
-    // updateClick();
-    // deleteClick();
+    addClick();
+    updateClick();
     // cameraEdit();
     rm = document.getElementById("rightMenu");
     rm.style.display = "none";
     bindEventListen();
-    mapEdit();
+
 })
 
 function icon_operate() {
@@ -143,7 +142,7 @@ function loadMapAndCamera(url, mapHiddenId) {
             $('#main').css('background', 'url(' + img.src + ')')
             $('#mapId').val(mapList[curMapIndex]['mapId'])
             $('#mapName').val(mapList[curMapIndex]['mapName'])
-            // $('#mapImageFileName').val(mapList[curMapIndex]['mapMapPath'])
+            // $('#mapImageFileName').val(mapList[curMapIndex]['mapPath'])
         }
     }
     if (mapHiddenId) {
@@ -219,17 +218,20 @@ function validateData(isAdd) {
     var chooseId = $("#mapId").val();
     var chooseName = $("#mapName").val();
     // var fileName = $("#mapImageFileName").val();
-    // console.log(fileName)
+    console.log(chooseId,chooseName);
+
     var isExit = false;
     var idIndex = mapList.findIndex(e => e.mapId == chooseId)
     var nameIndex = mapList.findIndex(e => e.mapName == chooseName)
+
     if (isAdd) {
         if (idIndex != -1 || nameIndex != -1) {
+
             isExit = true;
             layer.alert("地图ID或名称已存在！");
         }
     } else {
-        if (idIndex != curMapIndex || nameIndex != curMapIndex) {
+        if ((idIndex != curMapIndex &&idIndex!=-1) || (nameIndex != curMapIndex&&nameIndex!=-1)) {
             isExit = true;
             layer.alert("地图ID或名称已存在！");
         }
@@ -402,7 +404,7 @@ function queryMap(id = "", name = "") {
                 // curMap = mapList[curMapIndex]
                 loadMapAndCamera(mapList[curMapIndex].mapPath, mapList[curMapIndex].mapHiddenId); //加载背景图
                 loadMapOptions();
-                setInterval(queryAnomalyEvent,3000);
+                // setInterval(queryAnomalyEvent,3000);
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
 
             } else {
@@ -679,7 +681,7 @@ function anomalyConfirm() {
         var anomalyList=anomalyRecord[rightHiidenId];
         var firstAnomaly = anomalyList[0];
         layer.confirm('请确认当前异常，选择确认或忽略！',{
-            btn:['确认','放弃','稍后处理']},
+                btn:['确认','放弃','稍后处理']},
             function (){
 
                 var anomalyHiddenId = firstAnomaly.anomalyHiddenId;
@@ -744,7 +746,7 @@ function mapEdit(){
     $('#mapEdit').click(function (){
         var targetUrl = getWebRootPath() + "/page/manage/BR/mapEdit.jsp";
         var argTitle = "地图编辑";
-        window.curMapIndex = curMapIndex;
+
         openwindowNoRefresh(targetUrl, argTitle, 1280, 720);
     });
 }

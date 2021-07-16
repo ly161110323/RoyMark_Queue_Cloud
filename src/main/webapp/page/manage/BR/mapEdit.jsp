@@ -29,7 +29,7 @@
           type="image/x-icon"/>
 
     <script src="${ctx}/resources/jquery/jquery-ui-1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="./js/mapController.js"></script>
+    <script type="text/javascript" src="./js/mapEdit.js"></script>
     <style>
         #page{
             position: fixed;
@@ -104,7 +104,7 @@
                                             <input type="file" name="mapImage" id="mapImage"
                                                    style="display: none;"> <input type="text"
                                                                                   style="width: 65%;" autocomplete="off"
-<%--                                                                                  placeholder="768*365"--%>
+                                        <%--                                                                                  placeholder="768*365"--%>
                                                                                   class="form-control m-b input_btn_input"
                                                                                   readonly="readonly" name="mapImageFileName"
                                                                                   id="mapImageFileName">
@@ -163,40 +163,65 @@
 
 
                                 </td>
-<%--                                <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 35%">--%>
-<%--                                    <label type="text"  style="width: 15%; float: left; margin-right: 10px"--%>
-<%--                                           class="control-label input_lable_hm table_label_zd ">添加摄像头</label>--%>
-<%--                                    <select--%>
-<%--                                            class="form-control table_content_zd" name="selectCommitServerId"--%>
-<%--                                            id="selectCameraAdd"--%>
-<%--                                            style="width: 25%; float: left; margin-right: 10px">--%>
-<%--                                        <option value=""></option>--%>
-<%--                                    </select>--%>
-<%--                                    <button type="button"--%>
-<%--                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"--%>
-<%--                                            style="margin-top: 2.5px; margin-bottom: 2px;"--%>
-<%--                                            id="addCameraCommit">添加--%>
-<%--                                    </button>--%>
-<%--                                    <button type="button"--%>
-<%--                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"--%>
-<%--                                            style="margin-top: 2.5px; margin-bottom: 2px;"--%>
-<%--                                            id="saveCameraCommit">保存摄像头编辑--%>
-<%--                                    </button>--%>
-<%--                                </td>--%>
+                                <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 35%">
+                                    <label type="text"  style="width: 15%; float: left; margin-right: 10px"
+                                           class="control-label input_lable_hm table_label_zd ">添加摄像头</label>
+                                    <select
+                                            class="form-control table_content_zd" name="selectCommitServerId"
+                                            id="selectCameraAdd"
+                                            style="width: 25%; float: left; margin-right: 10px">
+                                        <option value=""></option>
+                                    </select>
+                                    <button type="button"
+                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
+                                            style="margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="addCameraCommit">添加
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
+                                            style="margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="saveCameraCommit">保存摄像头编辑
+                                    </button>
+                                </td>
                                 <td class="table_menu_tr_td_right_zd" colspan="2">
                                     <div style="float: right;">
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="mapEdit">地图编辑
+                                                id="addCommit">新增
                                         </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="modifyCommit">修改
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="clearData">清除
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="deleteCommit">删除
+                                        </button>
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="cameraEdit">关闭摄像头编辑--%>
+<%--                                        </button>--%>
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="mapEdit">地图编辑编辑--%>
+<%--                                        </button>--%>
                                     </div>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                     </form>
-<%--                    main 的positon必须设置为absolute--%>
+                    <%--                    main 的positon必须设置为absolute--%>
                     <div style="height: 100%">
                         <div id="main" style="height:80%;position: absolute; left:0; right:0;margin: auto;float: top">
                             <%--                        <canvas id="myCanvas" width="1280" height="720" style="">--%>
