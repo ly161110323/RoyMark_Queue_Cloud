@@ -385,7 +385,8 @@ public class AnomalyController {
 
     @RequestMapping(value = "/queryData", produces = "application/json;charset=utf-8")
     public Object search(@RequestParam(required = false) String event, @RequestParam(required = false) String windowId,
-                         @RequestParam(required = false) String date, @RequestParam(required=false) String userName, int pageNo, int pageSize) {
+                         @RequestParam(required = false) String date, @RequestParam(required=false) String userName,
+                         @RequestParam(required = false) String anomalyStatus, int pageNo, int pageSize) {
         JSONObject jsonObject = new JSONObject();
         try {
             // 分页构造器
@@ -424,6 +425,12 @@ public class AnomalyController {
                 // 选择选中的anomalyHiddenId
                 queryWrapper.in("anomaly_hidden_id", anomalyHiddenIdSet);
 
+            }
+            if (anomalyStatus != null) {
+                String[] array = anomalyStatus.split(",");
+                if (array.length > 0) {
+                    queryWrapper.in("anomaly_status", Arrays.asList(array));
+                }
             }
             queryWrapper.orderByDesc("anomaly_start_date");
             // 执行分页
