@@ -92,7 +92,7 @@ public class AnomalyController {
 //            System.out.println(anomaly);
 //            System.out.println(imagePath);
 //            System.out.println(videoPath);
-            System.out.println("BR:" + boxIds);
+//            System.out.println("BR:" + boxIds);
             String[] boxIdArray = boxIds.split(",");
             List<String> boxIdList = Arrays.asList(boxIdArray);
 
@@ -208,7 +208,7 @@ public class AnomalyController {
 
             Map<Long, Date> idAndDateMap = anomalyDateControlUtil.deal(boxAnomalyHiddenId, anomaly.getAnomalyEndDate());
             // 将获取到的异常id和最近接收时间的映射更新进数据库
-            System.out.println(idAndDateMap);
+//            System.out.println(idAndDateMap);
             if (idAndDateMap != null) {
                 for (Map.Entry<Long, Date> entry : idAndDateMap.entrySet()) {
                     LambdaUpdateWrapper<Anomaly> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
@@ -509,6 +509,12 @@ public class AnomalyController {
                             .orderByDesc(Anomaly::getAnomalyStartDate));
                     if (anomalies.size() > 3) {
                         anomalies = anomalies.subList(0, 3);
+                    }
+                    for (Anomaly anomaly: anomalies) {
+                        if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
+                            ActionUser user = userService.getById(anomaly.getUserHiddenId());
+                            addDefaultUser(anomaly, user);
+                        }
                     }
                     windowMap.put(window.getWindowHiddenId(), anomalies);
                 }
