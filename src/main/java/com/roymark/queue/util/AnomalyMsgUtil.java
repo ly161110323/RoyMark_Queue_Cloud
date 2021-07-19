@@ -22,11 +22,6 @@ public class AnomalyMsgUtil {
         anomalyMessageMap = new HashMap<>();
     }
 
-    // 获取Map
-    public Map<String, AnomalyMessage> getMap() {
-        return anomalyMessageMap;
-    }
-
     // 行为端添加
     public Map<String, Double> addMap(List<String> boxIdList, Long anomalyHiddenId) {
         if (anomalyMessageMap == null) {

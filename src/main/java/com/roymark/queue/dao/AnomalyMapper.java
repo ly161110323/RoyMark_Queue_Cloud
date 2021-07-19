@@ -19,4 +19,6 @@ public interface AnomalyMapper extends BaseMapper<Anomaly> {
     Anomaly getAnomalyByHiddenId(Long hiddenId);
 
     List<Anomaly> page(@Param("page")IPage<Anomaly> page, @Param(Constants.WRAPPER)Wrapper<Anomaly> queryWrapper);
+
+    List<Anomaly> list(@Param(Constants.WRAPPER)Wrapper<Anomaly> queryWrapper);
 }

@@ -34,13 +34,14 @@ public class FaceController {
     @Autowired
     private AnomalyUserService anomalyUserService;
 
+    AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
     public Object insert(Long windowHiddenId, String faceId, String boxId, String reId, double faceConf) {
         JSONObject jsonObject = new JSONObject();
         Date date = new Date();
         try {
             // 接收消息时清空无效信息
-            AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
             anomalyMsgUtil.deleteInvalidMsg();
 //             System.out.println("faceId:"+faceId);
 //             System.out.println("windowHiddenId:" + windowHiddenId);

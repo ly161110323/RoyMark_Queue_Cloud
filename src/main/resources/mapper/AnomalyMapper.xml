@@ -17,6 +17,7 @@
         <result column="user_hidden_id" property="userHiddenId" />
         <result column="anomaly_status" property="anomalyStatus" />
         <result column="default_user_flag" property="defaultUserFlag" />
+        <result column="anomaly_end_date_valid" property="anomalyEndDateValid" />
         <result column="window_id" property="windowId" />
         <result column="window_name" property="windowName" />
         <!--用户id 用户名 人脸置信度的信息结构体-->
@@ -48,6 +49,12 @@
         ${ew.customSqlSegment}
     </select>
 
+<!--    此处用了自然连接，因为该函数使用两次的场景下都是完全依赖与br_window，同时避免了两个表中window_hidden_id的歧义 -->
+    <select id="list" resultMap="BaseResultMap">
+        SELECT * FROM br_anomaly
+        NATURAL JOIN br_window
+        ${ew.customSqlSegment}
+    </select>
     <!--获取异常关联用户List-->
     <select id="selectUserShortInfo" parameterType="Long" resultMap="UserShortInfoMap">
         SELECT br_user.user_hidden_id as uid, br_user.user_name as uname, br_anomaly_user.face_conf as fc

@@ -27,9 +27,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return anomalyMapper.getAnomalyByHiddenId(hiddenId);
     }
 
-
     @Override
     public IPage<Anomaly> page(IPage<Anomaly> page, Wrapper<Anomaly> queryWrapper) {
         return page.setRecords(this.baseMapper.page(page, queryWrapper));
+    }
+
+    @Override
+    public List<Anomaly> list(Wrapper<Anomaly> queryWrapper) {
+        return this.baseMapper.list(queryWrapper);
     }
 }

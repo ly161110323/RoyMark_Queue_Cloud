@@ -68,6 +68,9 @@ public class Anomaly implements Serializable {
     @TableField(value = "default_user_flag")
     private Boolean defaultUserFlag;
 
+    @TableField(value = "anomaly_end_date_valid")
+    private Boolean anomalyEndDateValid;
+
     @TableField(exist =  false)
 	private String windowId;
 

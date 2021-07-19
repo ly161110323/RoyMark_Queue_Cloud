@@ -1,6 +1,8 @@
 package com.roymark.queue.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +10,7 @@ import com.roymark.queue.dao.AnomalyUserMapper;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.util.AnomalyDateControlUtil;
 import com.roymark.queue.util.AnomalyMsgUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +54,10 @@ public class AnomalyController {
 
     @Autowired
     private UserService userService;
+
+    AnomalyDateControlUtil anomalyDateControlUtil = new AnomalyDateControlUtil();
+
+    AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
 
     /* 快速更新异常记录的状态 */
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
@@ -175,48 +182,61 @@ public class AnomalyController {
                 anomalyService.updateById(anomaly);
                 boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
             } else {
-                // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
-                Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
-                Date startTimeThreshold = new Date(startTime.getTime() + 60 * 100);
-                queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTimeThreshold)
+//                // 若新增的开始时间与表内某个的结束时间差值<1分钟，则认为是表内该项的继续
+//                Date endTimeThreshold = new Date(startTime.getTime() - 60 * 1000);
+//                Date startTimeThreshold = new Date(startTime.getTime() + 60 * 100);
+//                queryAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().between(Anomaly::getAnomalyEndDate, endTimeThreshold, startTimeThreshold)
+//                        .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
+//                        .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
+//
+//                if (queryAnomaly != null) {                 // 如果差值<1分钟，更新该项
+//                    anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
+//                    anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
+//                    anomalyService.updateById(anomaly);
+//                    boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
+//                } else {
+                anomaly.setAnomalyHiddenId((long) 0);
+                anomalyService.save(anomaly);
+                Anomaly newAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent())
                         .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
-                        .eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent()));
-
-                if (queryAnomaly != null) {                 // 如果差值<1分钟，更新该项
-                    anomaly.setAnomalyStartDate(queryAnomaly.getAnomalyStartDate());
-                    anomaly.setAnomalyHiddenId(queryAnomaly.getAnomalyHiddenId());
-                    anomalyService.updateById(anomaly);
-                    boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
-                } else {
-                    anomaly.setAnomalyHiddenId((long) 0);
-                    anomalyService.save(anomaly);
-                    Anomaly newAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent())
-                            .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
-                            .eq(Anomaly::getAnomalyStartDate, anomaly.getAnomalyStartDate()));
-                    boxAnomalyHiddenId = newAnomaly.getAnomalyHiddenId();
-                }
+                        .eq(Anomaly::getAnomalyStartDate, anomaly.getAnomalyStartDate()));
+                boxAnomalyHiddenId = newAnomaly.getAnomalyHiddenId();
+//              }
             }
 
-            // 存入消息留待匹配人脸
-            AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+            // 接收时间和结束时间控制
+
+            Map<Long, Date> idAndDateMap = anomalyDateControlUtil.deal(boxAnomalyHiddenId, anomaly.getAnomalyEndDate());
+            // 将获取到的异常id和最近接收时间的映射更新进数据库
+            System.out.println(idAndDateMap);
+            if (idAndDateMap != null) {
+                for (Map.Entry<Long, Date> entry : idAndDateMap.entrySet()) {
+                    LambdaUpdateWrapper<Anomaly> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+                    lambdaUpdateWrapper.eq(Anomaly::getAnomalyHiddenId, entry.getKey())
+                            .set(Anomaly::getAnomalyEndDate, entry.getValue())
+                            .set(Anomaly::getAnomalyEndDateValid, false);
+                    anomalyService.update(null, lambdaUpdateWrapper);
+                }
+
+            }
 
             // 获取的已匹配的faceId与anomalyHiddenId的Map
             Map<String, Double> anomalyFaceMap = anomalyMsgUtil.addMap(boxIdList, boxAnomalyHiddenId);
-            if (anomalyFaceMap == null || anomalyFaceMap.entrySet().size() == 0) {
-                return;
-            }
-            // 向异常与用户的中间表中加入匹配的信息
-            for (Map.Entry<String, Double> entry : anomalyFaceMap.entrySet()) {
-                String faceId = entry.getKey();
-                FaceVector faceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getFaceId, faceId));
-                if (faceVector != null) {
-                    Long userHiddenId = faceVector.getUserHiddenId();
-                    anomalyUserService.checkInsert(new AnomalyUser((long) 0, boxAnomalyHiddenId, userHiddenId, entry.getValue()));
+            if (anomalyFaceMap != null) {
+                // 向异常与用户的中间表中加入匹配的信息
+                for (Map.Entry<String, Double> entry : anomalyFaceMap.entrySet()) {
+                    String faceId = entry.getKey();
+                    FaceVector faceVector = faceVectorService.getOne(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getFaceId, faceId));
+                    if (faceVector != null) {
+                        Long userHiddenId = faceVector.getUserHiddenId();
+                        anomalyUserService.checkInsert(new AnomalyUser((long) 0, boxAnomalyHiddenId, userHiddenId, entry.getValue()));
+                    }
                 }
             }
 
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -472,31 +492,31 @@ public class AnomalyController {
                 jsonObject.put("msg", "当前楼层无摄像头");
                 return jsonObject;
             }
-            Map<Long, List<Anomaly>> map = new HashMap<>();
+            // 摄像头id，对应多个窗口，同时每个窗口对应不超过3个最新异常
+            Map<Long, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
                 List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
                 List<Anomaly> anomalyOfWindowList = new ArrayList<>();
+                Map<Long, List<Anomaly>> windowMap = new HashMap<>();
                 for (Window window : windows) {
+                    // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
                     List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
                             .eq(Anomaly::getWindowHiddenId, window.getWindowHiddenId())
                             .isNull(Anomaly::getAnomalyEndDate)
+                            .eq(Anomaly::getAnomalyEndDateValid, true)
                             .ne(Anomaly::getAnomalyStatus, "invalid")
                             .orderByDesc(Anomaly::getAnomalyStartDate));
-                    if (anomalies.size() > 0) {
-                        Anomaly anomaly = anomalyService.getByHiddenId(anomalies.get(0).getAnomalyHiddenId());
-                        if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
-                            ActionUser user = userService.getById(anomaly.getUserHiddenId());
-                            addDefaultUser(anomaly, user);
-                        }
-                        anomalyOfWindowList.add(anomaly);
+                    if (anomalies.size() > 3) {
+                        anomalies = anomalies.subList(0, 3);
                     }
+                    windowMap.put(window.getWindowHiddenId(), anomalies);
                 }
-                map.put(camHiddenId, anomalyOfWindowList);
+                cameraMap.put(camHiddenId, windowMap);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
-            jsonObject.put("data", map);
+            jsonObject.put("data", cameraMap);
 
             return jsonObject;
         } catch (Exception e) {
@@ -518,7 +538,6 @@ public class AnomalyController {
     @RequestMapping(value = "/getCount", produces = "application/json;charset=utf-8")
     public Object Test() {
         JSONObject jsonObject = new JSONObject();
-        AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
         jsonObject.put("msg", anomalyMsgUtil.getResult());
         return jsonObject;
     }
@@ -526,8 +545,15 @@ public class AnomalyController {
     @RequestMapping(value = "/setCount", produces = "application/json;charset=utf-8")
     public Object Test1() {
         JSONObject jsonObject = new JSONObject();
-        AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
         anomalyMsgUtil.setCount();
         return jsonObject;
     }
+
+    @RequestMapping(value = "/testt", produces = "application/json;charset=utf-8")
+    public Object Test2() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("map",anomalyDateControlUtil.getAnomalyControlMap());
+        return jsonObject;
+    }
+
 }
