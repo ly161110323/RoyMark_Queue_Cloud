@@ -34,7 +34,7 @@ public class FaceController {
     @Autowired
     private AnomalyUserService anomalyUserService;
 
-    AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
+    private final AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
 
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
     public Object insert(Long windowHiddenId, String faceId, String boxId, String reId, double faceConf) {

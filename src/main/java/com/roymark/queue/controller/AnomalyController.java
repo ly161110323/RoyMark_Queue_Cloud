@@ -1,12 +1,9 @@
 package com.roymark.queue.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.dao.AnomalyUserMapper;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
@@ -14,14 +11,11 @@ import com.roymark.queue.util.AnomalyDateControlUtil;
 import com.roymark.queue.util.AnomalyMsgUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Map;
@@ -55,7 +49,7 @@ public class AnomalyController {
     @Autowired
     private UserService userService;
 
-    AnomalyDateControlUtil anomalyDateControlUtil = new AnomalyDateControlUtil();
+    private final AnomalyDateControlUtil anomalyDateControlUtil = new AnomalyDateControlUtil();
 
     AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
 
@@ -206,19 +200,19 @@ public class AnomalyController {
 
             // 接收时间和结束时间控制
 
-            Map<Long, Date> idAndDateMap = anomalyDateControlUtil.deal(boxAnomalyHiddenId, anomaly.getAnomalyEndDate());
+            anomalyDateControlUtil.deal(boxAnomalyHiddenId, anomaly.getAnomalyEndDate());
             // 将获取到的异常id和最近接收时间的映射更新进数据库
 //            System.out.println(idAndDateMap);
-            if (idAndDateMap != null) {
-                for (Map.Entry<Long, Date> entry : idAndDateMap.entrySet()) {
-                    LambdaUpdateWrapper<Anomaly> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-                    lambdaUpdateWrapper.eq(Anomaly::getAnomalyHiddenId, entry.getKey())
-                            .set(Anomaly::getAnomalyEndDate, entry.getValue())
-                            .set(Anomaly::getAnomalyEndDateValid, false);
-                    anomalyService.update(null, lambdaUpdateWrapper);
-                }
-
-            }
+//            if (idAndDateMap != null) {
+//                for (Map.Entry<Long, Date> entry : idAndDateMap.entrySet()) {
+//                    LambdaUpdateWrapper<Anomaly> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+//                    lambdaUpdateWrapper.eq(Anomaly::getAnomalyHiddenId, entry.getKey())
+//                            .set(Anomaly::getAnomalyEndDate, entry.getValue())
+//                            .set(Anomaly::getAnomalyEndDateValid, false);
+//                    anomalyService.update(null, lambdaUpdateWrapper);
+//                }
+//
+//            }
 
             // 获取的已匹配的faceId与anomalyHiddenId的Map
             Map<String, Double> anomalyFaceMap = anomalyMsgUtil.addMap(boxIdList, boxAnomalyHiddenId);
@@ -539,20 +533,6 @@ public class AnomalyController {
             userShortInfos.add(new UserShortInfo(user.getUserHiddenId(), user.getUserName(), anomaly.getAnomalyFaceConfidence()));
             anomaly.setUserShortInfos(userShortInfos);
         }
-    }
-
-    @RequestMapping(value = "/getCount", produces = "application/json;charset=utf-8")
-    public Object Test() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg", anomalyMsgUtil.getResult());
-        return jsonObject;
-    }
-
-    @RequestMapping(value = "/setCount", produces = "application/json;charset=utf-8")
-    public Object Test1() {
-        JSONObject jsonObject = new JSONObject();
-        anomalyMsgUtil.setCount();
-        return jsonObject;
     }
 
     @RequestMapping(value = "/testt", produces = "application/json;charset=utf-8")
