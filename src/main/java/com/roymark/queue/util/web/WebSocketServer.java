@@ -79,6 +79,7 @@ public class WebSocketServer{
 
     List<FFmpegFrameGrabber> grabbers;
 
+    private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
 
     // 线程
     private List<ReadPicThread> readPicThreads;
@@ -91,8 +92,6 @@ public class WebSocketServer{
         private FFmpegFrameGrabber picGrabber;
         private final String picRtspUrl;
         private BufferedImage image;
-        private final WaterMarkUtil waterMarkUtil;
-        private final String camId;
         public volatile boolean flag = true;
 
         public BufferedImage getImage() {
@@ -114,8 +113,6 @@ public class WebSocketServer{
             this.picHeight = picHeight;
             this.picGrabber = picGrabber;
             this.picRtspUrl = picRtspUrl;
-            this.waterMarkUtil = new WaterMarkUtil();
-            this.camId = camId;
             this.image = null;
             image = new BufferedImage(picWidth, picHeight, BufferedImage.TYPE_INT_RGB);
         }
@@ -136,25 +133,19 @@ public class WebSocketServer{
                     System.out.println("重试连接rtsp："+picRtspUrl+",开始创建grabber");
                     picGrabber = createGrabber(picRtspUrl, picWidth, picHeight);
                     System.out.println("创建grabber成功");
-                    try {
-                        picGrabber.start();
-                    } catch (Exception e) {
-                        log.error(e.getMessage());
-                    }
                 }
 
                 if (picGrabber != null) {
                     try {
                         Frame frame = picGrabber.grabImage();
-                        if (frame == null)
-                            return;
-                        image = java2DFrameConverter.getBufferedImage(frame);
-                        if (camId != null && !camId.equals(""))
-                            waterMarkUtil.mark(image, Color.RED, camId);
+                        if (frame == null) {
+                            image = null;
+                        } else {
+                            image = java2DFrameConverter.getBufferedImage(frame);
+                        }
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         log.error(e.getMessage());
-                        return;
                     }
                 }
             }
@@ -465,11 +456,15 @@ public class WebSocketServer{
                         else if (readPicThreads.get(currentIndex) != null) {    // 当rtsp流正确时菜获取
                             BufferedImage partImage = readPicThreads.get(currentIndex).getImage();
                             // 当图片不为空时才使用图片进行渲染
-                            if (partImage != null) {
-                                int[] imageArray = new int[width * height];
-                                imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                                returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                            if (partImage == null) {
+                                partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
+                                partImage.setRGB(0, 0, 0);
                             }
+                            // 绘制CAM ID
+                            waterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
+                            int[] imageArray = new int[width * height];
+                            imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                            returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                         }
                         currentIndex++;
                     }
