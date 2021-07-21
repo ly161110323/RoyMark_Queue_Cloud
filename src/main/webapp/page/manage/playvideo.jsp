@@ -25,7 +25,7 @@
 
 </div>
 <script>
-    var wsUrl = "${ctx}/webSocketService?video_address=rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/101,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/201,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/301,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/401&cam_id=test1,test2,test3,test4&width=1280&height=960";
+    var wsUrl = "${ctx}/webSocketService?video_address=rtsp://admin:1234qwer@10.249.41.65:666/Streaming/Channels/101,rtsp://admin:1234qwer@10.249.41.65:554/Streaming/Channels/401&cam_id=test1,test2,test3,test4&width=1280&height=960";
     //建立连接
     var ws1 = new Ws({
         host: window.location.host.split(":")[0]
