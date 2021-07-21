@@ -1,6 +1,5 @@
 package com.roymark.queue.service.impl;
 
-import com.roymark.queue.controller.ServerController;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 @Service
 public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> implements ServerService {
 
-    private static final Logger logger = LogManager.getLogger(ServerController.class);
+    private static final Logger logger = LogManager.getLogger(ServerServiceImpl.class);
 
     @Autowired
     private ServerMapper serverMapper;

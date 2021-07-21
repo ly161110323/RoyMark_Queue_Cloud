@@ -2,6 +2,9 @@ package com.roymark.queue.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.roymark.queue.util.web.HttpUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.List;
 
 @Service("cameraService")
 public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> implements CameraService  {
+    private static final Logger logger = LogManager.getLogger(CameraServiceImpl.class);
 
     @Autowired
     private CameraMapper cameraMapper;
@@ -26,6 +30,17 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     @Override
     public Camera getCameraByHiddenId(Long camHiddenId) {
         return cameraMapper.getCameraByHiddenId(camHiddenId);
+    }
+
+    @Override
+    public Boolean getCamStatus(Camera camera) {
+        try {
+            return HttpUtils.isHostReachable(camera.getCamIp(), 500);
+        } catch (Exception e) {
+            logger.error("CameraService.getCamStatus Exception");
+            logger.error(e.getMessage());
+            return false;
+        }
     }
 
     @Override

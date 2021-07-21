@@ -9,6 +9,7 @@ import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
 import com.roymark.queue.util.AnomalyDateControlUtil;
 import com.roymark.queue.util.AnomalyMsgUtil;
+import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -486,12 +487,11 @@ public class AnomalyController {
                 jsonObject.put("msg", "当前楼层无摄像头");
                 return jsonObject;
             }
-            // 摄像头id，对应多个窗口，同时每个窗口对应不超过3个最新异常
-            Map<Long, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
+            // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的Map；同时摄像头对应多个窗口，同时每个窗口对应不超过3个最新异常
+            Map<Map<String, Object>, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
                 List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
-                List<Anomaly> anomalyOfWindowList = new ArrayList<>();
                 Map<Long, List<Anomaly>> windowMap = new HashMap<>();
                 for (Window window : windows) {
                     // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
@@ -512,12 +512,16 @@ public class AnomalyController {
                     }
                     windowMap.put(window.getWindowHiddenId(), anomalies);
                 }
-                cameraMap.put(camHiddenId, windowMap);
+                Map<String, Object> camInfoMap = new HashMap<>();
+                // 设置摄像头及其相关状态
+                camInfoMap.put("camHiddenId", camHiddenId);
+                camInfoMap.put("camStatus", cameraService.getCamStatus(camera));
+                camInfoMap.put("serverStatus", serverService.getServerOnStatus(camera.getServerHiddenId()));
+                cameraMap.put(camInfoMap, windowMap);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
             jsonObject.put("data", cameraMap);
-
             return jsonObject;
         } catch (Exception e) {
             logger.error("/camera/getLatestAnomaly 错误:" + e.getMessage(), e);
