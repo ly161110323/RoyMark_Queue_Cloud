@@ -71,4 +71,7 @@ public class Camera implements Serializable {
 	@TableField(exist = false)
 	private String groupId;
 
+	// 摄像头所对应服务器是否在线的状态标志
+	@TableField(exist = false)
+	private Boolean serverOnFlag;
 }

@@ -5,4 +5,5 @@ import com.roymark.queue.entity.Server;
 
 public interface ServerService  extends IService<Server> {
 
+    Boolean getServerOnStatus(Long serverHiddenId);
 }

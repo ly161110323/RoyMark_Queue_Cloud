@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.GroupService;
+import com.roymark.queue.service.ServerService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +44,9 @@ public class CameraController {
 
 	@Autowired
 	private GroupService groupService;
+
+	@Autowired
+	private ServerService serverService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -239,13 +243,14 @@ public class CameraController {
 			// 执行分页
 			IPage<Camera> pageList = cameraService.page(page, queryWrapper);
 			for (Camera camera: pageList.getRecords()) {
-				boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
-				if (result) {
+				boolean camIpResult = HttpUtils.isHostReachable(camera.getCamIp(), 500);
+				if (camIpResult) {
 					camera.setCamStatus("正常");
 				}
 				else {
 					camera.setCamStatus("异常");
 				}
+				camera.setServerOnFlag(serverService.getServerOnStatus(camera.getServerHiddenId()));
 			}
 			// 返回结果
 			if (pageList.getRecords().size() <= 0) {
