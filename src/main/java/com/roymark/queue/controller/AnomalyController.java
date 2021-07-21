@@ -487,8 +487,8 @@ public class AnomalyController {
                 jsonObject.put("msg", "当前楼层无摄像头");
                 return jsonObject;
             }
-            // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的Map；同时摄像头对应多个窗口，同时每个窗口对应不超过3个最新异常
-            Map<Map<String, Object>, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
+            // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的List；同时摄像头对应多个窗口，同时每个窗口对应不超过3个最新异常
+            Map<List<Long>, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
                 List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
@@ -512,12 +512,12 @@ public class AnomalyController {
                     }
                     windowMap.put(window.getWindowHiddenId(), anomalies);
                 }
-                Map<String, Object> camInfoMap = new HashMap<>();
+                List<Long> camInfoList = new ArrayList<>();
                 // 设置摄像头及其相关状态
-                camInfoMap.put("camHiddenId", camHiddenId);
-                camInfoMap.put("camStatus", cameraService.getCamStatus(camera));
-                camInfoMap.put("serverStatus", serverService.getServerOnStatus(camera.getServerHiddenId()));
-                cameraMap.put(camInfoMap, windowMap);
+                camInfoList.add(camHiddenId);
+                camInfoList.add(cameraService.getCamStatus(camera)?(long)1:0);
+                camInfoList.add(serverService.getServerOnStatus(camera.getServerHiddenId())?(long)1:0);
+                cameraMap.put(camInfoList, windowMap);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
