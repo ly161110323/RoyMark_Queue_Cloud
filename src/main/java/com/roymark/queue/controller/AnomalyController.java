@@ -488,36 +488,32 @@ public class AnomalyController {
                 return jsonObject;
             }
             // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的List；同时摄像头对应多个窗口，同时每个窗口对应不超过3个最新异常
-            Map<List<Long>, Map<Long, List<Anomaly>>> cameraMap = new HashMap<>();
+            Map<List<Long>, List<Anomaly>> cameraMap = new HashMap<>();
+            List<Anomaly> anomalies;
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
-                List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camHiddenId));
-                Map<Long, List<Anomaly>> windowMap = new HashMap<>();
-                for (Window window : windows) {
-                    // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
-                    List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
-                            .eq(Anomaly::getWindowHiddenId, window.getWindowHiddenId())
-                            .isNull(Anomaly::getAnomalyEndDate)
-                            .eq(Anomaly::getAnomalyEndDateValid, true)
-                            .ne(Anomaly::getAnomalyStatus, "invalid")
-                            .orderByDesc(Anomaly::getAnomalyStartDate));
-                    if (anomalies.size() > 3) {
-                        anomalies = anomalies.subList(0, 3);
+                // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
+                anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
+                        .eq(Anomaly::getCamHiddenId, camHiddenId)
+                        .isNull(Anomaly::getAnomalyEndDate)
+                        .eq(Anomaly::getAnomalyEndDateValid, true)
+                        .ne(Anomaly::getAnomalyStatus, "invalid")
+                        .orderByDesc(Anomaly::getAnomalyStartDate));
+                if (anomalies.size() > 3) {
+                    anomalies = anomalies.subList(0, 3);
+                }
+                for (Anomaly anomaly: anomalies) {
+                    if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
+                        ActionUser user = userService.getById(anomaly.getUserHiddenId());
+                        addDefaultUser(anomaly, user);
                     }
-                    for (Anomaly anomaly: anomalies) {
-                        if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
-                            ActionUser user = userService.getById(anomaly.getUserHiddenId());
-                            addDefaultUser(anomaly, user);
-                        }
-                    }
-                    windowMap.put(window.getWindowHiddenId(), anomalies);
                 }
                 List<Long> camInfoList = new ArrayList<>();
                 // 设置摄像头及其相关状态
                 camInfoList.add(camHiddenId);
                 camInfoList.add(cameraService.getCamStatus(camera)?(long)1:0);
                 camInfoList.add(serverService.getServerOnStatus(camera.getServerHiddenId())?(long)1:0);
-                cameraMap.put(camInfoList, windowMap);
+                cameraMap.put(camInfoList, anomalies);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
