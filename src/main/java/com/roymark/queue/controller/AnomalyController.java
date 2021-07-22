@@ -487,8 +487,8 @@ public class AnomalyController {
                 jsonObject.put("msg", "当前楼层无摄像头");
                 return jsonObject;
             }
-            // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的List；同时摄像头对应多个窗口，同时每个窗口对应不超过3个最新异常
-            Map<List<Long>, List<Anomaly>> cameraMap = new HashMap<>();
+            // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的String；同时每个摄像头对应不超过3个最新异常
+            Map<String, List<Anomaly>> cameraMap = new HashMap<>();
             List<Anomaly> anomalies;
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
@@ -508,12 +508,11 @@ public class AnomalyController {
                         addDefaultUser(anomaly, user);
                     }
                 }
-                List<Long> camInfoList = new ArrayList<>();
                 // 设置摄像头及其相关状态
-                camInfoList.add(camHiddenId);
-                camInfoList.add(cameraService.getCamStatus(camera)?(long)1:0);
-                camInfoList.add(serverService.getServerOnStatus(camera.getServerHiddenId())?(long)1:0);
-                cameraMap.put(camInfoList, anomalies);
+                String camInfoStr = String.valueOf(camHiddenId) + ',' +
+                        (cameraService.getCamStatus(camera) ? (long) 1 : 0) + ',' +
+                        (serverService.getServerOnStatus(camera.getServerHiddenId()) ? (long) 1 : 0);
+                cameraMap.put(camInfoStr, anomalies);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");
