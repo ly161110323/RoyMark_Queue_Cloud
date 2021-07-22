@@ -51,8 +51,8 @@
 
 <!--    此处用了自然连接，因为该函数使用两次的场景下都是完全依赖与br_window，同时避免了两个表中window_hidden_id的歧义 -->
     <select id="list" resultMap="BaseResultMap">
-        SELECT * FROM br_anomaly
-        NATURAL JOIN br_window
+        SELECT br_anomaly.*, br_window.window_id, br_window.window_name  FROM br_anomaly
+        INNER JOIN  br_window ON br_anomaly.window_hidden_id = br_window.window_hidden_id
         ${ew.customSqlSegment}
     </select>
     <!--获取异常关联用户List-->

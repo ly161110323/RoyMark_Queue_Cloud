@@ -493,12 +493,13 @@ public class AnomalyController {
             for (Camera camera : cameras) {
                 Long camHiddenId = camera.getCamHiddenId();
                 // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
-                anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
-                        .eq(Anomaly::getCamHiddenId, camHiddenId)
-                        .isNull(Anomaly::getAnomalyEndDate)
-                        .eq(Anomaly::getAnomalyEndDateValid, true)
-                        .ne(Anomaly::getAnomalyStatus, "invalid")
-                        .orderByDesc(Anomaly::getAnomalyStartDate));
+                QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("br_anomaly.cam_hidden_id", camHiddenId)
+                        .isNull("anomaly_end_date")
+                        .eq("anomaly_end_date_valid", true)
+                        .ne("anomaly_status", "invalid")
+                        .orderByDesc("anomaly_start_date");
+                anomalies = anomalyService.list(queryWrapper);
                 if (anomalies.size() > 3) {
                     anomalies = anomalies.subList(0, 3);
                 }

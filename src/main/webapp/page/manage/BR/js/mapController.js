@@ -22,15 +22,16 @@ var isChange = false;
 var camSize = 50;
 // "/resources/images/xw/gray_camera.png";
 
-const green_src=getWebRootPath() + "/resources/images/xw/" + 'green' + "_camera.png";
-const yellow_src=getWebRootPath() + "/resources/images/xw/" + 'yellow' + "_camera.png";
-const red_src=getWebRootPath() + "/resources/images/xw/" + 'red' + "_camera.png";
-const black_src=getWebRootPath() + "/resources/images/xw/" + 'black' + "_camera.png";
-const gray_src=getWebRootPath() + "/resources/images/xw/" + 'gray' + "_camera.png";
+const green_src = getWebRootPath() + "/resources/images/xw/" + 'green' + "_camera.png";
+const yellow_src = getWebRootPath() + "/resources/images/xw/" + 'yellow' + "_camera.png";
+const red_src = getWebRootPath() + "/resources/images/xw/" + 'red' + "_camera.png";
+const black_src = getWebRootPath() + "/resources/images/xw/" + 'black' + "_camera.png";
+const gray_src = getWebRootPath() + "/resources/images/xw/" + 'gray' + "_camera.png";
+const error_src = getWebRootPath() + "/resources/images/xw/" + 'error' + "_camera.png";
 
 var normal_src = green_src;
 
-var status_src = {'play':yellow_src,'sleep':red_src,'leave':gray_src,'gather':black_src}
+var status_src = {'play': yellow_src, 'sleep': red_src, 'leave': gray_src, 'gather': black_src}
 $(document).ready(function () {
     queryMap();
     icon_operate();
@@ -75,7 +76,7 @@ function loadOneCameraIcon(mainDiv, camObj) {
     divNode.attr('id', camObj.camHiddenId);
     divNode.css('position', 'absolute');
     divNode.offset({top: parseInt(coord[1]), left: parseInt(coord[0])});
-    var imgNode = new Image(camSize,camSize);
+    var imgNode = new Image(camSize, camSize);
     imgNode.src = green_src;
     divNode.append(imgNode);
     mainDiv.append(divNode);
@@ -402,7 +403,7 @@ function queryMap(id = "", name = "") {
                 // curMap = mapList[curMapIndex]
                 loadMapAndCamera(mapList[curMapIndex].mapPath, mapList[curMapIndex].mapHiddenId); //加载背景图
                 loadMapOptions();
-                setInterval(queryAnomalyEvent,3000);
+                setInterval(queryAnomalyEvent, 3000);
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
 
             } else {
@@ -609,16 +610,28 @@ function queryAnomalyEvent() {
         dataType: 'json',
         data: {"mapHiddenId": mapList[curMapIndex].mapHiddenId},
         success: function (data) {
-            console.log(data)
+            // console.log(data)
             if (data.result == "error") {
-                layer.alert("服务器错误！");
+                layer.msg(data.msg);
                 return;
             }
             if (data.result == "ok") {
-                anomalyRecord = data.data;
+                let mydata = data.data;
+                anomalyRecord={}
+                $.each(mydata, function (key) {
+                    if(key.split(',')[1]=='1'&&key.split(',')[2]=='1'){
+                        anomalyRecord[key.split(',')[0]]=mydata[key]
+                    }else {
+                        console.log(key.split(',')[0],"error")
+                        $('#main').children('#' + key.split(',')[0]).children('img').attr('src', error_src);
+                    }
+                });
+
 
             } else if (data.result == "no") {
-                console.log("无最新异常");
+                // anomalyRecord = data.data;
+                layer.msg(data.msg);
+
             }
             changeAllCameraColor();
             // setInterval(changeAllCameraColor,1000);
@@ -628,28 +641,57 @@ function queryAnomalyEvent() {
 
 function changeAllCameraColor() {
 
-    $('#main').children().children("img").attr('src', green_src);
+    // $('#main').children().children("img").attr('src', green_src);
     $.each(anomalyRecord, function (key) { //key表示camHIddenId
-        anomalyRecord[key.toString()].forEach(function (anomalyEvent) {
+        console.log(key)
+        // anomalyRecord[key.toString()].forEach(function (anomalyEvent) {
+        //
+        //     // console.log(anomalyEvent.anomalyEvent)
+        //     switch (anomalyEvent.anomalyEvent){
+        //
+        //         case '睡觉':
+        //             $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', red_src);
+        //             break;
+        //         case '玩手机':
+        //             $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', yellow_src);
+        //             break;
+        //         case '聚众聊天':
+        //             $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', black_src);
+        //             break;
+        //         case '离岗':
+        //             $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', gray_src);
+        //             break;
+        //     }
+        //
+        // });
+        //[21,0,0]
 
-            // console.log(anomalyEvent.anomalyEvent)
-            switch (anomalyEvent.anomalyEvent){
 
-                case '睡觉':
-                    $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', red_src);
-                    break;
-                case '玩手机':
-                    $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', yellow_src);
-                    break;
-                case '聚众聊天':
-                    $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', black_src);
-                    break;
-                case '离岗':
-                    $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', gray_src);
-                    break;
+            // console.log(1111111)
+            if (anomalyRecord[key.toString()].length > 0) {
+                // console.log(3333333)
+                let anomalyEvent = anomalyRecord[key.toString()][0]
+                console.log(anomalyEvent)
+                switch (anomalyEvent.anomalyEvent) {
+
+                    case '睡觉':
+                        $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', red_src);
+                        break;
+                    case '玩手机':
+                        $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', yellow_src);
+                        break;
+                    case '聚众聊天':
+                        $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', black_src);
+                        break;
+                    case '离岗':
+                        $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', gray_src);
+                        break;
+                }
+            }else {
+                $('#main').children('#' + key).children('img').attr('src', green_src);
             }
 
-        });
+
     });
 
 
@@ -675,21 +717,22 @@ function deleteCamera() {
 
 // 异常确认
 function anomalyConfirm() {
-    if(anomalyRecord[rightHiidenId]){
-        var anomalyList=anomalyRecord[rightHiidenId];
+    if (anomalyRecord[rightHiidenId]) {
+        var anomalyList = anomalyRecord[rightHiidenId];
         var firstAnomaly = anomalyList[0];
-        layer.confirm('请确认当前异常，选择确认或忽略！',{
-            btn:['确认','放弃','稍后处理']},
-            function (){
+        layer.confirm('请确认当前异常，选择确认或忽略！', {
+                btn: ['确认', '放弃', '稍后处理']
+            },
+            function () {
 
                 var anomalyHiddenId = firstAnomaly.anomalyHiddenId;
                 console.log(rightHiidenId)
                 $.ajax({
                     type: 'POST',
-                    url: getWebRootPath()+'/anomaly/updateAnomalyStatus',
-                    data: {'anomalyStatus':'valid','anomalyHiddenId':anomalyHiddenId.toString()},
+                    url: getWebRootPath() + '/anomaly/updateAnomalyStatus',
+                    data: {'anomalyStatus': 'valid', 'anomalyHiddenId': anomalyHiddenId.toString()},
                     dataType: "json",
-                    async:true,
+                    async: true,
                     success: function (data) {
                         if (data.result == "error") {
                             layer.msg("服务器错误！确认失败");
@@ -710,10 +753,10 @@ function anomalyConfirm() {
                     }
                 });
             },
-            function (){
+            function () {
 
             },
-            function (){
+            function () {
 
             }
         )
@@ -727,7 +770,7 @@ function realtimeMinitor() {
         window.videoPath = addr;
         window.grid = {x: 1, y: 1};
         window.width = '720';
-        window.height="405";
+        window.height = "405";
         layer.open({
             type: 2,
             title: false,
@@ -739,9 +782,10 @@ function realtimeMinitor() {
     }
 
 }
+
 //地图编辑
-function mapEdit(){
-    $('#mapEdit').click(function (){
+function mapEdit() {
+    $('#mapEdit').click(function () {
         var targetUrl = getWebRootPath() + "/page/manage/BR/mapEdit.jsp";
         var argTitle = "地图编辑";
         window.curMapIndex = curMapIndex;
