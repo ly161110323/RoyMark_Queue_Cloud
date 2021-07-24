@@ -324,67 +324,101 @@ public class ServerController {
 				Long port = startServer.getServerPort();
 				String serverName = startServer.getServerName();
 				if(ip_address==null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")){
-					msg.append(serverName+ "启动失败，服务器ip地址不正确;\n");
+					msg.append("服务器名：").append(serverName).append("启动失败，服务器ip地址不正确;\n");
 				}
 				else if (port == null || port <= 0 || port > 65535) {
-					msg.append(serverName + "启动失败，服务器端口不正确;\n");
+					msg.append("服务器名：").append(serverName).append("启动失败，服务器端口不正确;\n");
 				}
 				else {
 					// 处理发送地址
 					String host = "http://"+ ip_address+":"+ port;// 请求域名或ip
 					String path = "/start";// 请求路径
-
+					// 服务器绑定摄像头启动信息
+					StringBuilder cameraStartInfo = new StringBuilder();
 					try {
 						boolean reachable = HttpUtils.isReachable(host, 500);
 						if (!reachable) {
-							msg.append(serverName + "启动失败,服务器不可用;\n");
+							msg.append("服务器名：").append(serverName).append("启动失败,服务器不可用;\n");
 						}else {
-
 							// 获取当前服务器对应的摄像头以及窗口
 							List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
-
+							// 服务器绑定的摄像头和窗口信息
 							List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
-							for (Camera camera : cameras) {
-								// 异常的摄像头不处理
-								boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
-								if (!result) {
-									continue;
-								}
-								CamAndWinInfo temp = new CamAndWinInfo();
-								List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
-								// 移除未开启行为分析的
-								windows.removeIf(window -> !window.getWindowActionAnalysis());
-								if (windows.size() > 0) {
-									temp.setCamera(camera);
-									temp.setWindows(windows);
-									camAndWinInfos.add(temp);
-								}
-							}
-							JSONObject requestData = new JSONObject();
-							requestData.put("params", params);
-							requestData.put("camAndWin", camAndWinInfos);
-							HashMap<String, String> header = new HashMap<>();
-							header.put("Content-Type", "application/json");// 设置请求头信息
-							String body = JSONObject.toJSONString(requestData);// 设置请求体信息
 
-							HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-							if(response.getStatusLine().getStatusCode() == 200){
-								msg.append(serverName+"启动成功;\n");
-							}else {
-								msg.append(serverName+"启动失败,启动响应未正常返回;\n");
+							if (cameras.size() == 0) {
+								cameraStartInfo.append("未绑定摄像头");
+								msg.append("服务器名：").append(serverName).append("启动失败。\n");
+							}
+							else {
+								StringBuilder normalCamIds = new StringBuilder();
+								StringBuilder abnormalCamIds = new StringBuilder();
+								StringBuilder noWindowCamIds = new StringBuilder();
+
+								for (Camera camera : cameras) {
+									// 异常的摄像头不处理
+									boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
+									if (!result) {
+										abnormalCamIds.append(camera.getCamId()).append("、");
+										continue;
+									}
+									CamAndWinInfo temp = new CamAndWinInfo();
+									List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
+									// 移除未开启行为分析的
+									windows.removeIf(window -> !window.getWindowActionAnalysis());
+									if (windows.size() > 0) {
+										temp.setCamera(camera);
+										temp.setWindows(windows);
+										camAndWinInfos.add(temp);
+										normalCamIds.append(camera.getCamId()).append("、");
+									}
+									else {
+										noWindowCamIds.append(camera.getCamId()).append("、");
+									}
+								}
+								// 去除最后一个、
+								if (normalCamIds.length() > 0) {
+									normalCamIds.deleteCharAt(normalCamIds.length()-1);
+									cameraStartInfo.append(normalCamIds).append("正常启动，");
+								}
+								if (abnormalCamIds.length() > 0) {
+									abnormalCamIds.deleteCharAt(normalCamIds.length()-1);
+									cameraStartInfo.append(abnormalCamIds).append("状态异常，");
+								}
+								if (noWindowCamIds.length() > 0) {
+									noWindowCamIds.deleteCharAt(normalCamIds.length()-1);
+									cameraStartInfo.append(noWindowCamIds).append("没有绑定窗口区域，");
+								}
+								// 去除最后一个，
+								if (cameraStartInfo.length() > 0) {
+									cameraStartInfo.deleteCharAt(cameraStartInfo.length()-1);
+								}
+								JSONObject requestData = new JSONObject();
+								requestData.put("params", params);
+								requestData.put("camAndWin", camAndWinInfos);
+								HashMap<String, String> header = new HashMap<>();
+								header.put("Content-Type", "application/json");// 设置请求头信息
+								String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
+								HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+								if(response.getStatusLine().getStatusCode() == 200){
+									msg.append("服务器名：").append(serverName).append(" 启动成功。");
+									msg.append(cameraStartInfo).append("\n");
+								}else {
+									msg.append("服务器名：").append(serverName).append("启动失败，服务器状态异常。\n");
+								}
 							}
 						}
 					} catch (IOException e) {
-						msg.append(serverName+"启动失败,服务器不可用;\n");
+						msg.append(serverName).append("启动失败,服务器不可用;\n");
 						logger.error(e.getMessage());
 					} catch (Exception e) {
 						logger.error(e.getMessage());
-						msg.append(serverName+"启动失败,启动过程出现异常;\n");
-						jsonObject.put("result", "error");
-						jsonObject.put("msg", msg);
-						return jsonObject;
+						msg.append(serverName).append("启动失败,启动过程出现异常;\n");
 					}
 				}
+			}
+			else {
+				msg.append("第").append(i+1).append("个服务器").append("不存在\n");
 			}
 		}
 		jsonObject.put("result", "ok");
