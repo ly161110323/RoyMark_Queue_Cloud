@@ -74,9 +74,6 @@ public class WebSocketServer{
     // 当前页数
     private int currentPage;
 
-    // 最大页数
-    private int maxPage;
-
     List<FFmpegFrameGrabber> grabbers;
 
     private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
@@ -220,7 +217,6 @@ public class WebSocketServer{
         camIds = Arrays.asList(camIdStr.split(","));
 
         currentPage = 0;
-        maxPage = rtspUrls.size() / (xPicNum*yPicNum);
 
         log.info("用户连接");
         JSONObject jsonObject = new JSONObject();

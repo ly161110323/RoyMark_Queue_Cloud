@@ -34,15 +34,15 @@
         , wsMesEvent: function (message) {
             //将接收到的图片数据进行刷新显示
             var data = JSON.parse(message);
-            console.log(data);
+            // console.log(data);
             if (data.code === 0) {
                 console.log(message)
             } else if (data.code === 201) {
-
                 $("#show_video").attr("src", "data:image/*;base64," + data.data)
             }
         }
     });
+    ws1.send("xxx");
 
     function test() {
         alert("test");
