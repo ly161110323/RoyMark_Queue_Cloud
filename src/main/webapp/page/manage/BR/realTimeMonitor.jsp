@@ -60,7 +60,7 @@
                                     <button type="button"
                                             class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
                                             style="margin-top: 2.5px; margin-bottom: 2px;"
-                                            id="changeCommit">切换地图
+                                            id="changeCommit">切换分组
                                     </button>
                                     <button type="button"
                                             class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
