@@ -2,6 +2,7 @@ $(function (){
     groupManagementClick();
     prevButton();
     nextButton();
+    changeGroup();
     var rootPath = getWebRootPath();
     var url = rootPath + "/group/queryData"
     var params = {
@@ -58,9 +59,15 @@ function prevButton(){
             layer.msg("已经是第一页了！")
         }else{
             curPage-=1;
-            queryCamByGroup($("#selectCommitGroupId").val(),curPage)
+            queryCamByGroup($("#selectCommitGroupId").val(),curPage);
         }
     })
+}
+function changeGroup(){
+    $('#changeCommit').click(function (){
+        curPage = 1;
+        queryCamByGroup($('#selectCommitGroupId').val(),curPage);
+    });
 }
 function nextButton(){
     $('#nextPage').click(function (){
