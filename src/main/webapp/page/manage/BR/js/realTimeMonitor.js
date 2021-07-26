@@ -119,10 +119,15 @@ function queryCamByGroup(groupHiddenId,pageNo){
         }
     });
 }
+
 function showVideoImg(){
     if(videoPath==""){
         layer.msg("视频地址为空！");
         return ;
+    }
+    if (ws1 != null) {
+        ws1.ws.close();
+        ws = null;
     }
     var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height+'&cam_id='+logids;
 
@@ -139,11 +144,16 @@ function showVideoImg(){
             if (data.code === 0) {
                 console.log(message)
             } else if (data.code === 201) {
-
                 $("#show_video").attr("src", "data:image/*;base64," + data.data)
             }
         }
     });
+    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function () {
+        if (ws1 != null) {
+            ws1.ws.close();
+        }
+    }
 }
 
 // var param = {"video_address": videoPath, "x": grid.x, "y": grid.y};

@@ -32,46 +32,6 @@ import java.util.concurrent.*;
 @Slf4j
 @ServerEndpoint(value = "/webSocketService",encoders = {ImageEncoder.class})
 public class WebSocketServer{
-    // 此处不可使用spring的自动注入功能，原因是spring为防止多线程的安全问题是防注入的
-    public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(10);
-    /**
-     * 与某个客户端的连接会话，需要通过它来给客户端发送数据
-     */
-    private Session session;
-
-    // rtsp服务器地址
-    private List<String> rtspUrls;
-
-    // CameraId集合
-    private List<String> camIds;
-
-    private Boolean openFlag;
-
-    // 读取帧的宽度
-    private int width;
-    // 读取帧的高度
-    private int height;
-
-    // 单个框的宽度
-    private int singleWidth;
-
-    // 单个框的高度
-    private int singleHeight;
-
-    // x轴上的图片个数
-    private int xPicNum;
-
-    // y轴上的图片个数
-    private int yPicNum;
-
-    List<FFmpegFrameGrabber> grabbers;
-
-    private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
-
-    private Thread thread;
-    // 线程
-    private List<ReadPicThread> readPicThreads;
-
     // 读取图片线程
     static class ReadPicThread implements Runnable {
         private Thread t;
@@ -138,6 +98,7 @@ public class WebSocketServer{
                     }
                 }
             }
+            // 资源释放
             if (picGrabber != null) {
                 try {
                     picGrabber.stop();
@@ -149,76 +110,214 @@ public class WebSocketServer{
             }
         }
     }
+
+    // 合成图片并推流
+    static class ProductFinalPicThread implements Runnable {
+        private final Session session;
+
+        // rtsp服务器地址
+        private List<String> rtspUrls;
+
+        // CameraId集合
+        private List<String> camIds;
+
+        private volatile Boolean openFlag;
+
+        // 读取帧的宽度
+        private int width;
+        // 读取帧的高度
+        private int height;
+
+        // 单个框的宽度
+        private final int singleWidth;
+
+        // 单个框的高度
+        private final int singleHeight;
+
+        // x轴上的图片个数
+        private final int xPicNum;
+
+        // y轴上的图片个数
+        private final int yPicNum;
+
+        List<FFmpegFrameGrabber> grabbers;
+
+        private final String threadName;
+
+        private Thread t;
+
+        private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
+
+        public ProductFinalPicThread(String threadName, Session session) {
+            this.threadName = threadName;
+            this.openFlag = true;
+            avutil.av_log_set_level(avutil.AV_LOG_ERROR);
+            grabbers = new ArrayList<>();
+            rtspUrls = new ArrayList<>();
+            camIds = new ArrayList<>();
+            this.session = session;
+            Map<String, List<String>> map = session.getRequestParameterMap();
+            List<String> rtspList = map.get("video_address");
+            List<String> camIdList = map.get("cam_id");
+
+            // 参数预处理
+            if (map.containsKey("x")) {
+                xPicNum = Integer.parseInt(map.get("x").get(0));
+            }
+            else {
+                xPicNum = 3;
+            }
+            if (map.containsKey("y")) {
+                yPicNum = Integer.parseInt(map.get("y").get(0));
+            }
+            else {
+                yPicNum = 3;
+            }
+            if (map.containsKey("width")) {
+                width = Integer.parseInt(map.get("width").get(0));
+            }
+            else {
+                width = 960;
+            }
+            if (map.containsKey("height")) {
+                height = Integer.parseInt(map.get("height").get(0));
+            }
+            else {
+                height = 540;
+            }
+            singleWidth = width / xPicNum;
+            singleHeight = height /yPicNum;
+
+            // 重构width和height (可能不能除尽)
+            width = singleWidth * xPicNum;
+            height = singleHeight * yPicNum;
+
+            String rtspUrlsStr = "";
+            if(rtspList != null && rtspList.size() > 0){
+                rtspUrlsStr = rtspList.get(0);
+            }
+            String camIdStr = "";
+            if (camIdList != null && camIdList.size() > 0) {
+                camIdStr = camIdList.get(0);
+            }
+
+            rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
+            camIds = Arrays.asList(camIdStr.split(","));
+
+            log.info("用户连接");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "用户连接上了");
+            jsonObject.put("code", 0);
+            sendMessageByStr(this.session, JSON.toJSONString(jsonObject));
+        }
+
+        public void start () {
+            System.out.println("Starting " +  threadName );
+            if (t == null) {
+                t = new Thread (this, threadName);
+                t.start ();
+            }
+        }
+
+        @Override
+        public void run() {
+            this.grabbers = getGrabberByRtsp(rtspUrls, singleWidth, singleHeight);
+            // grabber和读取线程加载
+            // 读取图片线程
+            List<ReadPicThread> readPicThreads = new ArrayList<>();
+            for (int i=0; i<grabbers.size(); i++) {
+                try {
+                    if (grabbers.get(i) == null) {
+                        readPicThreads.add(null);
+                    }
+                    else {
+                        ReadPicThread readPicThread;
+                        if (i < camIds.size())
+                            readPicThread = new ReadPicThread("thread_"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
+                        else
+                            readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), null);
+                        readPicThread.start();
+                        readPicThreads.add(readPicThread);
+                    }
+                }catch (Exception e) {  // 无法启动grabber时，跳过该线程捕获
+                    log.error("rtsp:"+rtspUrls.get(i)+",线程创建失败");
+                    log.error(e.getMessage());
+                    grabbers.set(i, null);
+                    readPicThreads.add(null);
+                }
+
+            }
+
+            // 合并并且推送图片
+            while (this.openFlag) {
+                try {
+                    BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+                    int currentIndex = 0; // 当前页的起始点
+
+                    int rtspNum = rtspUrls.size();
+                    for (int i=0; i<yPicNum; i++) {
+                        for (int j=0; j<xPicNum; j++) {
+                            if (currentIndex >= rtspNum) {
+                                break;
+                            }
+                            else if (readPicThreads.get(currentIndex) != null) {    // 当rtsp流正确时菜获取
+                                BufferedImage partImage = readPicThreads.get(currentIndex).getImage();
+                                // 当图片不为空时才使用图片进行渲染
+                                if (partImage == null) {
+                                    partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
+                                    partImage.setRGB(0, 0, 0);
+                                }
+                                // 绘制CAM ID
+                                waterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
+                                int[] imageArray = new int[width * height];
+                                imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                                returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                            }
+                            currentIndex++;
+                        }
+                        if (currentIndex >= rtspNum) {
+                            break;
+                        }
+
+                    }
+                    byte[] bytes = imageToBytes(returnImg, "jpg");
+                    sendMessageByObject(this.session, new Image(bytes));
+
+                } catch (Exception e) {
+                    log.error("因为异常，grabber关闭，rtsp连接断开，尝试重新连接");
+                    log.error("exception : " , e);
+
+                    try {
+                        for (FFmpegFrameGrabber grabber : grabbers) {
+                            grabber.stop();
+                        }
+                    } catch (FrameGrabber.Exception ex) {
+                        log.error("grabber stop exception: ", ex);
+                    }
+
+                    break;
+                }
+            }
+
+            // 资源释放
+            for (ReadPicThread readPicThread: readPicThreads) {
+                readPicThread.flag = false;
+            }
+        }
+    }
+
+
+    private ProductFinalPicThread thread;
+
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session){
-        this.openFlag = true;
-        avutil.av_log_set_level(avutil.AV_LOG_ERROR);
-        grabbers = new ArrayList<>();
-        rtspUrls = new ArrayList<>();
-        camIds = new ArrayList<>();
-        this.session = session;
-        Map<String, List<String>> map = session.getRequestParameterMap();
-        List<String> rtspList = map.get("video_address");
-        List<String> camIdList = map.get("cam_id");
-
-        // 参数预处理
-        if (map.containsKey("x")) {
-            xPicNum = Integer.parseInt(map.get("x").get(0));
-        }
-        else {
-            xPicNum = 3;
-        }
-        if (map.containsKey("y")) {
-            yPicNum = Integer.parseInt(map.get("y").get(0));
-        }
-        else {
-            yPicNum = 3;
-        }
-        if (map.containsKey("width")) {
-            width = Integer.parseInt(map.get("width").get(0));
-        }
-        else {
-            width = 960;
-        }
-        if (map.containsKey("height")) {
-            height = Integer.parseInt(map.get("height").get(0));
-        }
-        else {
-            height = 540;
-        }
-        singleWidth = width / xPicNum;
-        singleHeight = height /yPicNum;
-
-        // 重构width和height (可能不能除尽)
-        width = singleWidth * xPicNum;
-        height = singleHeight * yPicNum;
-
-        String rtspUrlsStr = "";
-        if(rtspList != null && rtspList.size() > 0){
-            rtspUrlsStr = rtspList.get(0);
-        }
-        String camIdStr = "";
-        if (camIdList != null && camIdList.size() > 0) {
-            camIdStr = camIdList.get(0);
-        }
-
-        rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
-        camIds = Arrays.asList(camIdStr.split(","));
-
-        log.info("用户连接");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg", "用户连接上了");
-        jsonObject.put("code", 0);
-        sendMessageByStr(JSON.toJSONString(jsonObject));
-
-        CompletableFuture.supplyAsync(()->{
-            this.thread = Thread.currentThread();
-            System.out.println("start: "+this.thread.getId());
-            return this;
-        }, EXECUTOR_SERVICE).thenAccept(WebSocketServer::live);
+        // 必须新建线程去发送图片，否则无法接收来自客户端的消息
+        thread = new ProductFinalPicThread("websocket_thread", session);
+        thread.start();
     }
 
     /**
@@ -228,14 +327,7 @@ public class WebSocketServer{
     public void onClose() {
         // 终止进程
         System.out.println("OnClose");
-        for (ReadPicThread readPicThread : readPicThreads) {
-            if (readPicThread != null)
-                readPicThread.flag = false;
-        }
-
-        if (this.openFlag) {
-            this.openFlag = false;
-        }
+        this.thread.openFlag = false;
 //        if(this.thread != null){
 //            this.thread.interrupt();
 //            System.out.println("end: "+this.thread.getId());
@@ -253,24 +345,6 @@ public class WebSocketServer{
     public void onMessage(String message, Session session) {
         System.out.println("消息：" + message);
         log.info("用户消息,报文:" + message);
-        //可以群发消息
-        //消息保存到数据库、redis
-        /*if (StringUtils.isNotBlank(message)) {
-            //解析发送的报文
-            JSONObject jsonObject = JSON.parseObject(message);
-            //追加发送人(防止串改)
-            if (jsonObject != null) {
-                jsonObject.put("fromUserId", this.userId);
-                String toUserId = jsonObject.getString("toUserId");
-                //传送给对应toUserId用户的websocket
-                if (StringUtils.isNotBlank(toUserId) && webSocketMap.containsKey(toUserId)) {
-                    webSocketMap.get(toUserId).sendMessageByStr(jsonObject.toJSONString());
-                } else {
-                    log.error("请求的userId:" + toUserId + "不在该服务器上");
-                    //否则不在这个服务器上，发送到mysql或者redis
-                }
-            }
-        }*/
     }
 
     /**
@@ -284,11 +358,11 @@ public class WebSocketServer{
         log.error("websocket error: ", error);
     }
 
-    public void sendMessageByStr(String message) {
+    public static void sendMessageByStr(Session session, String message) {
         if (StringUtils.isNotBlank(message)) {
             try {
-                if (this.session.isOpen()) {
-                    this.session.getBasicRemote().sendText(message);
+                if (session.isOpen()) {
+                    session.getBasicRemote().sendText(message);
                 }
             } catch (IOException e) {
                 // log.error("发送信息失败 ，信息是：" + message);
@@ -297,19 +371,12 @@ public class WebSocketServer{
         }
     }
 
-    public void sendMessageByObject(Object message) {
+    public static void sendMessageByObject(Session session, Object message) {
         if (message != null) {
             try {
-                if (this.session != null && this.session.isOpen()) {
-                    this.session.getBasicRemote().sendObject(message);
+                if (session != null && session.isOpen()) {
+                    session.getBasicRemote().sendObject(message);
                 }
-//                if (sessions.size() > 0) {
-//                    for (WebSocketServer webSocketServer: sessions) {
-//                        if (webSocketServer != null && webSocketServer.session.isOpen()) {
-//                            webSocketServer.session.getBasicRemote().sendObject(message);
-//                        }
-//                    }
-//                }
             } catch (IOException | EncodeException e) {
                 // log.error("发送信息失败 ，信息是：" + message);
                 log.error("websocket send object msg exception: ", e);
@@ -317,23 +384,11 @@ public class WebSocketServer{
         }
     }
 
-    public void sendBinary(ByteBuffer message) {
-        if (message != null) {
-            try {
-                if (this.session.isOpen())
-                    this.session.getBasicRemote().sendBinary(message);
-            } catch (IOException e) {
-                // log.error("发送信息失败 ，信息是：" + message);
-                log.error("websocket send byteBuffer msg exception: ", e);
-            }
-        }
-    }
-
-
     /**
      * 开启获取rtsp流，通过websocket传输数据
      */
-    public void live() {
+    public static List<FFmpegFrameGrabber> getGrabberByRtsp(List<String> rtspUrls, int singleWidth, int singleHeight) {
+        List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
         for (String rtspUrl : rtspUrls) {
             log.info("连接rtsp："+rtspUrl+",开始创建grabber");
             FFmpegFrameGrabber grabber = createGrabber(rtspUrl, singleWidth, singleHeight);
@@ -345,7 +400,7 @@ public class WebSocketServer{
         } else {
             log.info("创建grabber失败");
         }
-        startCameraPush(grabbers);
+        return grabbers;
     }
 
     /**
@@ -368,11 +423,7 @@ public class WebSocketServer{
             }
             String host = "http://" + strings[1].split("/")[0];
             System.out.println(host);
-//            try {
-//                HttpUtils.isReachable(host, 3000);
-//            }catch (IOException e) {
-//                return null;
-//            }
+
             FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(rtsp);
             grabber.setOption("rtsp_transport", "tcp");
             //设置帧率
@@ -394,96 +445,13 @@ public class WebSocketServer{
     }
 
     /**
-     * 推送图片（摄像机直播）
-     */
-    public void startCameraPush(List<FFmpegFrameGrabber> grabbers) {
-        System.out.println("startCameraPush");
-        readPicThreads = new ArrayList<>();
-        for (int i=0; i<grabbers.size(); i++) {
-            try {
-                if (grabbers.get(i) == null) {
-                    readPicThreads.add(null);
-                    // System.out.println("Grabber is null");
-                }
-                else {
-                    // grabbers.get(i).start();
-                    ReadPicThread readPicThread = null;
-                    if (i < camIds.size())
-                        readPicThread = new ReadPicThread("thread_"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
-                    else
-                        readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), null);
-                    readPicThread.start();
-                    readPicThreads.add(readPicThread);
-                }
-            }catch (Exception e) {  // 无法启动grabber时，跳过该线程捕获
-                log.error("rtsp:"+rtspUrls.get(i)+",线程创建失败");
-                log.error(e.getMessage());
-                grabbers.set(i, null);
-                readPicThreads.add(null);
-            }
-
-        }
-
-        while (this.openFlag) {
-            try {
-                BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-                int currentIndex = 0; // 当前页的起始点
-
-                int rtspNum = rtspUrls.size();
-                for (int i=0; i<yPicNum; i++) {
-                    for (int j=0; j<xPicNum; j++) {
-                        if (currentIndex >= rtspNum) {
-                            break;
-                        }
-                        else if (readPicThreads.get(currentIndex) != null) {    // 当rtsp流正确时菜获取
-                            BufferedImage partImage = readPicThreads.get(currentIndex).getImage();
-                            // 当图片不为空时才使用图片进行渲染
-                            if (partImage == null) {
-                                partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
-                                partImage.setRGB(0, 0, 0);
-                            }
-                            // 绘制CAM ID
-                            waterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
-                            int[] imageArray = new int[width * height];
-                            imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                            returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                        }
-                        currentIndex++;
-                    }
-                    if (currentIndex >= rtspNum) {
-                        break;
-                    }
-
-                }
-                byte[] bytes = imageToBytes(returnImg, "jpg");
-                sendMessageByObject(new Image(bytes));
-
-            } catch (Exception e) {
-                log.error("因为异常，grabber关闭，rtsp连接断开，尝试重新连接");
-                log.error("exception : " , e);
-
-                try {
-                    for (FFmpegFrameGrabber grabber : grabbers) {
-                        grabber.stop();
-                    }
-                } catch (FrameGrabber.Exception ex) {
-                        log.error("grabber stop exception: ", ex);
-                    }
-
-                break;
-            }
-        }
-    }
-
-    /**
      * 图片转字节数组
      *
      * @param bImage 图片数据
      * @param format 格式
      * @return 图片字节码
      */
-    private byte[] imageToBytes(BufferedImage bImage, String format) {
+    private static byte[] imageToBytes(BufferedImage bImage, String format) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ImageIO.write(bImage, format, out);
@@ -497,3 +465,4 @@ public class WebSocketServer{
 
 
 }
+

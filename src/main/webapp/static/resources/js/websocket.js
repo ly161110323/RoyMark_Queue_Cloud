@@ -109,7 +109,6 @@
             //Ws关闭事件：Ws连接关闭后触发
             ws.onclose = (e) => {
                 console.log('连接已关闭...');
-                alert("websocket连接已关闭，按F5尝试重新刷新页面");
                 this.isHeartBeat = false;
                 ws = null;
                 this.reConnect();
