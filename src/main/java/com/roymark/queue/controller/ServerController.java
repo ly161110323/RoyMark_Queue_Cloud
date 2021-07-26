@@ -498,7 +498,7 @@ public class ServerController {
 		try {
 			boolean reachable = HttpUtils.isReachable(host, 500);
 			if (!reachable) {
-				msg.append("人脸服务器配置有误，请检查");
+				msg.append("人脸管理服务器配置有误，请检查");
 				result.append("no");
 			} else {
 				Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
@@ -554,7 +554,7 @@ public class ServerController {
 			try {
 				boolean reachable = HttpUtils.isReachable(host, 500);
 				if (!reachable) {
-					msg.append("人脸服务器配置有误，请检查");
+					msg.append("人脸管理服务器配置有误，请检查");
 					result.append("no");
 				} else {
 					JSONObject requestData = new JSONObject();
@@ -582,6 +582,48 @@ public class ServerController {
 			}
 		}
 
+	// 人脸管理停止
+	@RequestMapping(value = "/getFaceManagerStatus",produces = "application/json;charset=utf-8")
+	public Object getFaceManagerStatus() {
+		JSONObject jsonObject = new JSONObject();
+		StringBuilder msg = new StringBuilder();
+		StringBuilder result = new StringBuilder();
+		// 处理发送地址
+		String host = getURLFromDB("");
+		String path = "/getFaceManagerStatus";
+		try {
+			boolean reachable = HttpUtils.isReachable(host, 500);
+			if (!reachable) {
+				msg.append("人脸管理服务器配置有误，请检查");
+				result.append("no");
+			} else {
+				JSONObject requestData = new JSONObject();
+				HashMap<String, String> header = new HashMap<>();
+				header.put("Content-Type", "application/json");// 设置请求头信息
+				String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
+				HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+				if (response.getStatusLine().getStatusCode() == 200) {
+					if("on".equals(EntityUtils.toString(response.getEntity(),"UTF-8"))){
+						msg.append("运行中");
+					}else {
+						msg.append("待机");
+					}
+				}else {
+					msg.append("离线");
+				}
+				result.append("ok");
+			}
+			jsonObject.put("msg", msg);
+			jsonObject.put("result", result);
+			return jsonObject;
+		} catch (Exception e) {
+			logger.error("/server/getFaceManagerStatus 错误:" + e.getMessage(), e);
+			jsonObject.put("msg", "服务器查询状态出现异常");
+			jsonObject.put("result", "error");
+			return jsonObject;
+		}
+	}
 
 	public String getURLFromDB(String path) {
 		// 处理发送地址

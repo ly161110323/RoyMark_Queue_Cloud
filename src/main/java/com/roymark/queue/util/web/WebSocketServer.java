@@ -2,10 +2,6 @@ package com.roymark.queue.util.web;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.roymark.queue.entity.Camera;
-import com.roymark.queue.service.CameraService;
-import com.roymark.queue.service.GroupService;
 import com.roymark.queue.util.WaterMarkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,9 +45,6 @@ public class WebSocketServer{
     // CameraId集合
     private List<String> camIds;
 
-    // GroupHiddenId;
-    int groupHiddenId;
-
     private Boolean openFlag;
 
     // 读取帧的宽度
@@ -71,16 +64,15 @@ public class WebSocketServer{
     // y轴上的图片个数
     private int yPicNum;
 
-    // 当前页数
-    private int currentPage;
-
     List<FFmpegFrameGrabber> grabbers;
 
     private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
 
+    private Thread thread;
     // 线程
     private List<ReadPicThread> readPicThreads;
 
+    // 读取图片线程
     static class ReadPicThread implements Runnable {
         private Thread t;
         private final String threadName;
@@ -216,22 +208,17 @@ public class WebSocketServer{
         rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
         camIds = Arrays.asList(camIdStr.split(","));
 
-        currentPage = 0;
-
         log.info("用户连接");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "用户连接上了");
         jsonObject.put("code", 0);
         sendMessageByStr(JSON.toJSONString(jsonObject));
 
-        this.live();
-//        CompletableFuture.supplyAsync(()->{
-//            this.thread = Thread.currentThread();
-//            System.out.println("start: "+this.thread.getId());
-//            return this;
-//        }, EXECUTOR_SERVICE).thenAccept(server->{
-//            server.live();
-//        });
+        CompletableFuture.supplyAsync(()->{
+            this.thread = Thread.currentThread();
+            System.out.println("start: "+this.thread.getId());
+            return this;
+        }, EXECUTOR_SERVICE).thenAccept(WebSocketServer::live);
     }
 
     /**
@@ -422,7 +409,7 @@ public class WebSocketServer{
                     // grabbers.get(i).start();
                     ReadPicThread readPicThread = null;
                     if (i < camIds.size())
-                        readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
+                        readPicThread = new ReadPicThread("thread_"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
                     else
                         readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), null);
                     readPicThread.start();
@@ -441,7 +428,7 @@ public class WebSocketServer{
             try {
                 BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-                int currentIndex = currentPage*xPicNum*yPicNum; // 当前页的起始点
+                int currentIndex = 0; // 当前页的起始点
 
                 int rtspNum = rtspUrls.size();
                 for (int i=0; i<yPicNum; i++) {
