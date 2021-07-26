@@ -254,11 +254,11 @@ public class ServerController {
 					String host = "http://" + ip_address + ":" + port;
 					String path = "/status";
 					try {
-						boolean reachable = HttpUtils.isReachable(host, 500);
-						if (!reachable){
-							server.setServerStatus("离线");
-							server.setProgramStatus("无");
-						}
+//						boolean reachable = HttpUtils.isReachable(host, 500);
+//						if (!reachable){
+//							server.setServerStatus("离线");
+//							server.setProgramStatus("无");
+//						}
 						HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
 						if(response.getStatusLine().getStatusCode() == 200){
 							if("on".equals(EntityUtils.toString(response.getEntity(),"UTF-8"))){
@@ -336,10 +336,7 @@ public class ServerController {
 					// 服务器绑定摄像头启动信息
 					StringBuilder cameraStartInfo = new StringBuilder();
 					try {
-						boolean reachable = HttpUtils.isReachable(host, 500);
-						if (!reachable) {
-							msg.append("服务器名：").append(serverName).append("启动失败,服务器不可用;\n");
-						}else {
+
 							// 获取当前服务器对应的摄像头以及窗口
 							List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
 							// 服务器绑定的摄像头和窗口信息
@@ -408,7 +405,7 @@ public class ServerController {
 								}else {
 									msg.append("服务器名：").append(serverName).append("启动失败，服务器状态异常。\n");
 								}
-							}
+
 						}
 					} catch (IOException e) {
 						msg.append(serverName).append("启动失败,服务器不可用;\n");
@@ -457,17 +454,14 @@ public class ServerController {
 					String host = "http://" + ip_address + ":" + port;
 					String path = "/stop";
 					try {
-						boolean reachable = HttpUtils.isReachable(host, 500);
-						if (!reachable) {
-							msg.append(serverName + "停止失败,服务器不可用;\n");
-						}else {
+
 							HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
 							if(response.getStatusLine().getStatusCode() == 200){
-								msg.append(serverName+"停止成功;\n");
+								msg.append(serverName).append("停止成功;\n");
 							}else {
-								msg.append(serverName+"停止失败,停止响应未正常返回;\n");
+								msg.append(serverName).append("停止失败,停止响应未正常返回;\n");
 							}
-						}
+
 					} catch (IOException e) {
 						msg.append(serverName+"停止失败,服务器不可用;\n");
 						logger.error(e.getMessage());
@@ -496,40 +490,40 @@ public class ServerController {
 		String host = getURLFromDB("");
 		String path = "/startFaceManager";
 		try {
-			boolean reachable = HttpUtils.isReachable(host, 500);
-			if (!reachable) {
-				msg.append("人脸管理服务器配置有误，请检查");
+
+			Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
+			Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
+			if (milvusHostParam == null || milvusPortParam == null) {
+				msg.append("milvus配置不全，请检查");
 				result.append("no");
-			} else {
-				Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
-				Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
-				if (milvusHostParam == null || milvusPortParam == null) {
-					msg.append("milvus配置不全，请检查");
+			}
+			else {
+				// 参数加入
+				String milvusHost = milvusHostParam.getParamValue()!=null?milvusHostParam.getParamValue():milvusHostParam.getParamDefault();
+				String milvusPort = milvusPortParam.getParamValue()!=null?milvusPortParam.getParamValue():milvusPortParam.getParamDefault();
+				JSONObject requestData = new JSONObject();
+				requestData.put("milvus_host", milvusHost);
+				requestData.put("milvus_port", milvusPort);
+				HashMap<String, String> header = new HashMap<>();
+				header.put("Content-Type", "application/json");// 设置请求头信息
+				String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+				HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+				String serverMsg = EntityUtils.toString(response.getEntity(),"UTF-8");
+				if (response.getStatusLine().getStatusCode() == 200) {
+					if (!serverMsg.equals("")) {
+						msg.append(serverMsg);
+					}
+					else
+						msg.append("人脸管理服务器启动成功");
+					result.append("ok");
+				} else {
+					if (!serverMsg.equals("")) {
+						msg.append(serverMsg);
+					}
+					else
+						msg.append("人脸管理服务器启动失败，服务器状态异常");
 					result.append("no");
 				}
-				else {
-					// 参数加入
-					String milvusHost = milvusHostParam.getParamValue()!=null?milvusHostParam.getParamValue():milvusHostParam.getParamDefault();
-					String milvusPort = milvusPortParam.getParamValue()!=null?milvusPortParam.getParamValue():milvusPortParam.getParamDefault();
-					JSONObject requestData = new JSONObject();
-					System.out.println("mivlusHost:"+milvusHost);
-					System.out.println("milvusPort:"+milvusPort);
-					requestData.put("milvus_host", milvusHost);
-					requestData.put("milvus_port", milvusPort);
-					HashMap<String, String> header = new HashMap<>();
-					header.put("Content-Type", "application/json");// 设置请求头信息
-					String body = JSONObject.toJSONString(requestData);// 设置请求体信息
-
-					HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-					if (response.getStatusLine().getStatusCode() == 200) {
-						msg.append("人脸管理服务器启动成功");
-						result.append("ok");
-					} else {
-						msg.append("人脸管理服务器启动失败，服务器状态异常");
-						result.append("no");
-					}
-				}
-
 			}
 			jsonObject.put("msg", msg);
 			jsonObject.put("result", result);
@@ -552,25 +546,27 @@ public class ServerController {
 			String host = getURLFromDB("");
 			String path = "/stopFaceManager";
 			try {
-				System.out.println(host);
-				boolean reachable = HttpUtils.isReachable(host, 500);
-				if (!reachable) {
-					msg.append("人脸管理服务器配置有误，请检查");
-					result.append("no");
-				} else {
-					JSONObject requestData = new JSONObject();
-					HashMap<String, String> header = new HashMap<>();
-					header.put("Content-Type", "application/json");// 设置请求头信息
-					String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+				JSONObject requestData = new JSONObject();
+				HashMap<String, String> header = new HashMap<>();
+				header.put("Content-Type", "application/json");// 设置请求头信息
+				String body = JSONObject.toJSONString(requestData);// 设置请求体信息
 
-					HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-					if (response.getStatusLine().getStatusCode() == 200) {
-						msg.append("人脸管理服务器停止成功");
-						result.append("ok");
-					} else {
-						msg.append("人脸管理服务器停止失败，服务器状态异常");
-						result.append("no");
+				HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+				String serverMsg = EntityUtils.toString(response.getEntity(),"UTF-8");
+				if (response.getStatusLine().getStatusCode() == 200) {
+					if (!serverMsg.equals("")) {
+						msg.append(serverMsg);
 					}
+					else
+						msg.append("人脸管理服务器停止成功");
+					result.append("ok");
+				} else {
+					if (!serverMsg.equals("")) {
+						msg.append(serverMsg);
+					}
+					else
+						msg.append("人脸管理服务器停止失败，服务器状态异常");
+					result.append("no");
 				}
 				jsonObject.put("msg", msg);
 				jsonObject.put("result", result);
@@ -593,28 +589,30 @@ public class ServerController {
 		String host = getURLFromDB("");
 		String path = "/getFaceManagerStatus";
 		try {
-			boolean reachable = HttpUtils.isReachable(host, 500);
-			if (!reachable) {
-				msg.append("人脸管理服务器配置有误，请检查");
-				result.append("no");
-			} else {
 				JSONObject requestData = new JSONObject();
 				HashMap<String, String> header = new HashMap<>();
 				header.put("Content-Type", "application/json");// 设置请求头信息
 				String body = JSONObject.toJSONString(requestData);// 设置请求体信息
 
 				HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-				if (response.getStatusLine().getStatusCode() == 200) {
-					if("on".equals(EntityUtils.toString(response.getEntity(),"UTF-8"))){
-						msg.append("运行中");
-					}else {
-						msg.append("待机");
-					}
-				}else {
-					msg.append("离线");
+			String serverMsg = EntityUtils.toString(response.getEntity(),"UTF-8");
+			if (response.getStatusLine().getStatusCode() == 200) {
+				if (!serverMsg.equals("")) {
+					msg.append(serverMsg);
 				}
+				else
+					msg.append("在线");
 				result.append("ok");
+			} else {
+				if (!serverMsg.equals("")) {
+					msg.append(serverMsg);
+				}
+				else
+					msg.append("离线");
+				result.append("no");
 			}
+				result.append("ok");
+
 			jsonObject.put("msg", msg);
 			jsonObject.put("result", result);
 			return jsonObject;
