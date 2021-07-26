@@ -346,8 +346,7 @@ public class ServerController {
 							List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
 
 							if (cameras.size() == 0) {
-								cameraStartInfo.append("未绑定摄像头");
-								msg.append("服务器名：").append(serverName).append("启动失败。\n");
+								msg.append("服务器名：").append(serverName).append("启动失败。未绑定摄像头\n");
 							}
 							else {
 								StringBuilder normalCamIds = new StringBuilder();
@@ -400,6 +399,9 @@ public class ServerController {
 								String body = JSONObject.toJSONString(requestData);// 设置请求体信息
 
 								HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+								String serverMsg = EntityUtils.toString(response.getEntity(),"UTF-8");
+								if (!serverMsg.equals(""))
+									msg.append(serverMsg).append("\n");
 								if(response.getStatusLine().getStatusCode() == 200){
 									msg.append("服务器名：").append(serverName).append(" 启动成功。");
 									msg.append(cameraStartInfo).append("\n");
@@ -484,59 +486,75 @@ public class ServerController {
 		return jsonObject;
 	}
 
-	// Milvus启动
-	@RequestMapping(value = "/startMilvus",produces = "application/json;charset=utf-8")
-	public Object startMilvus() {
+	// 人脸管理启动
+	@RequestMapping(value = "/startFaceManager",produces = "application/json;charset=utf-8")
+	public Object startFaceManager() {
 		JSONObject jsonObject = new JSONObject();
 		StringBuilder msg = new StringBuilder();
 		StringBuilder result = new StringBuilder();
 		// 处理发送地址
 		String host = getURLFromDB("");
-		String path = "/start";
+		String path = "/startFaceManager";
 		try {
 			boolean reachable = HttpUtils.isReachable(host, 500);
 			if (!reachable) {
-				msg.append("milvus服务器配置有误，请检查");
+				msg.append("人脸服务器配置有误，请检查");
 				result.append("no");
 			} else {
-				JSONObject requestData = new JSONObject();
-				HashMap<String, String> header = new HashMap<>();
-				header.put("Content-Type", "application/json");// 设置请求头信息
-				String body = JSONObject.toJSONString(requestData);// 设置请求体信息
-
-				HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
-				if (response.getStatusLine().getStatusCode() == 200) {
-					msg.append("milvus服务器启动成功");
-					result.append("ok");
-				} else {
-					msg.append("milvus服务器启动失败，服务器状态异常");
+				Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
+				Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
+				if (milvusHostParam == null || milvusPortParam == null) {
+					msg.append("milvus配置不全，请检查");
 					result.append("no");
 				}
+				else {
+					// 参数加入
+					String milvusHost = milvusHostParam.getParamValue()!=null?milvusHostParam.getParamValue():milvusHostParam.getParamDefault();
+					String milvusPort = milvusPortParam.getParamValue()!=null?milvusPortParam.getParamValue():milvusPortParam.getParamDefault();
+					JSONObject requestData = new JSONObject();
+					System.out.println("mivlusHost:"+milvusHost);
+					System.out.println("milvusPort:"+milvusPort);
+					requestData.put("milvus_host", milvusHost);
+					requestData.put("milvus_port", milvusPort);
+					HashMap<String, String> header = new HashMap<>();
+					header.put("Content-Type", "application/json");// 设置请求头信息
+					String body = JSONObject.toJSONString(requestData);// 设置请求体信息
+
+					HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
+					if (response.getStatusLine().getStatusCode() == 200) {
+						msg.append("人脸管理服务器启动成功");
+						result.append("ok");
+					} else {
+						msg.append("人脸管理服务器启动失败，服务器状态异常");
+						result.append("no");
+					}
+				}
+
 			}
 			jsonObject.put("msg", msg);
 			jsonObject.put("result", result);
 			return jsonObject;
 		} catch (Exception e) {
-			logger.error("/server/startMilvus 错误:" + e.getMessage(), e);
+			logger.error("/server/startFaceManager 错误:" + e.getMessage(), e);
 			jsonObject.put("msg", "服务器停止出现异常");
 			jsonObject.put("result", "error");
 			return jsonObject;
 		}
 	}
 
-		// Milvus停止
-		@RequestMapping(value = "/stopMilvus",produces = "application/json;charset=utf-8")
-		public Object stopMilvus() {
+		// 人脸管理停止
+		@RequestMapping(value = "/stopFaceManager",produces = "application/json;charset=utf-8")
+		public Object stopFaceManager() {
 			JSONObject jsonObject = new JSONObject();
 			StringBuilder msg = new StringBuilder();
 			StringBuilder result = new StringBuilder();
 			// 处理发送地址
 			String host = getURLFromDB("");
-			String path = "/stop";
+			String path = "/stopFaceManager";
 			try {
 				boolean reachable = HttpUtils.isReachable(host, 500);
 				if (!reachable) {
-					msg.append("milvus服务器配置有误，请检查");
+					msg.append("人脸服务器配置有误，请检查");
 					result.append("no");
 				} else {
 					JSONObject requestData = new JSONObject();
@@ -546,10 +564,10 @@ public class ServerController {
 
 					HttpResponse response = HttpUtils.doPost(host, path, "post", header, null, body);
 					if (response.getStatusLine().getStatusCode() == 200) {
-						msg.append("milvus服务器停止成功");
+						msg.append("人脸管理服务器停止成功");
 						result.append("ok");
 					} else {
-						msg.append("milvus服务器停止失败，服务器状态异常");
+						msg.append("人脸管理服务器停止失败，服务器状态异常");
 						result.append("no");
 					}
 				}
@@ -557,7 +575,7 @@ public class ServerController {
 				jsonObject.put("result", result);
 				return jsonObject;
 			} catch (Exception e) {
-				logger.error("/server/stopMilvus 错误:" + e.getMessage(), e);
+				logger.error("/server/stopFaceManager 错误:" + e.getMessage(), e);
 				jsonObject.put("msg", "服务器停止出现异常");
 				jsonObject.put("result", "error");
 				return jsonObject;
@@ -567,9 +585,9 @@ public class ServerController {
 
 	public String getURLFromDB(String path) {
 		// 处理发送地址
-		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_ip"));
-		Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
-		if (faceServerIp == null || faceServerPort == null) {
+		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
+		Parameter faceManagerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_manager_port"));
+		if (faceServerIp == null || faceManagerPort == null) {
 			return "";
 		}
 		String host = "http://";
@@ -583,11 +601,11 @@ public class ServerController {
 			return "";
 		}
 		host += ":";
-		if (!faceServerPort.getParamValue().equals("")) {
-			host += faceServerPort.getParamValue();
+		if (!faceManagerPort.getParamValue().equals("")) {
+			host += faceManagerPort.getParamValue();
 		}
-		else if (!faceServerPort.getParamDefault().equals("")) {
-			host += faceServerPort.getParamDefault();
+		else if (!faceManagerPort.getParamDefault().equals("")) {
+			host += faceManagerPort.getParamDefault();
 		}
 		else {
 			return "";
