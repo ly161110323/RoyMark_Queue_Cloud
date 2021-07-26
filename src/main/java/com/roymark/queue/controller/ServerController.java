@@ -536,7 +536,7 @@ public class ServerController {
 			return jsonObject;
 		} catch (Exception e) {
 			logger.error("/server/startFaceManager 错误:" + e.getMessage(), e);
-			jsonObject.put("msg", "服务器停止出现异常");
+			jsonObject.put("msg", "服务器启动出现异常，"+e);
 			jsonObject.put("result", "error");
 			return jsonObject;
 		}
@@ -552,6 +552,7 @@ public class ServerController {
 			String host = getURLFromDB("");
 			String path = "/stopFaceManager";
 			try {
+				System.out.println(host);
 				boolean reachable = HttpUtils.isReachable(host, 500);
 				if (!reachable) {
 					msg.append("人脸管理服务器配置有误，请检查");
@@ -628,7 +629,7 @@ public class ServerController {
 	public String getURLFromDB(String path) {
 		// 处理发送地址
 		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-		Parameter faceManagerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_manager_port"));
+		Parameter faceManagerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_controller_port"));
 		if (faceServerIp == null || faceManagerPort == null) {
 			return "";
 		}

@@ -569,7 +569,7 @@ public class UserController {
 	public String getURLFromDB(String path) {
 		// 处理发送地址
 		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-		Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_manager_port"));
+		Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_controller_port"));
 		if (faceServerIp == null || faceServerPort == null) {
 			return "";
 		}
