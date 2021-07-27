@@ -395,12 +395,20 @@ public class UserController {
 				return jsonObject;
 			}
 			// 处理发送地址
-			String url = getURLFromDB("/insertFaceImage");
-			if (url.equals("")) {
+			String host = getURLFromDB("");
+			if (host.equals("")) {
 				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
+			String path = "/insertFaceImage";
+			boolean connectResult = HttpUtils.isReachable(host, 500);
+			if (!connectResult) {
+				jsonObject.put("msg", "连接失败，请检查配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			String url = host+path;
 
 			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 
@@ -521,7 +529,21 @@ public class UserController {
 				faceVectorService.removeById(queryFaceVector.getFaceVectorId());
 				MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 				requestParams.add("faceId", faceId);
-				String url = getURLFromDB("/deleteFaceImage");
+				// 处理发送地址
+				String host = getURLFromDB("");
+				if (host.equals("")) {
+					jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
+				boolean connectResult = HttpUtils.isReachable(host, 500);
+				if (!connectResult) {
+					jsonObject.put("msg", "连接失败，请检查配置");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
+				String path = "/deleteFaceImage";
+				String url = host+path;
 				try {
 					ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
 					if(response.getStatusCodeValue() == 200) {
