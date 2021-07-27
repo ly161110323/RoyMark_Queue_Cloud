@@ -367,11 +367,11 @@ public class ServerController {
                                 cameraStartInfo.append(normalCamIds).append("正常启动，");
                             }
                             if (abnormalCamIds.length() > 0) {
-                                abnormalCamIds.deleteCharAt(normalCamIds.length() - 1);
+                                abnormalCamIds.deleteCharAt(abnormalCamIds.length() - 1);
                                 cameraStartInfo.append(abnormalCamIds).append("状态异常，");
                             }
                             if (noWindowCamIds.length() > 0) {
-                                noWindowCamIds.deleteCharAt(normalCamIds.length() - 1);
+                                noWindowCamIds.deleteCharAt(noWindowCamIds.length() - 1);
                                 cameraStartInfo.append(noWindowCamIds).append("没有绑定窗口区域，");
                             }
                             // 去除最后一个，
