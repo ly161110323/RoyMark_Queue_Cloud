@@ -146,11 +146,26 @@ public class UserController {
 				return jsonObject;
 			}
 
-			String url = getURLFromDB("/insertFaceImage");
+			// 处理发送地址
+			String ip_address = getFaceServerIp();
+			String port = getFaceManagerPort();
+			if (ip_address.equals("") || port.equals("")) {
+				jsonObject.put("msg", "人脸服务器配置错误，请检查");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			String host = "http://" + ip_address + ":" + port;
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+			if (!connectResult) {
+				jsonObject.put("msg", "连接失败，请检查配置");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
+			String path = "/insertFaceImage";
 			requestParams.add("image", uploadinfo.getResource());
 
 			try {
-				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
+				ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
 				// System.out.println(response);
 				if(response.getStatusCodeValue() == 200){
 					logger.info("向服务器发送图片;");
@@ -276,9 +291,24 @@ public class UserController {
 					faceVectorService.removeById(faceVector.getFaceVectorId());
 					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 					requestParams.add("faceId", faceId);
-					String url = getURLFromDB("/deleteFaceImage");
+					// 处理发送地址
+					String ip_address = getFaceServerIp();
+					String port = getFaceManagerPort();
+					if (ip_address.equals("") || port.equals("")) {
+						jsonObject.put("msg", "人脸服务器配置错误，请检查");
+						jsonObject.put("result", "no");
+						return jsonObject;
+					}
+					String host = "http://" + ip_address + ":" + port;
+					boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+					if (!connectResult) {
+						jsonObject.put("msg", "连接失败，请检查配置");
+						jsonObject.put("result", "no");
+						return jsonObject;
+					}
+					String path = "/deleteFaceImage";
 					try {
-						ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
+						ResponseEntity<String> response = HttpUtil.sendPost(host+path, requestParams, new HashMap<>());
 						if(response.getStatusCodeValue() == 200) {
 							HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
 							if (hashMap.get("status").equals("False")) {
@@ -377,17 +407,18 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/insertFace", produces = "application/json;charset=utf-8")
-	public Object insertFace(Long userHiddenId, @RequestParam(value = "uploadinfo") MultipartFile uploadinfo) {
+	public Object insertFace(Long userHiddenId,
+							 @RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
 		JSONObject jsonObject = new JSONObject();
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = attributes.getRequest();
 
+		if (uploadinfo == null) {
+			jsonObject.put("result", "no");
+			jsonObject.put("msg", "未选中图片");
+			return jsonObject;
+		}
 		try {
-			if (uploadinfo == null) {
-				jsonObject.put("result", "no");
-				jsonObject.put("msg", "上传图片有误，请重新上传");
-				return jsonObject;
-			}
 			ActionUser queryUser = userService.getById(userHiddenId);
 			if (queryUser == null) {
 				jsonObject.put("result", "no");
@@ -395,14 +426,16 @@ public class UserController {
 				return jsonObject;
 			}
 			// 处理发送地址
-			String host = getURLFromDB("");
-			if (host.equals("")) {
-				jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+			String ip_address = getFaceServerIp();
+			String port = getFaceManagerPort();
+			if (ip_address.equals("") || port.equals("")) {
+				jsonObject.put("msg", "人脸服务器配置错误，请检查");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
+			String host = "http://" + ip_address + ":" + port;
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
 			String path = "/insertFaceImage";
-			boolean connectResult = HttpUtils.isReachable(host, 500);
 			if (!connectResult) {
 				jsonObject.put("msg", "连接失败，请检查配置");
 				jsonObject.put("result", "no");
@@ -501,8 +534,6 @@ public class UserController {
 			// 确定已有的path中是否包含并构造新path
 			boolean existFlag = false;
 			for (String path: curImgPaths) {
-				System.out.println(path);
-				System.out.println(imgPath);
 				if (path.equals(imgPath)) {
 					existFlag = true;
 					continue;
@@ -530,13 +561,15 @@ public class UserController {
 				MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 				requestParams.add("faceId", faceId);
 				// 处理发送地址
-				String host = getURLFromDB("");
-				if (host.equals("")) {
-					jsonObject.put("msg", "人脸服务器参数有误！请检查人脸服务器配置");
+				String ip_address = getFaceServerIp();
+				String port = getFaceManagerPort();
+				if (ip_address.equals("") || port.equals("")) {
+					jsonObject.put("msg", "人脸服务器配置错误，请检查");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
-				boolean connectResult = HttpUtils.isReachable(host, 500);
+				String host = "http://" + ip_address + ":" + port;
+				boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
 				if (!connectResult) {
 					jsonObject.put("msg", "连接失败，请检查配置");
 					jsonObject.put("result", "no");
@@ -588,34 +621,28 @@ public class UserController {
 		}
 	}
 
-	public String getURLFromDB(String path) {
+	public String getFaceServerIp() {
 		// 处理发送地址
 		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-		Parameter faceServerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_controller_port"));
-		if (faceServerIp == null || faceServerPort == null) {
+		if (faceServerIp == null) {
 			return "";
 		}
-		String host = "http://";
 		if (!faceServerIp.getParamValue().equals("")) {
-			host += faceServerIp.getParamValue();
+			return faceServerIp.getParamValue();
 		}
-		else if (!faceServerIp.getParamDefault().equals("")) {
-			host += faceServerIp.getParamDefault();
-		}
-		else {
+		return faceServerIp.getParamDefault();
+	}
+
+	public String getFaceManagerPort() {
+		// 处理发送地址
+		Parameter faceControllerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_manager_port"));
+		if (faceControllerPort == null) {
 			return "";
 		}
-		host += ":";
-		if (!faceServerPort.getParamValue().equals("")) {
-			host += faceServerPort.getParamValue();
+		if (!faceControllerPort.getParamValue().equals("")) {
+			return faceControllerPort.getParamValue();
 		}
-		else if (!faceServerPort.getParamDefault().equals("")) {
-			host += faceServerPort.getParamDefault();
-		}
-		else {
-			return "";
-		}
-		return host + path;
+		return faceControllerPort.getParamDefault();
 	}
 }
 

@@ -1,6 +1,7 @@
 package com.roymark.queue.controller;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -248,11 +249,12 @@ public class ServerController {
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/status";
                     try {
-//						boolean reachable = HttpUtils.isReachable(host, 500);
-//						if (!reachable){
-//							server.setServerStatus("离线");
-//							server.setProgramStatus("无");
-//						}
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
+                        if (!connectResult){
+							server.setServerStatus("离线");
+							server.setProgramStatus("无");
+							continue;
+						}
                         HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
                         if (response.getStatusLine().getStatusCode() == 200) {
                             if ("on".equals(EntityUtils.toString(response.getEntity(), "UTF-8"))) {
@@ -328,7 +330,7 @@ public class ServerController {
                     // 服务器绑定摄像头启动信息
                     StringBuilder cameraStartInfo = new StringBuilder();
                     try {
-                        boolean connectResult = HttpUtils.isReachable(host, 500);
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
                         }
@@ -446,7 +448,7 @@ public class ServerController {
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/stop";
                     try {
-                        boolean connectResult = HttpUtils.isReachable(host, 500);
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
                         }
@@ -486,10 +488,17 @@ public class ServerController {
         StringBuilder msg = new StringBuilder();
         StringBuilder result = new StringBuilder();
         // 处理发送地址
-        String host = getURLFromDB("");
+        String ip_address = getFaceServerIp();
+        String port = getFaceControllerPort();
+        if (ip_address.equals("") || port.equals("")) {
+            jsonObject.put("msg", "人脸服务器配置错误，请检查");
+            jsonObject.put("result", "no");
+            return jsonObject;
+        }
+        String host = "http://" + ip_address + ":" + port;
         String path = "/startFaceManager";
         try {
-            boolean connectResult = HttpUtils.isReachable(host, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
                 msg.append("连接失败，请检查ip和端口;\n");
                 result.append("no");
@@ -498,7 +507,7 @@ public class ServerController {
                 Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
                 Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
                 if (milvusHostParam == null || milvusPortParam == null) {
-                    msg.append("milvus配置不全，请检查");
+                    msg.append("人脸管理配置不全，请检查");
                     result.append("no");
                 } else {
                     // 参数加入
@@ -545,15 +554,21 @@ public class ServerController {
         StringBuilder msg = new StringBuilder();
         StringBuilder result = new StringBuilder();
         // 处理发送地址
-        String host = getURLFromDB("");
+        String ip_address = getFaceServerIp();
+        String port = getFaceControllerPort();
+        if (ip_address.equals("") || port.equals("")) {
+            jsonObject.put("msg", "人脸服务器配置错误，请检查");
+            jsonObject.put("result", "no");
+            return jsonObject;
+        }
+        String host = "http://" + ip_address + ":" + port;
         String path = "/stopFaceManager";
         try {
-            boolean connectResult = HttpUtils.isReachable(host, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
                 msg.append("连接失败，请检查ip和端口;\n");
                 result.append("no");
-            }
-            else {
+            } else {
                 JSONObject requestData = new JSONObject();
                 HashMap<String, String> header = new HashMap<>();
                 header.put("Content-Type", "application/json");// 设置请求头信息
@@ -593,10 +608,17 @@ public class ServerController {
         StringBuilder msg = new StringBuilder();
         StringBuilder result = new StringBuilder();
         // 处理发送地址
-        String host = getURLFromDB("");
+        String ip_address = getFaceServerIp();
+        String port = getFaceControllerPort();
+        if (ip_address.equals("") || port.equals("")) {
+            jsonObject.put("msg", "人脸服务器配置错误，请检查");
+            jsonObject.put("result", "no");
+            return jsonObject;
+        }
+        String host = "http://" + ip_address + ":" + port;
         String path = "/getFaceManagerStatus";
         try {
-            boolean connectResult = HttpUtils.isReachable(host, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
                 msg.append("连接失败，请检查ip和端口;\n");
                 result.append("no");
@@ -634,29 +656,28 @@ public class ServerController {
         }
     }
 
-    public String getURLFromDB(String path) {
+    public String getFaceServerIp() {
         // 处理发送地址
         Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-        Parameter faceManagerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_controller_port"));
-        if (faceServerIp == null || faceManagerPort == null) {
+        if (faceServerIp == null) {
             return "";
         }
-        String host = "http://";
         if (!faceServerIp.getParamValue().equals("")) {
-            host += faceServerIp.getParamValue();
-        } else if (!faceServerIp.getParamDefault().equals("")) {
-            host += faceServerIp.getParamDefault();
-        } else {
-            return "";
+            return faceServerIp.getParamValue();
         }
-        host += ":";
-        if (!faceManagerPort.getParamValue().equals("")) {
-            host += faceManagerPort.getParamValue();
-        } else if (!faceManagerPort.getParamDefault().equals("")) {
-            host += faceManagerPort.getParamDefault();
-        } else {
-            return "";
-        }
-        return host + path;
+        return faceServerIp.getParamDefault();
     }
+
+    public String getFaceControllerPort() {
+        // 处理发送地址
+        Parameter faceControllerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_controller_port"));
+        if (faceControllerPort == null) {
+            return "";
+        }
+        if (!faceControllerPort.getParamValue().equals("")) {
+            return faceControllerPort.getParamValue();
+        }
+        return faceControllerPort.getParamDefault();
+    }
+
 }

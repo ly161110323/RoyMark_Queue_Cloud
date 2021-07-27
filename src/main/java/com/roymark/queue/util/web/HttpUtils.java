@@ -250,13 +250,23 @@ public class HttpUtils {
 		return httpClient.execute(request);
 	}
 
-	public static boolean isReachable(String host, int timeout) throws IOException {
-		URL url = new URL(host);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setConnectTimeout(timeout);
-		connection.setReadTimeout(timeout);
-		connection.connect();
-		return connection.getResponseCode() == 200;
+	public static boolean isReachable(String ip, String port, int timeout) {
+		boolean ipConnectResult = isHostReachable(ip, timeout);
+		if (!ipConnectResult) {
+			return false;
+		}
+		try {
+			String host = "http://" + ip + ":" + port;// 请求域名或ip
+			URL url = new URL(host);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setConnectTimeout(timeout);
+			connection.setReadTimeout(timeout);
+			connection.connect();
+			return connection.getResponseCode() == 200;
+		} catch (Exception e) {
+			return false;
+		}
+
 	}
 
 	private static String buildUrl(String host, String path, Map<String, String> querys) throws UnsupportedEncodingException {

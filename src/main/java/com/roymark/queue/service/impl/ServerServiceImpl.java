@@ -28,7 +28,7 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
             Server server = serverMapper.selectById(serverHiddenId);
             String host = "http://" + server.getServerIp() + ":" + server.getServerPort();
             String path = "/status";
-            boolean reachable = HttpUtils.isReachable(host, 500);
+            boolean reachable = HttpUtils.isReachable(server.getServerIp(), String.valueOf(server.getServerPort()), 500);
             if (!reachable) {
                 return false;
             }
