@@ -2,6 +2,7 @@ package com.roymark.queue.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -74,4 +75,7 @@ public class Camera implements Serializable {
 	// 摄像头所对应服务器是否在线的状态标志
 	@TableField(exist = false)
 	private Boolean serverOnFlag;
+
+	@TableField(exist = false)
+	private String windowIds;
 }

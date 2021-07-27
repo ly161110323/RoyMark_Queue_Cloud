@@ -251,6 +251,15 @@ public class CameraController {
 					camera.setCamStatus("异常");
 				}
 				camera.setServerOnFlag(serverService.getServerOnStatus(camera.getServerHiddenId()));
+				// 设置绑定的窗口，以逗号分隔
+				List<Window> windowList = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
+				StringBuilder windowIds = new StringBuilder();
+				for (Window window: windowList) {
+					windowIds.append(window.getWindowId()).append(",");
+				}
+				if (windowIds.length() > 0)
+					windowIds.deleteCharAt(windowIds.length()-1);
+				camera.setWindowIds(windowIds.toString());
 			}
 			// 返回结果
 			if (pageList.getRecords().size() <= 0) {
