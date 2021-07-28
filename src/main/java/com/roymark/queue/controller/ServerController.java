@@ -249,7 +249,7 @@ public class ServerController {
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/status";
                     try {
-                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 1000);
                         if (!connectResult){
 							server.setServerStatus("离线");
 							server.setProgramStatus("无");

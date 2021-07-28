@@ -18,6 +18,8 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -33,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpUtils {
+
+	private static final Logger logger = LogManager.getLogger(HttpUtils.class);
 
 	private static RequestConfig config = RequestConfig.custom().setConnectTimeout(1000).setConnectionRequestTimeout(5000).setSocketTimeout(5000).build();
 
@@ -264,6 +268,7 @@ public class HttpUtils {
 			connection.connect();
 			return connection.getResponseCode() == 200;
 		} catch (Exception e) {
+			logger.error(ip+" HttpUtils.isReachable error:"+e.getMessage(), e);
 			return false;
 		}
 
@@ -338,7 +343,7 @@ public class HttpUtils {
 		try {
 			return InetAddress.getByName(host).isReachable(timeOut);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(host+" HttpUtils.isHostReachable error:"+e.getMessage(), e);
 		}
 		return false;
 	}
