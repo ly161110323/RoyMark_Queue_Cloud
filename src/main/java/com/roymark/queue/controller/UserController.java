@@ -594,7 +594,7 @@ public class UserController {
 					}
 				}catch (Exception e) {
 					logger.error(e.getMessage());
-					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("msg", "向人脸服务器删除失败！请检查人脸服务器配置");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
