@@ -358,11 +358,11 @@ function startClick(){
                     data : data,
                     success : function(data) {
                         if (data.result == "error") {
-                            layer.alert(data.msg);
+                            layer.alert(data.msg,{time:3});
                             return;
                         }
                         if (data.result == "ok") {
-                            layer.msg(data.msg);
+                            layer.msg(data.msg,{time:3});
                         }
                         table.draw(false);
                         // clearData();

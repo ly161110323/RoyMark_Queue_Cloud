@@ -44,7 +44,7 @@
     var oriUrls = parent.imgs.split(','); //保存相对路径
 
     var hiddenId = parent.dataId;
-    var curindex = 0;
+
     var loadedNum = 0;
     var rootPath=getWebRootPath();
     var curIndex = 0;
@@ -76,12 +76,12 @@
             curIndex = obj.index;
         });
         $('#deleteFace').click(function (){
-            console.log(oriUrls)
+            console.log(curIndex)
 
             var formData = new FormData();
             formData.append("userHiddenId", hiddenId);
-            formData.append("imgPath",oriUrls[curindex] );
-
+            formData.append("imgPath",oriUrls[curIndex] );
+            console.log("path:",oriUrls[curIndex])
             var url = rootPath + "/user/deleteFace";
 
             $.ajax({
@@ -98,8 +98,8 @@
                     }
                     if (data.result == "ok") {
                         layer.msg(data.msg);
-                        imgsrclist.splice(curindex,1);
-                        oriUrls.splice(curindex,1);
+                        imgsrclist.splice(curIndex,1);
+                        oriUrls.splice(curIndex,1);
                         loadimages();
                         ren.reload();
                     } else if (data.result == "no") {

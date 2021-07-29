@@ -368,7 +368,7 @@ function showPhotos(){
 
     window.dataId = dataId;
     window.imgs = urls;
-
+    console.log(urls)
     layer.open({
         type: 2,
         title: false,

@@ -60,6 +60,16 @@
         .active{
             background-color: #00aaff;
         }
+        .bubble{
+            position:relative;
+            padding:15px;
+            margin:1em 0em 3em;
+            width:300px;
+            line-height:1.2;
+            text-align:center;
+            color:#fff;
+            background:#075698;
+        }
     </style>
 
 <body class="gray-bg" id="bodyBg">
@@ -205,8 +215,7 @@
                         </div>
 
                     </div>
-
-
+<%--                    <blockquote class="bubble">床前明月光，疑是地上霜。</blockquote>--%>
                 </div>
             </div>
 
