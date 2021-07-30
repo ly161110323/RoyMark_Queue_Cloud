@@ -105,11 +105,16 @@ public class WindowController {
             }
             List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId())
                     .or().eq(Window::getWindowName, window.getWindowName()));
-
+            // 为空表示 名字、ID都被修改为不存在值
+            if (windows.size() == 0) {
+            }
+            // 查询到的只有一个且hiddenId相同，表明 名字、ID都没有被修改/某一个未被修改且其余修改值不存在
+            else if (windows.size() == 1 && windows.get(0).getWindowHiddenId().equals(window.getWindowHiddenId())) {
+            }
             // 如果根据服务器名查询到名字或ID已存在
-            if (windows.size() > 0) {
+            else {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "服务器ID或名称已存在");
+                jsonObject.put("msg", "窗口ID或名称已存在");
                 return jsonObject;
             }
             boolean result;

@@ -56,7 +56,7 @@ public class GroupController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            group.setGroupHiddenId(Long.valueOf(0));
+            group.setGroupHiddenId(0L);
 
             Group queryGroup = groupService.getOne(Wrappers.<Group>lambdaQuery().eq(Group::getGroupId, group.getGroupId()));
             if (queryGroup != null) {

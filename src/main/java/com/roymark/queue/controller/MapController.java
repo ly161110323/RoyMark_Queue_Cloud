@@ -61,17 +61,19 @@ public class MapController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            map.setMapHiddenId(Long.valueOf(0));
+            map.setMapHiddenId(0L);
             if (uploadMap != null) {
                 String uploadPath = "/uploads/map/";
                 String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
                 map.setMapPath(filePath);
             }
-            Map queryMap = mapService.getOne(Wrappers.<Map>lambdaQuery().eq(Map::getMapId, map.getMapId()));
-            if (queryMap != null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "区域ID已存在");
-                return jsonObject;
+            List<Map> maps = mapService.list();
+            for (Map queryMap: maps) {
+                if (map.getMapId().equals(queryMap.getMapId()) || map.getMapName().equals(queryMap.getMapName())) {
+                    jsonObject.put("result", "no");
+                    jsonObject.put("msg", "区域ID或名称已存在");
+                    return jsonObject;
+                }
             }
             boolean result = mapService.save(map);
             if (result) {
@@ -105,8 +107,21 @@ public class MapController {
                 jsonObject.put("msg", "区域不存在");
                 return jsonObject;
             }
+            List<Map> maps = mapService.list(Wrappers.<Map>lambdaQuery().eq(Map::getMapId, map.getMapId())
+                    .or().eq(Map::getMapName, map.getMapName()));
 
-            queryMap = mapService.getOne(Wrappers.<Map>lambdaQuery().eq(Map::getMapId, map.getMapId()));
+            // 为空表示 名字、ID都被修改为不存在值
+            if (maps.size() == 0) {
+            }
+            // 查询到的只有一个且hiddenId相同，表明 名字、ID都没有被修改/某一个未被修改且其余修改值不存在
+            else if (maps.size() == 1 && maps.get(0).getMapHiddenId().equals(map.getMapHiddenId())) {
+            }
+            else {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "区域ID或名称已存在");
+                return jsonObject;
+            }
+
             if (queryMap != null && !queryMap.getMapHiddenId().equals(map.getMapHiddenId())) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "区域ID已存在");

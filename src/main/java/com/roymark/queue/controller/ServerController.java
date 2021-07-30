@@ -130,12 +130,18 @@ public class ServerController {
             }
 
             List<Server> servers = serverService.list(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId())
-                    .or().eq(Server::getServerName, server.getServerName()));
+                    .or().eq(Server::getServerName, server.getServerName())
+                    .or().eq(Server::getServerPort, server.getServerPort()).eq(Server::getServerIp, server.getServerIp()));
 
-            // 如果根据服务器名查询到名字或ID已存在
-            if (servers.size() > 0) {
+            // 为空表示 名字、ID和（IP和端口）都被修改为不存在值
+            if (servers.size() == 0) {
+            }
+            // 查询到的只有一个且hiddenId相同，表明 名字、ID和（IP和端口）都没有被修改/某一个未被修改且其余修改值不存在
+            else if (servers.size() == 1 && servers.get(0).getServerHiddenId().equals(server.getServerHiddenId())) {
+            }
+            else {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "服务器ID或名称已存在");
+                jsonObject.put("msg", "服务器ID或名称或IP和端口已存在");
                 return jsonObject;
             }
 
