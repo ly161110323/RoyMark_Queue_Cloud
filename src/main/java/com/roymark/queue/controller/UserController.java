@@ -270,11 +270,13 @@ public class UserController {
 				}
 			}
 			for (int i = 0; i < deletes.length; i++) {
-				List<Anomaly> anomalyList = anomalyService.list(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getUserHiddenId, Long.valueOf(deletes[i])));
-				for (Anomaly anomaly : anomalyList) {
-					anomalyService.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
-							.eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-				}
+//				QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
+//				queryWrapper.eq("br_anomaly.user_hidden_id", Long.valueOf(deletes[i]));
+//				List<Anomaly> anomalyList = anomalyService.list(queryWrapper);
+//				for (Anomaly anomaly : anomalyList) {
+//					anomalyService.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
+//							.eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
+//				}
 				Long userHiddenId = Long.valueOf(deletes[i]);
 				ActionUser queryUser = userService.getById(userHiddenId);
 				String imgPath = queryUser.getUserPhoto();
@@ -331,7 +333,7 @@ public class UserController {
 			return jsonObject;
 
 		} catch (Exception e) {
-			logger.error("/camera/delete 错误:" + e.getMessage(), e);
+			logger.error("/user/delete 错误:" + e.getMessage(), e);
 			jsonObject.put("result", "error");
 			jsonObject.put("msg", "删除出现错误");
 			return jsonObject;
@@ -447,6 +449,13 @@ public class UserController {
 
 			requestParams.add("image", uploadinfo.getResource());
 
+			String existPath = queryUser.getUserPhoto();
+			String[] existPaths = existPath.split(",");
+			if (existPaths.length >= 10) {
+				jsonObject.put("msg", "图片数量不能超过10个");
+				jsonObject.put("result", "no");
+				return jsonObject;
+			}
 			try {
 				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
 				// System.out.println(response);
@@ -460,21 +469,11 @@ public class UserController {
 					}
 
 					String uploadPath = "/uploads/user/";
-					String existPath = queryUser.getUserPhoto();
-					String filePath = "";
-					if (existPath==null || existPath.equals("")) {
-						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+					String filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+					if (existPath.equals("")) {
 						queryUser.setUserPhoto(filePath);
 					}
-
 					else {
-						String[] existPaths = existPath.split(",");
-						if (existPaths.length >= 9) {
-							jsonObject.put("msg", "图片数量已经超过10个");
-							jsonObject.put("result", "no");
-							return jsonObject;
-						}
-						filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
 						queryUser.setUserPhoto(existPath+","+filePath);
 					}
 

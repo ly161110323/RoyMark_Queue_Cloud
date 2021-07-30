@@ -79,13 +79,26 @@ public class ServerController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            server.setServerHiddenId(Long.valueOf(0));
-            Server queryServer = serverService.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
-            if (queryServer != null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "服务器ID已存在");
-                return jsonObject;
+            server.setServerHiddenId(0L);
+
+            List<Server> servers = serverService.list();
+
+            // 存在判断
+            for (Server queryServer: servers) {
+                // 服务器ID和名称不能重复
+                if (server.getServerId().equals(queryServer.getServerId()) || server.getServerName().equals(queryServer.getServerName())) {
+                    jsonObject.put("result", "no");
+                    jsonObject.put("msg", "服务器ID已存在");
+                    return jsonObject;
+                }
+                if (server.getServerIp().equals(queryServer.getServerIp())
+                        && server.getServerPort().equals(queryServer.getServerPort())) {
+                    jsonObject.put("result", "no");
+                    jsonObject.put("msg", "IP地址和端口不能重复");
+                    return jsonObject;
+                }
             }
+
             boolean result = serverService.save(server);
             if (result) {
                 jsonObject.put("result", "ok");
@@ -116,12 +129,13 @@ public class ServerController {
                 return jsonObject;
             }
 
-            queryServer = serverService.getOne(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId()));
+            List<Server> servers = serverService.list(Wrappers.<Server>lambdaQuery().eq(Server::getServerId, server.getServerId())
+                    .or().eq(Server::getServerName, server.getServerName()));
 
-            // 如果根据服务器名查询到的非空且其hiddenId与传入的hiddenId不一致，则表明服务器名已存在于另一项
-            if (queryServer != null && !queryServer.getServerHiddenId().equals(server.getServerHiddenId())) {
+            // 如果根据服务器名查询到名字或ID已存在
+            if (servers.size() > 0) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "服务器名已存在");
+                jsonObject.put("msg", "服务器ID或名称已存在");
                 return jsonObject;
             }
 

@@ -339,12 +339,40 @@ public class HttpUtils {
 		}
 	}
 
-	public static boolean isHostReachable(String host, Integer timeOut) {
-		try {
-			return InetAddress.getByName(host).isReachable(timeOut);
-		} catch (IOException e) {
-			logger.error(host+" HttpUtils.isHostReachable error:"+e.getMessage(), e);
+	public static boolean isHostReachable(String host, int timeout) {
+		try{
+			String cmd;
+
+			if(System.getProperty("os.name").startsWith("Windows"))
+				cmd = "cmd /C ping -n 1 " + host + " | find \"TTL\"";
+			else
+				cmd = "ping -c 1 " + host;
+
+			Process myProcess = Runtime.getRuntime().exec(cmd);
+			myProcess.waitFor();
+
+			return myProcess.exitValue() == 0;
+		} catch( Exception e ) {
+			logger.error(host+" HttpUtils.isHostReachable Error:", e);
+			return false;
 		}
-		return false;
+	}
+
+	public static boolean isSocketReachable(String ip, String port, int timeout) {
+		Socket rtspSocket = new Socket();
+		// 建立TCP Scoket连接
+		try {
+			rtspSocket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), timeout);
+			rtspSocket.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("HttpUtils isSocketReachable Error: ", e);
+			try {
+				rtspSocket.close();
+			} catch (IOException ex) {
+				logger.error("Socket Close Error: ", ex);
+			}
+			return false;
+		}
 	}
 }

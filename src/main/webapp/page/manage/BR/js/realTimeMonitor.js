@@ -127,7 +127,7 @@ function showVideoImg(){
     }
     if (ws1 != null) {
         ws1.ws.close();
-        ws = null;
+        ws1 = null;
     }
     var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height+'&cam_id='+logids;
 

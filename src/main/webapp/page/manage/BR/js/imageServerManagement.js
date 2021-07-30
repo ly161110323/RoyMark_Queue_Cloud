@@ -163,8 +163,13 @@ function validateData(isAdd) {
         layer.alert("服务器名称不能为空！");
         return;
     }
+    var regexIP = /^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/g;
     if($("#serverIp").val().trim()==""){
         layer.alert("服务器IP不能为空！");
+        return;
+    }
+    else if(!regexIP.test($("#serverIp").val().trim())){
+        layer.alert("IP地址格式有误,请重新输入");
         return;
     }
 

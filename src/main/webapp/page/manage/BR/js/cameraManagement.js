@@ -231,10 +231,28 @@ function checkBoxStyle_Control() {
 
 //页面数据合法性验证
 function validateData(isAdd) {
-    if ($("#camId").val().trim() == "") {
+    if ($("#camId").val().trim() === "") {
         layer.alert("摄像头ID不能为空！");
         return;
     }
+
+    var regexIP = /^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/g;
+    let ip = $("#camIp").val().trim();
+    if (ip === "") {
+        layer.alert("IP地址不能为空");
+        return;
+    } else if(!regexIP.test(ip)){
+        layer.alert("IP地址格式有误,请重新输入");
+        return;
+    }
+    var regex = "([A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2}";
+    //var regex = "(([A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2})|(([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2})"; // 含冒号
+    var regexp = new RegExp(regex);
+    if (!regexp.test($("#camMacAddr").val().trim())) {
+        layer.alert("MAC地址格式必须为FF-FF-FF-FF-FF-FF");
+        return;
+    }
+
 
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
@@ -274,8 +292,7 @@ function clearData() {
     $file.after($file.clone().val(""));
     $file.remove();
     $("#camId").val("");
-
-    // $("#windowId").val("");
+    $("#camIp").val("");
     $("#serverId").val("");
     $("#groupId").val("")
     $("#camVideoAddr").val("");
@@ -296,6 +313,7 @@ function addClick() {
         if (!validateData(true)) {
             return;
         }
+
 
 
         var formData = new FormData();
@@ -472,3 +490,4 @@ function selectAreaClick() {
         openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
     });
 }
+

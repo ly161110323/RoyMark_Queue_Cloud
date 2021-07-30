@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.Camera;
+import com.roymark.queue.entity.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +59,18 @@ public class WindowController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            window.setWindowHiddenId(Long.valueOf(0));
+            window.setWindowHiddenId(0L);
 
-            Window queryWindow = windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
-            if (queryWindow != null) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "窗口ID已存在");
-                return jsonObject;
+            List<Window> windows = windowService.list();
+
+            // 存在判断
+            for (Window queryWindow: windows) {
+                // 服务器ID和名称不能重复
+                if (window.getWindowId().equals(queryWindow.getWindowId()) || window.getWindowName().equals(queryWindow.getWindowName())) {
+                    jsonObject.put("result", "no");
+                    jsonObject.put("msg", "窗口ID或名称已存在");
+                    return jsonObject;
+                }
             }
             boolean result = windowService.save(window);
             if (result) {
@@ -97,12 +103,13 @@ public class WindowController {
                 jsonObject.put("msg", "窗口不存在");
                 return jsonObject;
             }
-            queryWindow = windowService.getOne(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId()));
+            List<Window> windows = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getWindowId, window.getWindowId())
+                    .or().eq(Window::getWindowName, window.getWindowName()));
 
-            // 如果根据服务器名查询到的非空且其hiddenId与传入的hiddenId不一致，则表明服务器名已存在于另一项
-            if (queryWindow != null && !queryWindow.getWindowHiddenId().equals(window.getWindowHiddenId())) {
+            // 如果根据服务器名查询到名字或ID已存在
+            if (windows.size() > 0) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "窗口名已存在");
+                jsonObject.put("msg", "服务器ID或名称已存在");
                 return jsonObject;
             }
             boolean result;

@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.GroupService;
-import com.roymark.queue.service.ServerService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,8 +44,6 @@ public class CameraController {
 	@Autowired
 	private GroupService groupService;
 
-	@Autowired
-	private ServerService serverService;
 
 	@RequestMapping(value = "/getAll", produces = "application/json;charset=utf-8")
 	public Object getAllCameras() {
@@ -80,7 +77,7 @@ public class CameraController {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
-			camera.setCamHiddenId(Long.valueOf(0));
+			camera.setCamHiddenId(0L);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
 			camera.setCamBirth(cameraBirth);
@@ -250,7 +247,7 @@ public class CameraController {
 				else {
 					camera.setCamStatus("异常");
 				}
-				camera.setServerOnFlag(serverService.getServerOnStatus(camera.getServerHiddenId()));
+				// camera.setServerOnFlag(serverService.getServerOnStatus(camera.getServerHiddenId()));
 				// 设置绑定的窗口，以逗号分隔
 				List<Window> windowList = windowService.list(Wrappers.<Window>lambdaQuery().eq(Window::getCamHiddenId, camera.getCamHiddenId()));
 				StringBuilder windowIds = new StringBuilder();
@@ -293,24 +290,41 @@ public class CameraController {
 				jsonObject.put("msg", "摄像头不存在");
 				return jsonObject;
 			}
-			FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(camera.getCamVideoAddr());
-			if (grabber == null) {
+
+			String rtsp = camera.getCamVideoAddr();
+			String[] strings = rtsp.split("@");
+
+			if (rtsp.equals("") || strings.length < 2) {
 				jsonObject.put("result", "no");
-				jsonObject.put("msg", "grabber创建失败");
+				jsonObject.put("msg", "rtsp流格式有误，请检查");
 				return jsonObject;
 			}
+
+			String ipAndPortStr = strings[1].split("/")[0];
+			String[] ipAndPort = ipAndPortStr.split(":");
+			if (ipAndPort.length < 2) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "rtsp流格式有误，请检查");
+				return jsonObject;
+			}
+			// socket探测
+			if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000)) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "rtsp流IP和端口不可达，请检查");
+				return jsonObject;
+			}
+
+			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(camera.getCamVideoAddr());
+
 			grabber.setOption("rtsp_transport", "tcp");
 
-			//设置帧率
-			grabber.setFrameRate(25);
 			//设置获取的视频宽度
 			grabber.setImageWidth(960);
 			//设置获取的视频高度
 			grabber.setImageHeight(540);
-			//设置视频bit率
-			grabber.setVideoBitrate(3000000);
 
-			grabber.start();
+			grabber.startUnsafe();
+
 			Frame frame = null;
 			for (int i=0; i<10; i++)
 				frame = grabber.grabImage();
@@ -322,7 +336,7 @@ public class CameraController {
 			BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
 
 			grabber.stop();
-
+			grabber.release();
 			// 确保文件夹创建情况
 			String filePath = request.getServletContext().getRealPath("") + "/uploads/camera/";
 			File file = new File(filePath);

@@ -264,7 +264,7 @@ public class AnomalyController {
     public Object insert(Anomaly anomaly, String anomalyStartTime, String anomalyEndTime) {
         JSONObject jsonObject = new JSONObject();
 
-        anomaly.setAnomalyHiddenId(Long.valueOf(0));
+        anomaly.setAnomalyHiddenId(0L);
 
         Timestamp startTime = Timestamp.valueOf(anomalyStartTime);
         Timestamp endTime = Timestamp.valueOf(anomalyEndTime);
@@ -305,12 +305,15 @@ public class AnomalyController {
         }
 
         try {
-
-            if (anomalyService.getById(anomaly.getAnomalyHiddenId()) == null) {
+            Anomaly queryAnomaly = anomalyService.getById(anomaly.getAnomalyHiddenId());
+            if (queryAnomaly == null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "异常记录不存在");
                 return jsonObject;
             }
+
+            anomaly.setAnomalyConfidence(queryAnomaly.getAnomalyConfidence());
+
             boolean result;
             if (anomaly.getUserHiddenId() != null && anomaly.getWindowHiddenId() != null) {
                 result = anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
@@ -520,7 +523,7 @@ public class AnomalyController {
             jsonObject.put("data", cameraMap);
             return jsonObject;
         } catch (Exception e) {
-            logger.error("/camera/getLatestAnomaly 错误:" + e.getMessage(), e);
+            logger.error("/anomaly/getLatestAnomaly 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "获取出现错误");
             return jsonObject;
@@ -535,11 +538,5 @@ public class AnomalyController {
         }
     }
 
-    @RequestMapping(value = "/testt", produces = "application/json;charset=utf-8")
-    public Object Test2() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("map",anomalyDateControlUtil.getAnomalyControlMap());
-        return jsonObject;
-    }
 
 }
