@@ -79,8 +79,13 @@ public class CameraController {
 		try {
 			camera.setCamHiddenId(0L);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
-			camera.setCamBirth(cameraBirth);
+			if (cameraBirthStr.equals("")) {
+				camera.setCamBirth(null);
+			}
+			else {
+				Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
+				camera.setCamBirth(cameraBirth);
+			}
 
 			Camera queryCamera = cameraService.getOne(Wrappers.<Camera>lambdaQuery().eq(Camera::getCamId, camera.getCamId()));
 			if (queryCamera != null) {
