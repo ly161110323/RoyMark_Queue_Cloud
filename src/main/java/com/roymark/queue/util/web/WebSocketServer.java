@@ -31,7 +31,7 @@ import java.util.Map;
 @ServerEndpoint(value = "/webSocketService",encoders = {ImageEncoder.class})
 public class WebSocketServer{
     // 读取图片线程
-    static class ReadPicThread implements Runnable {
+    public static class ReadPicThread implements Runnable {
         private Thread t;
         private final String threadName;
         private final int picWidth;
@@ -54,7 +54,7 @@ public class WebSocketServer{
         }
 
         // 初始化
-        public ReadPicThread(String threadName, int picWidth, int picHeight, FFmpegFrameGrabber picGrabber, String picRtspUrl, String camId) {
+        public ReadPicThread(String threadName, int picWidth, int picHeight, FFmpegFrameGrabber picGrabber, String picRtspUrl) {
             this.threadName = threadName;
             this.picWidth = picWidth;
             this.picHeight = picHeight;
@@ -70,7 +70,7 @@ public class WebSocketServer{
                 // 启动，不能使用start而是startUnSafe
                 picGrabber.startUnsafe();
             } catch (Exception e) {
-                log.error(e.getMessage());
+                log.error("grabber start exception: ", e);
                 return;
             }
             // 获取摄像头图片
@@ -145,7 +145,6 @@ public class WebSocketServer{
 
         private Thread t;
 
-        private final WaterMarkUtil waterMarkUtil = new WaterMarkUtil();
 
         public ProductFinalPicThread(String threadName, Session session) {
             this.threadName = threadName;
@@ -231,19 +230,12 @@ public class WebSocketServer{
                         readPicThreads.add(null);
                     }
                     else {
-                        ReadPicThread readPicThread;
-                        if (i < camIds.size())
-                            readPicThread = new ReadPicThread("thread_"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), camIds.get(i));
-                        else
-                            readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i), null);
+                        ReadPicThread readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
                         readPicThread.start();
                         readPicThreads.add(readPicThread);
                     }
                 }catch (Exception e) {  // 无法启动grabber时，跳过该线程捕获
-                    log.error("rtsp:"+rtspUrls.get(i)+",线程创建失败");
-                    log.error(e.getMessage());
-                    grabbers.set(i, null);
-                    readPicThreads.add(null);
+                    log.error("rtsp:"+rtspUrls.get(i)+",线程创建失败", e);
                 }
 
             }
@@ -267,7 +259,7 @@ public class WebSocketServer{
                                 partImage = readPicThreads.get(currentIndex).getImage();
                             }
                             // 绘制CAM ID
-                            waterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
+                            WaterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
                             int[] imageArray = new int[width * height];
                             imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
@@ -484,4 +476,3 @@ public class WebSocketServer{
 
 
 }
-

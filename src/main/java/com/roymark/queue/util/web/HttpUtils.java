@@ -268,7 +268,6 @@ public class HttpUtils {
 			connection.connect();
 			return connection.getResponseCode() == 200;
 		} catch (Exception e) {
-			logger.error(ip+" HttpUtils.isReachable error:"+e.getMessage(), e);
 			return false;
 		}
 
@@ -366,11 +365,10 @@ public class HttpUtils {
 			rtspSocket.close();
 			return true;
 		} catch (IOException e) {
-			logger.error("HttpUtils isSocketReachable Error: ", e);
 			try {
 				rtspSocket.close();
 			} catch (IOException ex) {
-				logger.error("Socket Close Error: ", ex);
+				return false;
 			}
 			return false;
 		}

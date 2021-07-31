@@ -3,7 +3,9 @@ package com.roymark.queue.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.roymark.queue.entity.Server;
 
+import java.util.List;
+
 public interface ServerService  extends IService<Server> {
 
-    Boolean getServerOnStatus(Long serverHiddenId);
+    void setServersStatus(List<Server> servers);
 }

@@ -138,17 +138,17 @@ public class GroupController {
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
             }
-            for (int i=0; i<deletes.length; i++) {
-                Group group = groupService.getById(Long.valueOf(deletes[i]));
+            for (String delete : deletes) {
+                Group group = groupService.getById(Long.valueOf(delete));
                 if (group == null) {
                     jsonObject.put("result", "error");
                     jsonObject.put("msg", "数据不存在");
                     return jsonObject;
                 }
             }
-            for (int i = 0; i < deletes.length; i++) {
+            for (String delete : deletes) {
                 // 首先删除所有关联摄像头
-                Long deleteGroupHiddenId = Long.valueOf(deletes[i]);
+                Long deleteGroupHiddenId = Long.valueOf(delete);
                 List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getGroupHiddenId, deleteGroupHiddenId));
                 for (Camera camera : cameras) {
                     cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getGroupHiddenId, null)
@@ -200,8 +200,8 @@ public class GroupController {
 
         try {
             // 分页构造器
-            Page<Group> page = new Page<Group>(pageNo, pageSize);
-            QueryWrapper<Group> queryWrapper = new QueryWrapper<Group>();
+            Page<Group> page = new Page<>(pageNo, pageSize);
+            QueryWrapper<Group> queryWrapper = new QueryWrapper<>();
             queryWrapper.orderByAsc("group_id");
             // 执行分页
             IPage<Group> pageList = groupService.page(page, queryWrapper);

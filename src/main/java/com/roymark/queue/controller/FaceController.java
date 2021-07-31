@@ -2,10 +2,8 @@ package com.roymark.queue.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.roymark.queue.dao.AnomalyUserMapper;
 import com.roymark.queue.entity.*;
 import com.roymark.queue.service.AnomalyUserService;
-import com.roymark.queue.service.FaceFeatureService;
 import com.roymark.queue.service.FaceVectorService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.AnomalyMsgUtil;

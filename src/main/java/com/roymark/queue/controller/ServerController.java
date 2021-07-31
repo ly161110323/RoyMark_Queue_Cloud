@@ -15,6 +15,7 @@ import com.roymark.queue.entity.*;
 import com.roymark.queue.service.CameraService;
 import com.roymark.queue.service.ParameterService;
 import com.roymark.queue.service.WindowService;
+import com.roymark.queue.util.CamAndServerUtil.ServerStatusThread;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -84,11 +85,11 @@ public class ServerController {
             List<Server> servers = serverService.list();
 
             // 存在判断
-            for (Server queryServer: servers) {
+            for (Server queryServer : servers) {
                 // 服务器ID和名称不能重复
                 if (server.getServerId().equals(queryServer.getServerId()) || server.getServerName().equals(queryServer.getServerName())) {
                     jsonObject.put("result", "no");
-                    jsonObject.put("msg", "服务器ID已存在");
+                    jsonObject.put("msg", "服务器ID或名称已存在");
                     return jsonObject;
                 }
                 if (server.getServerIp().equals(queryServer.getServerIp())
@@ -138,8 +139,7 @@ public class ServerController {
             }
             // 查询到的只有一个且hiddenId相同，表明 名字、ID和（IP和端口）都没有被修改/某一个未被修改且其余修改值不存在
             else if (servers.size() == 1 && servers.get(0).getServerHiddenId().equals(server.getServerHiddenId())) {
-            }
-            else {
+            } else {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "服务器ID或名称或IP和端口已存在");
                 return jsonObject;
@@ -252,56 +252,10 @@ public class ServerController {
                 jsonObject.put("pageList", pageList);
                 return jsonObject;
             }
-            StringBuilder msg = new StringBuilder();
-            for (Server server : pageList.getRecords()) {
-                String ip_address = server.getServerIp();
-                Long port = server.getServerPort();
-                if (ip_address == null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")) {
-                    server.setServerStatus("离线");
-                    server.setProgramStatus("无");
-                    msg.append(server.getServerName() + "服务器ip地址不正确;\n");
-                } else if (port == null || port <= 0 || port > 65535) {
-                    server.setServerStatus("离线");
-                    server.setProgramStatus("无");
-                    msg.append(server.getServerName() + "服务器端口不正确;\n");
-                } else {
-                    // 判断服务器是否可用
-                    String host = "http://" + ip_address + ":" + port;
-                    String path = "/status";
-                    try {
-                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 1000);
-                        if (!connectResult){
-							server.setServerStatus("离线");
-							server.setProgramStatus("无");
-							continue;
-						}
-                        HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
-                        if (response.getStatusLine().getStatusCode() == 200) {
-                            if ("on".equals(EntityUtils.toString(response.getEntity(), "UTF-8"))) {
-                                server.setServerStatus("在线");
-                                server.setProgramStatus("运行中");
-                            } else {
-                                server.setServerStatus("在线");
-                                server.setProgramStatus("待机");
-                            }
-                        } else {
-                            server.setServerStatus("离线");
-                            server.setProgramStatus("无");
-                        }
-                    } catch (IOException e) {            // 连接异常
-                        server.setServerStatus("离线");
-                        server.setProgramStatus("无");
-                    }
-
-                }
-
-            }
-            if (msg.equals("")) {
-                msg.append("搜索成功");
-            }
+            serverService.setServersStatus(pageList.getRecords());
             jsonObject.put("pageList", pageList);
             jsonObject.put("result", "ok");
-            jsonObject.put("msg", msg.toString());
+            jsonObject.put("msg", "搜索成功");
             return jsonObject;
 
         } catch (Exception e) {
@@ -353,8 +307,7 @@ public class ServerController {
                         boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
-                        }
-                        else {
+                        } else {
                             // 获取当前服务器对应的摄像头以及窗口
                             List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
                             // 服务器绑定的摄像头和窗口信息
@@ -461,9 +414,9 @@ public class ServerController {
                 Long port = stopServer.getServerPort();
                 String serverName = stopServer.getServerName();
                 if (ip_address == null || !ip_address.matches("^((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))$")) {
-                    msg.append(serverName + "停止失败，服务器ip地址不正确;\n");
+                    msg.append(serverName).append("停止失败，服务器ip地址不正确;\n");
                 } else if (port == null || port <= 0 || port > 65535) {
-                    msg.append(serverName + "停止失败，服务器端口不正确;\n");
+                    msg.append(serverName).append("停止失败，服务器端口不正确;\n");
                 } else {
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/stop";
@@ -471,8 +424,7 @@ public class ServerController {
                         boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
-                        }
-                        else {
+                        } else {
                             HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
                             String serverMsg = EntityUtils.toString(response.getEntity(), "UTF-8");
                             if (!serverMsg.equals(""))
@@ -522,8 +474,7 @@ public class ServerController {
             if (!connectResult) {
                 msg.append("连接失败，请检查ip和端口;\n");
                 result.append("no");
-            }
-            else {
+            } else {
                 Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
                 Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
                 if (milvusHostParam == null || milvusPortParam == null) {
@@ -642,8 +593,7 @@ public class ServerController {
             if (!connectResult) {
                 msg.append("连接失败，请检查ip和端口;\n");
                 result.append("no");
-            }
-            else {
+            } else {
                 JSONObject requestData = new JSONObject();
                 HashMap<String, String> header = new HashMap<>();
                 header.put("Content-Type", "application/json");// 设置请求头信息

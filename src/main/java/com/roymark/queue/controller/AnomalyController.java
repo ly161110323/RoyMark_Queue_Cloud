@@ -9,7 +9,7 @@ import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
 import com.roymark.queue.util.AnomalyDateControlUtil;
 import com.roymark.queue.util.AnomalyMsgUtil;
-import com.roymark.queue.util.web.HttpUtils;
+import com.roymark.queue.util.CamAndServerUtil.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/anomaly")
@@ -59,7 +56,7 @@ public class AnomalyController {
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
         JSONObject jsonObject = new JSONObject();
         try {
-            Boolean result = anomalyService.update(Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getAnomalyStatus, anomalyStatus)
+            boolean result = anomalyService.update(Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getAnomalyStatus, anomalyStatus)
                     .eq(Anomaly::getAnomalyHiddenId, anomalyHiddenId));
             if (result) {
                 jsonObject.put("result", "ok");
@@ -96,17 +93,6 @@ public class AnomalyController {
                 logger.info("回传格式有误");
                 return;
             }
-            //申明线程池
-            ExecutorService threadPool = Executors.newFixedThreadPool(1);
-            Callable<Object> callable = new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("code", 200);
-                    return jsonObject;
-                }
-            };
-            threadPool.submit(callable).get();
 
             // 获取服务器信息
             String[] imagePaths = imagePath.split(",");
@@ -116,14 +102,14 @@ public class AnomalyController {
                 if (camera != null) {
                     Server server = serverService.getById(camera.getServerHiddenId());
                     if (server != null) {
-                        for (int i = 0; i < imagePaths.length; i++) {
-                            if (!imagePaths[i].equals("")) {
+                        for (String path : imagePaths) {
+                            if (!path.equals("")) {
                                 StringBuilder str = new StringBuilder();
                                 str.append("http://");
                                 str.append(server.getServerIp());
                                 str.append(":");
                                 str.append(server.getServerPort());
-                                str.append(imagePaths[i]);
+                                str.append(path);
                                 anomalyImagePath.append(str);
                                 anomalyImagePath.append(",");
                             }
@@ -352,18 +338,18 @@ public class AnomalyController {
                 jsonObject.put("msg", "没有选中的删除项");
                 return jsonObject;
             }
-            for (int i = 0; i < deletes.length; i++) {
-                Anomaly anomaly = anomalyService.getById(Long.valueOf(deletes[i]));
+            for (String delete : deletes) {
+                Anomaly anomaly = anomalyService.getById(Long.valueOf(delete));
                 if (anomaly == null) {
                     jsonObject.put("result", "error");
                     jsonObject.put("msg", "数据不存在");
                     return jsonObject;
                 }
             }
-            for (int i = 0; i < deletes.length; i++) {
-                anomalyService.removeById(Long.valueOf(deletes[i]));
+            for (String delete : deletes) {
+                anomalyService.removeById(Long.valueOf(delete));
                 anomalyUserService.remove(Wrappers.<AnomalyUser>lambdaUpdate().eq(AnomalyUser::getAnomalyHiddenId
-                        , Long.valueOf(deletes[i])));
+                        , Long.valueOf(delete)));
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "删除成功");
@@ -408,7 +394,7 @@ public class AnomalyController {
         JSONObject jsonObject = new JSONObject();
         try {
             // 分页构造器
-            Page<Anomaly> page = new Page<Anomaly>(pageNo, pageSize);
+            Page<Anomaly> page = new Page<>(pageNo, pageSize);
             QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<Anomaly>();
             if (event != null)
                 queryWrapper.like("anomaly_event", event);
@@ -493,7 +479,37 @@ public class AnomalyController {
             // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的String；同时每个摄像头对应不超过3个最新异常
             Map<String, List<Anomaly>> cameraMap = new HashMap<>();
             List<Anomaly> anomalies;
-            for (Camera camera : cameras) {
+
+            // 以线程来执行摄像头状态设置
+            Runnable cameraRunnable = () -> {
+                cameraService.setCamsStatus(cameras);
+            };
+            Thread cameraThread = new Thread(cameraRunnable);
+            cameraThread.start();
+            // 获取窗口所对应的服务器
+            List<Server> servers = new ArrayList<>();
+            for (Camera camera: cameras) {
+                servers.add(serverService.getById(camera.getServerHiddenId()));
+            }
+            // 以线程来执行服务器状态设置
+            Runnable serverRunnable = () -> {
+                serverService.setServersStatus(servers);
+            };
+            Thread serverThread = new Thread(serverRunnable);
+            serverThread.start();
+
+            // 等待两个状态设置线程结束
+            try {
+                cameraThread.join();
+                serverThread.join();
+            } catch (InterruptedException e) {
+                logger.error("Thread Exception: ", e);
+            }
+
+            // 获取camera
+            for (int i=0; i<cameras.size(); i++) {
+                Camera camera = cameras.get(i);
+                Server server = servers.get(i);
                 Long camHiddenId = camera.getCamHiddenId();
                 // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
                 QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
@@ -513,9 +529,9 @@ public class AnomalyController {
                     }
                 }
                 // 设置摄像头及其相关状态
-                String camInfoStr = String.valueOf(camHiddenId) + ',' +
-                        (cameraService.getCamStatus(camera) ? (long) 1 : 0) + ',' +
-                        (serverService.getServerOnStatus(camera.getServerHiddenId()) ? (long) 1 : 0);
+                String camInfoStr = String.valueOf(camHiddenId) + ','
+                        + (camera.getCamStatus().equals("正常")? (long)1:0) + ','
+                        + (server==null?0:server.getProgramStatus().equals("运行中")? (long)1:0);
                 cameraMap.put(camInfoStr, anomalies);
             }
             jsonObject.put("result", "ok");

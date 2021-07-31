@@ -42,7 +42,7 @@ public class WaterMarkUtil {
      *            水印的文字
 
      */
-    public BufferedImage mark(BufferedImage bufferedImage, Color markContentColor, String waterMarkContent) {
+    public static BufferedImage mark(BufferedImage bufferedImage, Color markContentColor, String waterMarkContent) {
 
         try {
             // 加水印
