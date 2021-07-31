@@ -230,7 +230,7 @@ public class WebSocketServer{
                         readPicThreads.add(null);
                     }
                     else {
-                        ReadPicThread readPicThread = new ReadPicThread("thread"+i, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
+                        ReadPicThread readPicThread = new ReadPicThread("thread"+camIds.get(i), singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
                         readPicThread.start();
                         readPicThreads.add(readPicThread);
                     }
@@ -250,7 +250,7 @@ public class WebSocketServer{
                     int rtspNum = rtspUrls.size();
                     for (int i=0; i<yPicNum; i++) {
                         for (int j=0; j<xPicNum; j++) {
-                            if (currentIndex >= rtspNum) {
+                            if (currentIndex >= readPicThreads.size()) {
                                 break;
                             }
                             BufferedImage partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
@@ -286,7 +286,7 @@ public class WebSocketServer{
                 if (readPicThread != null)
                     readPicThread.flag = false;
             }
-            // 已经在readPicThread中释放
+            // 已经在readPicThread中释放 grabber
 //            try {
 //                for (FFmpegFrameGrabber grabber : grabbers) {
 //                    if (grabber != null) {
@@ -384,10 +384,26 @@ public class WebSocketServer{
     public static List<FFmpegFrameGrabber> getGrabberByRtsp(List<String> rtspUrls, int singleWidth, int singleHeight) {
         List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
         try {
+            // 以线程创建，避免因为探测ip和端口导致开启延时很长
+            List<Thread> threadList = new ArrayList<>();
             for (String rtspUrl : rtspUrls) {
                 log.info("连接rtsp："+rtspUrl+",开始创建grabber");
-                FFmpegFrameGrabber grabber = createGrabber(rtspUrl, singleWidth, singleHeight);
-                grabbers.add(grabber);
+                Runnable runnable = () -> {
+                    FFmpegFrameGrabber grabber = createGrabber(rtspUrl, singleWidth, singleHeight);
+                    grabbers.add(grabber);
+                };
+                Thread thread = new Thread(runnable);
+                thread.start();
+                threadList.add(thread);
+            }
+
+            // 等待Grabber线程全部完成
+            try {
+                for (Thread thread: threadList) {
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                log.error("Thread join error:", e);
             }
 
             if (grabbers.size() > 0) {
@@ -427,13 +443,11 @@ public class WebSocketServer{
             if (ipAndPort.length < 2) {
                 return null;
             }
-            // 因为超时影响速度，放弃
-//            // socket探测
-//            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000)) {
-//                return null;
-//            }
-            // String host = "http://" + strings[1].split("/")[0];
-            // System.out.println(host);
+            // socket探测
+            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 500)) {
+                log.info(rtsp + "Socket连接不可达");
+                return null;
+            }
 
             FFmpegFrameGrabber grabber = FFmpegFrameGrabber.createDefault(rtsp);
             grabber.setOption("rtsp_transport", "tcp");

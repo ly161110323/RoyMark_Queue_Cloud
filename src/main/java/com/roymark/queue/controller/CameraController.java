@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -286,9 +287,9 @@ public class CameraController {
     }
 
     @RequestMapping(value = "/getCurrentPic", produces = "application/json;charset=utf-8")
-    public Object getCurrentPic(HttpServletRequest request, Long camHiddenId) {
+    public Object getCurrentPic(HttpServletRequest request, Long camHiddenId) throws FrameGrabber.Exception {
         JSONObject jsonObject = new JSONObject();
-
+        FFmpegFrameGrabber grabber = null;
         try {
             Camera camera = cameraService.getById(camHiddenId);
             if (camera == null) {
@@ -319,7 +320,8 @@ public class CameraController {
                 jsonObject.put("msg", "rtsp流IP和端口不可达，请检查");
                 return jsonObject;
             }
-            FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(camera.getCamVideoAddr());
+
+            grabber = new FFmpegFrameGrabber(camera.getCamVideoAddr());
 
             grabber.setOption("rtsp_transport", "tcp");
 
@@ -331,20 +333,15 @@ public class CameraController {
             grabber.startUnsafe();
 
             Frame frame = null;
-            frame = grabber.grabImage();
+            for (int i=0; i<10; i++)
+                frame = grabber.grabImage();
             if (frame == null) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "捕获失败");
                 return jsonObject;
             }
             BufferedImage image = new Java2DFrameConverter().getBufferedImage(frame);
-            //BufferedImage image = CamUtil.getCamRealPic(camera.getCamVideoAddr(), 960, 540);
 
-//			if (image == null) {
-//				jsonObject.put("result", "no");
-//				jsonObject.put("msg", "获取图片失败，请检查rtsp流重试");
-//				return jsonObject;
-//			}
             // 确保文件夹创建情况
             String filePath = request.getServletContext().getRealPath("") + "/uploads/camera/";
             File file = new File(filePath);
@@ -360,8 +357,10 @@ public class CameraController {
             jsonObject.put("msg", "捕获成功");
             return jsonObject;
 
-
         } catch (Exception e) {
+            if (grabber != null) {
+                grabber.release();
+            }
             logger.error("/camera/getCurrentPic 错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
             jsonObject.put("msg", "捕获出现错误");

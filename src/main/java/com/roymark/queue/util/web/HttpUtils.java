@@ -255,10 +255,6 @@ public class HttpUtils {
 	}
 
 	public static boolean isReachable(String ip, String port, int timeout) {
-		boolean ipConnectResult = isHostReachable(ip, timeout);
-		if (!ipConnectResult) {
-			return false;
-		}
 		try {
 			String host = "http://" + ip + ":" + port;// 请求域名或ip
 			URL url = new URL(host);
@@ -352,7 +348,6 @@ public class HttpUtils {
 
 			return myProcess.exitValue() == 0;
 		} catch( Exception e ) {
-			logger.error(host+" HttpUtils.isHostReachable Error:", e);
 			return false;
 		}
 	}

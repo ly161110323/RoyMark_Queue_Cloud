@@ -310,6 +310,10 @@ public class ServerController {
                         } else {
                             // 获取当前服务器对应的摄像头以及窗口
                             List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
+
+                            // 开启线程获取摄像头状态
+                            cameraService.setCamsStatus(cameras);
+
                             // 服务器绑定的摄像头和窗口信息
                             List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();
 
@@ -321,9 +325,7 @@ public class ServerController {
                                 StringBuilder noWindowCamIds = new StringBuilder();
 
                                 for (Camera camera : cameras) {
-                                    // 异常的摄像头不处理
-                                    boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 500);
-                                    if (!result) {
+                                    if (!camera.getCamStatus().equals("正常")) {
                                         abnormalCamIds.append(camera.getCamId()).append("、");
                                         continue;
                                     }
