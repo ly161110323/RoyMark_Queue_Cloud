@@ -451,14 +451,16 @@ public class UserController {
 			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 
 			requestParams.add("image", uploadinfo.getResource());
-
 			String existPath = queryUser.getUserPhoto();
-			String[] existPaths = existPath.split(",");
-			if (existPaths.length >= 10) {
-				jsonObject.put("msg", "图片数量不能超过10个");
-				jsonObject.put("result", "no");
-				return jsonObject;
+			if (existPath!=null && !existPath.equals("")) {
+				String[] existPaths = existPath.split(",");
+				if (existPaths.length >= 10) {
+					jsonObject.put("msg", "图片数量不能超过10个");
+					jsonObject.put("result", "no");
+					return jsonObject;
+				}
 			}
+
 			try {
 				ResponseEntity<String> response = HttpUtil.sendPost(url, requestParams, new HashMap<>());
 				// System.out.println(response);
@@ -534,6 +536,11 @@ public class UserController {
 			// 获得现有的imgPath
 			String curImgPath = queryUser.getUserPhoto();
 
+			if (curImgPath==null || curImgPath.equals("")) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "用户没有照片");
+				return jsonObject;
+			}
 			String[] curImgPaths = curImgPath.split(",");
 
 			StringBuilder newImgPath = new StringBuilder();
