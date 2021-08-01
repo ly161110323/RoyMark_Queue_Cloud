@@ -53,7 +53,7 @@
                         "ordering": false,
                         "info": true,
                         "autoWidth": false,
-                        "displayLength": 10,
+                        "displayLength": 15,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
                         "sAjaxSource": tableUrl,
@@ -248,8 +248,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>部门：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">部门：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
@@ -262,8 +261,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>事项：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">事项：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
@@ -277,8 +275,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>区域坐标：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">区域坐标：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
@@ -328,8 +325,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>绑定摄像头ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">绑定摄像头ID：</label>
                                         <div class="col-sm-8">
                                             <select
                                                     class="form-control m-b table_content_zd"

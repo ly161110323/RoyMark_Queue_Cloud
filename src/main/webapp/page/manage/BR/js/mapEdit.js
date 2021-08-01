@@ -36,6 +36,7 @@ $(document).ready(function () {
     icon_operate();
     addClick();
     updateClick();
+    deleteClick();
     // cameraEdit();
     rm = document.getElementById("rightMenu");
     rm.style.display = "none";
@@ -43,6 +44,11 @@ $(document).ready(function () {
 
 })
 
+function reLoad(){
+    curMapIndex = 0;
+    queryMap();
+
+}
 function icon_operate() {
     $(document).on('click', '#btnChooseMapImage', function () {
         //让文件选择组件做一次点击
@@ -130,7 +136,7 @@ function loadDivNodes(cameraArray) {
 function loadMapAndCamera(url, mapHiddenId) {
     if (url) {
         var rootPath = getWebRootPath()
-        console.log(rootPath + url)
+        // console.log(rootPath + url)
         img = new Image()
         img.src = rootPath + url;
         img.onload = function () {
@@ -337,10 +343,10 @@ function addClick() {
 
 //清除数据
 function clearData() {
-    var $file = $("#mapImageFileName");
+    var $file = $("#mapImage");
     $file.after($file.clone().val(""));
     $file.remove();
-
+    $("#mapImageFileName").val("");
     $("#mapName").val("");
 
     $("#mapId").val("");
@@ -474,6 +480,30 @@ function saveCamera(callback) {
     });
 }
 
+function changeMap(mapHiddenId){
+    var map = mapList.find(e => e.mapHiddenId == mapHiddenId)
+    curMapIndex = mapList.findIndex(e => e.mapHiddenId == mapHiddenId)
+    console.log(curMapIndex)
+    if (isChange) {
+        layer.confirm('是否保存当前摄像头位置修改？', {
+            btn: ['保存', '不保存'],
+            icon: 3
+        }, function () {
+            // $('#modifyCommit').trigger("click");
+            saveCamera(function () {
+                loadMapAndCamera(map.mapPath, map.mapHiddenId);
+                loadMapOptions();
+            });
+
+        }, function () {
+            loadMapAndCamera(map.mapPath, map.mapHiddenId);
+            loadMapOptions();
+        })
+    } else {
+        loadMapAndCamera(map.mapPath, map.mapHiddenId);
+        loadMapOptions();
+    }
+}
 function bindEventListen() {
     $('#saveCameraCommit').click(saveCamera);
     $(document).on('click', '#changeCommit', function () {
@@ -484,30 +514,9 @@ function bindEventListen() {
             layer.msg("已选择当前地图！")
             return;
         }
-        var map = mapList.find(e => e.mapHiddenId == selectId)
-        curMapIndex = mapList.findIndex(e => e.mapHiddenId == selectId)
-        console.log(curMapIndex)
-        if (isChange) {
-            layer.confirm('是否保存当前摄像头位置修改？', {
-                btn: ['保存', '不保存'],
-                icon: 3
-            }, function () {
-                // $('#modifyCommit').trigger("click");
-                saveCamera(function () {
-                    loadMapAndCamera(map.mapPath, map.mapHiddenId);
-                    loadMapOptions();
-                });
+        changeMap(selectId)
 
-            }, function () {
-                loadMapAndCamera(map.mapPath, map.mapHiddenId);
-                loadMapOptions();
-            })
-        } else {
-            loadMapAndCamera(map.mapPath, map.mapHiddenId);
-            loadMapOptions();
-        }
-
-    })
+    });
     $('#selectCommitMapId').change(function () {
         var hiddenId = $(this).children('option:selected').val()
         $('#selectCommitMapName').val(hiddenId)
@@ -545,22 +554,15 @@ function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click', '#deleteCommit', function () {
         var rootPath = getWebRootPath();
-        var url = rootPath + "/window/delete";
-        var items = new Array();
-        var cBox = $("[name=choice]:checked");
-        if (cBox.length == 0) {
-            layer.alert("请勾选您所要删除的数据！");
-            return;
-        }
-        layer.confirm("您确定要" + "删除" + "这" + cBox.length + "条记录吗？",
+        var url = rootPath + "/map/delete";
+
+        layer.confirm("您确定要" + "删除" + "这张地图吗？",
             {
                 btn: ['确定', '取消']
             },
             function () {
-                for (var i = 0; i < cBox.length; i++) {
-                    items.push(cBox.eq(i).val());
-                }
-                var data = {"deleteId": items.toString()};
+
+                var data = {"deleteId":mapList[curMapIndex].mapHiddenId };
 
                 $.ajax({
                     type: 'POST',
@@ -568,14 +570,16 @@ function deleteClick() {
                     data: data,
                     success: function (data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert(data.msg);
                             return;
                         }
                         if (data.result == "ok") {
                             layer.alert("删除成功！");
+                            reLoad();
                         }
-                        table.draw(false);
+
                         clearData();
+
                     },
                     error: function (data) {
                         layer.alert("错误！");

@@ -245,10 +245,14 @@ function validateData(isAdd) {
         layer.alert("IP地址格式有误,请重新输入");
         return;
     }
+    if ($("#camVideoAddr").val().trim() === "") {
+        layer.alert("摄像头视频流路径不能为空！");
+        return;
+    }
     var regex = "([A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2}";
     //var regex = "(([A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2})|(([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2})"; // 含冒号
     var regexp = new RegExp(regex);
-    if (!regexp.test($("#camMacAddr").val().trim())) {
+    if (!regexp.test($("#camMacAddr").val().trim())&&$("#camMacAddr").val().trim()!='') {
         layer.alert("MAC地址格式必须为FF-FF-FF-FF-FF-FF");
         return;
     }
@@ -300,7 +304,7 @@ function clearData() {
     $("#camBrand").val("");
     $("#camType").val("");
     $("#camBirth").val("");
-
+    $("#mapId").val("");
 }
 function clearSearch(){
     $('#inputCommitCamId').val("");
@@ -340,13 +344,13 @@ function addClick() {
             success: function (data) {
                 console.log(data)
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("服务器错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("新增成功！");
                 } else if (data.result == "no") {
-                    layer.alert("新增失败！");
+                    layer.alert("新增失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -391,13 +395,13 @@ function updateClick() {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("服务器错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("修改成功！");
                 } else if (data.result == "no") {
-                    layer.alert("修改失败！");
+                    layer.alert("修改失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -433,7 +437,7 @@ function deleteClick() {
                     data: data,
                     success: function (data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert("服务器错误！删除失败"+data.msg);
                             return;
                         }
                         if (data.result == "ok") {
@@ -443,7 +447,7 @@ function deleteClick() {
                         clearData();
                     },
                     error: function (data) {
-                        layer.alert("错误！");
+                        layer.alert("错误！"+data.msg);
                     }
                 });
             }, function () {
@@ -458,7 +462,7 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         table.draw(false);
-        clearSearch();
+        // clearSearch();
     });
 
 }

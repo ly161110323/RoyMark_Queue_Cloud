@@ -10,9 +10,10 @@ $(document).ready(function () {
     queryWindowList();
     insertPhoto()
     icon_operate();//部门图标处理
-
+    faceManagerButton();
     caseAreaClick();
     selectAreaClick();
+    flashFaceManagerStatus();
 });
 
 function icon_operate() {
@@ -209,10 +210,10 @@ function validateData(isAdd) {
         layer.alert("人员编号不能为空！");
         return;
     }
-    if ($("#userSex").val().trim() == "") {
-        layer.alert("人员性别不能为空！");
-        return;
-    }
+    // if ($("#userSex").val().trim() == "") {
+    //     layer.alert("人员性别不能为空！");
+    //     return;
+    // }
 
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
@@ -223,7 +224,7 @@ function validateData(isAdd) {
     trs.each(function (index, element) {
         var objLs = $(element).find("td:eq(0)>input").val();
 
-        if ($(element).find("td:eq(2)").text() == chooseId) {
+        if ($(element).find("td:eq(4)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;
                 layer.alert("人员编号已存在！");
@@ -250,7 +251,7 @@ function clearData() {
     var $file = $("#staffPhoto");
     $file.after($file.clone().val(""));
     $file.remove();
-
+    $('#staffPhotoFileName').val("")
     $("#userName").val("");
 
     $("#userSex").val("");
@@ -343,19 +344,82 @@ function updateClick() {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("服务器错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
-                    layer.alert("修改成功！");
+                    layer.msg("修改成功！");
                 } else if (data.result == "no") {
-                    layer.alert("修改失败！");
+                    layer.alert("修改失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
             }
         });
     });//修改事件处理完毕
+}
+function flashFaceManagerStatus(){
+    let url = getWebRootPath() +'/server/getFaceManagerStatus'
+    $.ajax({
+        url: url,
+        type: "get",
+        // datatype: "json",
+        // processData: false, // 使数据不做处理
+        // contentType: false, // 不要设置Content-Type请求头
+        // data: formData,
+        success: function (data) {
+            if(data.result!='ok'){
+                layer.msg('人脸服务器状态检查失败，请检查face_controller_server是否开启！')
+            }
+            if(data.msg=='off'){
+
+                $('#faceManagerServerStatusLabel').text("人脸管理服务关闭")
+            }else if(data.msg=='on') {
+
+                $('#faceManagerServerStatusLabel').text("人脸管理服务开启")
+            }else {
+                $('#faceManagerServerStatusLabel').text("其他,请检查返回值")
+            }
+        },error:function (data){
+
+            layer.msg('后台错误！')
+        }
+
+    });
+}
+function faceManagerButton(){
+    $('#startFaceManagerButton').click(function (){
+        let url = getWebRootPath() +'/server/startFaceManager'
+        $.ajax({
+            url: url,
+            type: "get",
+            // datatype: "json",
+            // processData: false, // 使数据不做处理
+            // contentType: false, // 不要设置Content-Type请求头
+            // data: formData,
+            success: function (data) {
+                layer.alert(data.msg)
+                flashFaceManagerStatus()
+                // $('#faceManagerServerStatusLabel').text("人脸管理服务开启")
+            }
+        });
+    });
+    $('#stopFaceManagerButton').click(function (){
+        let url = getWebRootPath() +'/server/stopFaceManager'
+        $.ajax({
+            url: url,
+            type: "get",
+            // datatype: "json",
+            // processData: false, // 使数据不做处理
+            // contentType: false, // 不要设置Content-Type请求头
+            // data: formData,
+            success: function (data) {
+                layer.alert(data.msg)
+                // $('#faceManagerServerStatusLabel').text("人脸管理服务关闭")
+                flashFaceManagerStatus()
+            }
+        });
+    });
 }
 function showPhotos(){
     var rootPath = getWebRootPath();
@@ -404,14 +468,12 @@ function insertPhoto(){
             contentType: false, // 不要设置Content-Type请求头
             data: formData,
             success: function (data) {
-                if (data.result == "error") {
-                    layer.alert("服务器错误！");
-                    return;
-                }
+                console.log(data.result=="no")
                 if (data.result == "ok") {
-                    layer.alert("上传成功！");
-                } else if (data.result == "no") {
-                    layer.alert("上传失败！");
+                    layer.msg("上传成功！");
+                } else  {
+                    console.log(data.msg)
+                    layer.alert("上传失败！"+data.msg);
                 }
 
             }
@@ -471,7 +533,8 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         table.draw(false);
-        clearSearch();
+        // clearSearch();
+        flashFaceManagerStatus();
     });
 
 }

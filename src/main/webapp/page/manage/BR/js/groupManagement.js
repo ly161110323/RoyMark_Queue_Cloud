@@ -197,13 +197,13 @@ function addClick() {
             success: function (data) {
                 console.log(data)
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert(data.msg);
                     return;
                 }
                 if (data.result == "ok") {
-                    layer.alert("新增成功！");
+                    layer.msg("新增成功！");
                 } else if (data.result == "no") {
-                    layer.alert("新增失败！");
+                    layer.alert(data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -240,13 +240,13 @@ function updateClick() {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert(data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("修改成功！");
                 } else if (data.result == "no") {
-                    layer.alert("修改失败！");
+                    layer.alert(data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -282,7 +282,7 @@ function deleteClick() {
                     data: data,
                     success: function (data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert(data.msg);
                             return;
                         }
                         if (data.result == "ok") {

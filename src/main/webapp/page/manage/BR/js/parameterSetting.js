@@ -151,10 +151,10 @@ function validateData(isAdd) {
         layer.alert("参数名称不能为空！");
         return;
     }
-    if($("#paramDefault").val().trim()==""){
-        layer.alert("参数默认值不能为空！");
-        return;
-    }
+    // if($("#paramDefault").val().trim()==""){
+    //     layer.alert("参数默认值不能为空！");
+    //     return;
+    // }
 
     if($("#paramValue").val().trim()==""){
         layer.alert("参数值不能为空！");
@@ -167,8 +167,10 @@ function validateData(isAdd) {
 
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function(index,element){
-        var objLs = $(element).find("td:eq(1)>input").val();
-        if($(element).find("td:eq(1)").text() == paramName){
+        var objLs = $(element).find("td:eq(0)>input").val();
+
+        if($(element).find("td:eq(2)").text() == paramName){
+
             if(isAdd){
                 isExit=true;
                 layer.alert("该参数名称已存在！");
@@ -339,8 +341,8 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
-        $('#inputCommitParamValue').val("");
-        $('#inputCommitParamName').val("");
+        // $('#inputCommitParamValue').val("");
+        // $('#inputCommitParamName').val("");
     });
 
 }

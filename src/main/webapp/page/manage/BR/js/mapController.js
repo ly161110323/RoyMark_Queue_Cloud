@@ -11,13 +11,13 @@ var rm = null
 // var ctx = c.getContext("2d");
 
 
-var mapList = null
+var mapList = null;
 var anomalyRecord = {}//只保存最新的异常
 var curMapIndex = 0;
 var curMap = null
 var hasCoordCams = []
 var noCoordCams = []
-var edit = true
+var edit = false
 var isChange = false;
 var camSize = 50;
 // "/resources/images/xw/gray_camera.png";
@@ -35,6 +35,7 @@ var status_src = {'play': yellow_src, 'sleep': red_src, 'leave': gray_src, 'gath
 $(document).ready(function () {
     queryMap();
     icon_operate();
+    setInterval(queryAnomalyEvent,3000);
     // addClick();
     // updateClick();
     // deleteClick();
@@ -99,24 +100,24 @@ function loadOneCameraIcon(mainDiv, camObj) {
 
     })
     // 为每个摄像头设定可拖拽
-    $(function () {
-        divNode.draggable({
-            // containment: { containment: "parent" },
-            containment: "#main", scroll: false,
-            stop: function (event, ui) {
-                console.log(ui);
-                console.log(ui.helper.context.id);
-                var index = hasCoordCams.findIndex(e => e.camHiddenId === camObj["camHiddenId"]);
-                if (index != -1) {
-                    var c = ui.position.left.toString() + ',' + ui.position.top.toString();
-                    hasCoordCams[index].camCoordinates = c;
-                }
-                if (edit) {
-                    isChange = true;
-                }
-            }
-        });
-    });
+    // $(function () {
+    //     divNode.draggable({
+    //         // containment: { containment: "parent" },
+    //         containment: "#main", scroll: false,
+    //         stop: function (event, ui) {
+    //             console.log(ui);
+    //             console.log(ui.helper.context.id);
+    //             var index = hasCoordCams.findIndex(e => e.camHiddenId === camObj["camHiddenId"]);
+    //             if (index != -1) {
+    //                 var c = ui.position.left.toString() + ',' + ui.position.top.toString();
+    //                 hasCoordCams[index].camCoordinates = c;
+    //             }
+    //             if (edit) {
+    //                 isChange = true;
+    //             }
+    //         }
+    //     });
+    // });
 }
 
 function loadDivNodes(cameraArray) {
@@ -403,11 +404,11 @@ function queryMap(id = "", name = "") {
                 // curMap = mapList[curMapIndex]
                 loadMapAndCamera(mapList[curMapIndex].mapPath, mapList[curMapIndex].mapHiddenId); //加载背景图
                 loadMapOptions();
-                setInterval(queryAnomalyEvent, 3000);
+
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
-
+                layer.alert("查询地图出现未知错误!")
             } else {
-
+                layer.alert("查询地图出现未知错误!")
             }
         }
     });
@@ -472,7 +473,30 @@ function saveCamera(callback) {
         }
     });
 }
+function changeMap(mapHiddenId){
+    var map = mapList.find(e => e.mapHiddenId == mapHiddenId)
+    curMapIndex = mapList.findIndex(e => e.mapHiddenId == mapHiddenId)
+    console.log(curMapIndex)
+    if (isChange) {
+        layer.confirm('是否保存当前摄像头位置修改？', {
+            btn: ['保存', '不保存'],
+            icon: 3
+        }, function () {
+            // $('#modifyCommit').trigger("click");
+            saveCamera(function () {
+                loadMapAndCamera(map.mapPath, map.mapHiddenId);
+                loadMapOptions();
+            });
 
+        }, function () {
+            loadMapAndCamera(map.mapPath, map.mapHiddenId);
+            loadMapOptions();
+        })
+    } else {
+        loadMapAndCamera(map.mapPath, map.mapHiddenId);
+        loadMapOptions();
+    }
+}
 function bindEventListen() {
     $('#saveCameraCommit').click(saveCamera);
     $(document).on('click', '#changeCommit', function () {
@@ -483,28 +507,7 @@ function bindEventListen() {
             layer.msg("已选择当前地图！")
             return;
         }
-        var map = mapList.find(e => e.mapHiddenId == selectId)
-        curMapIndex = mapList.findIndex(e => e.mapHiddenId == selectId)
-        console.log(curMapIndex)
-        if (isChange) {
-            layer.confirm('是否保存当前摄像头位置修改？', {
-                btn: ['保存', '不保存'],
-                icon: 3
-            }, function () {
-                // $('#modifyCommit').trigger("click");
-                saveCamera(function () {
-                    loadMapAndCamera(map.mapPath, map.mapHiddenId);
-                    loadMapOptions();
-                });
-
-            }, function () {
-                loadMapAndCamera(map.mapPath, map.mapHiddenId);
-                loadMapOptions();
-            })
-        } else {
-            loadMapAndCamera(map.mapPath, map.mapHiddenId);
-            loadMapOptions();
-        }
+        changeMap(selectId);
 
     })
     $('#selectCommitMapId').change(function () {
@@ -567,17 +570,17 @@ function deleteClick() {
                     data: data,
                     success: function (data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert("服务器错误！",data.msg);
                             return;
                         }
                         if (data.result == "ok") {
-                            layer.alert("删除成功！");
+                            layer.msg("删除成功！");
                         }
                         table.draw(false);
                         clearData();
                     },
                     error: function (data) {
-                        layer.alert("错误！");
+                        layer.alert("ajax错误！");
                     }
                 });
             }, function () {
@@ -630,7 +633,7 @@ function queryAnomalyEvent() {
 
             } else if (data.result == "no") {
                 // anomalyRecord = data.data;
-                layer.msg(data.msg);
+                // layer.msg(data.msg);
 
             }
             changeAllCameraColor();
@@ -789,7 +792,18 @@ function mapEdit() {
         var targetUrl = getWebRootPath() + "/page/manage/BR/mapEdit.jsp";
         var argTitle = "地图编辑";
         window.curMapIndex = curMapIndex;
-        openwindowNoRefresh(targetUrl, argTitle, 1280, 720);
+        layer.open({
+            type: 2,
+            title: argTitle,
+            shadeClose: true,
+            shade: 0.8,
+            area: ['960px', '540px'],
+            content: targetUrl,
+            cancel:function (index,layero){
+                queryMap();
+            }
+        });
+
     });
 }
 

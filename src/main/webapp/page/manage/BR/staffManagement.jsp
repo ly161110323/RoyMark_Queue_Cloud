@@ -55,7 +55,7 @@
                         "ordering": false,
                         "info": true,
                         "autoWidth": false,
-                        "displayLength": 10,
+                        "displayLength": 15,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
                         "sAjaxSource": tableUrl,
@@ -114,7 +114,7 @@
                                 targets: 0, data: "userHiddenId", title: "操作",
                                 render: function (data, type, row, meta) {
                                     var html = "<input type='checkbox' value=" + row.userHiddenId + " class='lsCheck' name='choice' />";
-                                    html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
+                                    // html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
                                 }
                             },
@@ -232,12 +232,14 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>性别：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">性别：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
-                                                   name="userSex" id="userSex">
+                                            <select class="form-control m-b table_content_zd"
+                                                    id="userSex" name="userSex">
+                                                <option value="">请选择性别</option>
+                                                <option value="男">男</option>
+                                                <option value="女">女</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </td>
@@ -256,8 +258,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>窗口ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">窗口ID：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="windowId" name="windowId">
@@ -272,8 +273,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>部门：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">部门：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
@@ -284,7 +284,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">职位：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">岗位：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
@@ -301,7 +301,7 @@
                                             <input type="file" name="staffPhoto" id="staffPhoto"
                                                    style="display: none;"> <input type="text"
                                                                                   style="width: 65%;" autocomplete="off"
-                                                                                  placeholder="768*365"
+                                                                                  placeholder=""
                                                                                   class="form-control m-b input_btn_input"
                                                                                   readonly="readonly" name="staffPhotoFileName"
                                                                                   id="staffPhotoFileName">
@@ -337,7 +337,7 @@
                                             autocomplete="off"
                                             spellcheck="false"
                                             placeholder=""
-                                            style="width: 25%;"
+                                            style="width: 15%;"
                                             class="form-control input_btn_input table_content_zd"
                                             name="inputCommitUserName"
                                             id="inputCommitUserName">
@@ -348,7 +348,7 @@
                                             autocomplete="off"
                                             spellcheck="false"
                                             placeholder=""
-                                            style="width: 25%;"
+                                            style="width: 15%;"
                                             class="form-control input_btn_input table_content_zd"
                                             name="inputCommitUserId"
                                             id="inputCommitUserId">
@@ -359,7 +359,7 @@
                                             autocomplete="off"
                                             spellcheck="false"
                                             placeholder=""
-                                            style="width: 25%;"
+                                            style="width: 15%;"
                                             class="form-control input_btn_input table_content_zd"
                                             name="inputCommitUserDepartment"
                                             id="inputCommitUserDepartment">
@@ -370,6 +370,28 @@
                                             id="queCommit">
                                         查询
                                     </button>
+                                    <sapn
+
+                                            style="width: 16%;"
+                                            class="form-control input_btn_input table_content_zd"
+                                            name="faceManagerServerStatus"
+                                            id="faceManagerServerStatusLabel">
+                                        人脸管理服务关闭
+                                    </sapn>
+                                    <button type="button"
+                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
+                                            style="margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="startFaceManagerButton">
+                                        开启
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"
+                                            style="margin-top: 2.5px; margin-bottom: 2px;"
+                                            id="stopFaceManagerButton">
+                                        关闭
+                                    </button>
+<%--                                    <label style="width: 25%;" class="form-control input_btn_input table_content_zd" id="face_manager_server_status">人脸管理服务未开启</label>--%>
+
                                 </td>
 
                                 <td class="table_menu_tr_td_right_zd" colspan="2">

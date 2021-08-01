@@ -111,7 +111,7 @@ function trClick() {
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
         $("#txtDeptLs").val(dataId);
         $("#serverName").val($(this).find("td:eq(2)").text());
-        console.log($(this).find("td:eq(2)").text())
+        // console.log($(this).find("td:eq(2)").text())
         $("#serverId").val($(this).find("td:eq(3)").text());
         $("#serverIp").val($(this).find("td:eq(4)").text());
         $("#serverPort").val($(this).find("td:eq(5)").text());
@@ -159,6 +159,10 @@ function checkBoxStyle_Control()
 }
 //页面数据合法性验证
 function validateData(isAdd) {
+    if($("#serverId").val().trim()==""){
+        layer.alert("服务器ID不能为空！");
+        return;
+    }
     if($("#serverName").val().trim()==""){
         layer.alert("服务器名称不能为空！");
         return;
@@ -177,31 +181,29 @@ function validateData(isAdd) {
         layer.alert("服务器端口不能为空！");
         return;
     }
-    if($("#serverId").val().trim()==""){
-        layer.alert("服务器ID不能为空！");
-        return;
-    }
+
     var trs = $("#itemResultTable tr:gt(0)");
-    // var chooseName = $("#txtDeptName").val();
+    var chooseName = $("#serverName").val();
     var chooseId = $("#serverId").val();
     var isExit = false;
-
+    console.log(chooseName)
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function(index,element){
         var objLs = $(element).find("td:eq(0)>input").val();
-        // if($(element).find("td:eq(2)").text() == chooseName){
-        //     if(isAdd){
-        //         isExit=true;
-        //         layer.alert("该委办局名称已存在！");
-        //         return false;
-        //     }else{
-        //         if(objLs!=dataId){
-        //             isExit=true;
-        //             layer.alert("该委办局名称已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
+        if($(element).find("td:eq(2)").text() == chooseName){
+            if(isAdd){
+                isExit=true;
+                layer.alert("该服务器名称已存在！");
+                return false;
+
+            }else{
+                if(objLs!=dataId){
+                    isExit=true;
+                    layer.alert("该服务器名称已存在！");
+                    return false;
+                }
+            }
+        }
         if($(element).find("td:eq(3)").text() == chooseId){
             if(isAdd){
                 isExit=true;
@@ -210,7 +212,7 @@ function validateData(isAdd) {
             }else{
                 if(objLs!=dataId){
                     isExit=true;
-                    layer.alert("该委办局编号已存在！");
+                    layer.alert("该服务器id已存在！");
                     return false;
                 }
             }
@@ -267,13 +269,13 @@ function addClick() {
             success : function(data) {
                 console.log(data)
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("后台错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
-                    layer.alert("新增成功！");
+                    layer.msg("新增成功！");
                 } else if (data.result == "no") {
-                    layer.alert("新增失败！");
+                    layer.alert("新增失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -299,7 +301,7 @@ function updateClick() {
         formData.append("serverPort",$("#serverPort").val());
         formData.append("serverId",$("#serverId").val());
         formData.append("serverHiddenId",dataId)
-        console.log(formData)
+        // console.log(formData)
 
         var rootPath = getWebRootPath();
         var url = rootPath + "/server/update";
@@ -313,13 +315,13 @@ function updateClick() {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert(data.msg);
                     return;
                 }
                 if (data.result == "ok") {
-                    layer.alert("修改成功！");
+                    layer.msg("修改成功！"+data.msg);
                 } else if (data.result == "no") {
-                    layer.alert("修改失败！");
+                    layer.alert("修改失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -333,7 +335,7 @@ function startClick(){
         var url=rootPath+"/server/batchStartServers";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
-        console.log(dataId)
+        // console.log(dataId)
         if (cBox.length == 0&&dataId=='') {
             layer.alert("请勾选您所要启动的服务器！");
             return;
@@ -363,11 +365,11 @@ function startClick(){
                     data : data,
                     success : function(data) {
                         if (data.result == "error") {
-                            layer.alert(data.msg,{time:3});
+                            layer.alert(data.msg);
                             return;
                         }
                         if (data.result == "ok") {
-                            layer.msg(data.msg,{time:3});
+                            layer.msg(data.msg,{time:5000});
                         }
                         table.draw(false);
                         // clearData();
@@ -461,7 +463,7 @@ function deleteClick() {
                     data : data,
                     success : function(data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert("服务器错误！删除失败"+data.msg);
                             return;
                         }
                         if (data.result == "ok") {
@@ -486,7 +488,7 @@ function searchClick()
     $(document).on('click','#queCommit',function(){
         isSearch="1";
         table.draw(false);
-        clearSearch();
+        // clearSearch();
     });
 
 }

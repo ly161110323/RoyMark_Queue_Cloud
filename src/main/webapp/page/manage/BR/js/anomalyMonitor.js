@@ -2,7 +2,7 @@
 $(document).ready(function () {
 
     // addClick();
-    updateClick();
+    anomalyConfirm();
     deleteClick();
     searchClick();
     clearClick();
@@ -312,9 +312,62 @@ function addClick() {
         });
     });
 }
+//删除摄像头
+function deleteCamera() {
+    var inx = hasCoordCams.findIndex(e => e.camHiddenId == rightHiidenId);
+    if (inx != -1) {
+        hasCoordCams[inx].camCoordinates = "";
+        noCoordCams.push(hasCoordCams[inx]);
+        hasCoordCams.splice(inx, 1);
+        $("#main").find("div[id=" + rightHiidenId + "]").remove();
+        flashAddibleCamera(noCoordCams);
+        layer.msg("已删除！");
+    }
+}
 
+// 异常确认
+function anomalyConfirm() {
+    $('#modifyCommit').click(function (){
+
+        if (dataId == '') {
+            layer.alert("请选择要确认的数据！");
+            return;
+        }
+
+
+        $.ajax({
+            type: 'POST',
+            url: getWebRootPath() + '/anomaly/updateAnomalyStatus',
+            data: {'anomalyStatus': 'valid', 'anomalyHiddenId': dataId.toString()},
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.result == "error") {
+                    layer.alert("服务器错误！确认失败：",data.msg);
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.msg("确认成功！");
+
+                    // $('#main').children('#' + rightHiidenId).children('img').attr('src', green_src);
+
+                }
+
+                table.draw(false);
+                // clearData();
+
+            },
+            error: function (data) {
+                layer.msg("网络错误！");
+            }
+        });
+    });
+
+
+
+}
 function updateClick() {
-//为修改绑定点击事件
+//为修改绑定点击事件  实际并未使用该函数 因绝大多数异常记录不支持修改 仅确认结果一项，因此单独使用另一个函数修改确认结果
     $(document).on('click', '#modifyCommit', function () {
         if (dataId == '') {
             layer.alert("请选择要修改的数据！");
@@ -477,7 +530,7 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         table.draw(false);
-        clearSearch();
+        // clearSearch();
     });
 
 }

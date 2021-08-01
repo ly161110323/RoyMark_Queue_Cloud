@@ -53,7 +53,7 @@
                         "ordering": false,
                         "info": true,
                         "autoWidth": false,
-                        "displayLength": 10,
+                        "displayLength": 15,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
                         "sAjaxSource":tableUrl,
@@ -231,8 +231,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>备注：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">备注：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"

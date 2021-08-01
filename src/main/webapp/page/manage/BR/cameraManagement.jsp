@@ -53,7 +53,7 @@
                         "ordering": false,
                         "info": true,
                         "autoWidth": false,
-                        "displayLength": 10,
+                        "displayLength": 15,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
                         "sAjaxSource": tableUrl,
@@ -248,12 +248,11 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>服务器ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器ID：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="serverId" name="serverId">
-                                                <option value="0">请选择绑定服务器ID</option>
+                                                <option value="">请选择绑定服务器ID</option>
                                             </select>
                                         </div>
 
@@ -278,8 +277,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>mac地址：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">mac地址：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
@@ -290,19 +288,19 @@
 
                             </tr>
                             <tr>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+<%--                                <td style="width: 25%;">--%>
+                                    <div class="form-group" style="float: left; width: 100%">
+                                        <label style="width: 10%;"
+                                               class="col-sm-6 control-label input_lable_hm table_label_zd"><span
                                                 style="color: red;">*</span>视频流地址：</label>
-                                        <div class="col-sm-8">
+                                        <div class="col-sm-8" style="width: 90%">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
                                                    name="camVideoAddr" id="camVideoAddr">
                                         </div>
-                                        <%--                                                                        <input type="hidden" name="queueDept.deptLs" id="txtDeptLs" />--%>
+
                                     </div>
-                                </td>
+<%--                                </td>--%>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
@@ -319,8 +317,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>型号：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">型号：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
@@ -334,8 +331,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>生产日期：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">生产日期：</label>
                                         <div class="col-sm-8">
                                             <input type="date" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
@@ -349,8 +345,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>绑定地图：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">绑定地图：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="mapId" name="mapId">
@@ -363,8 +358,7 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>所在分组：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">所在分组：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="groupId" name="groupId">

@@ -56,7 +56,7 @@
                         "ordering": false,
                         "info": true,
                         "autoWidth": false,
-                        "displayLength": 10,
+                        "displayLength": 15,
                         "sAjaxDataProp": "data",
                         "bServerSide": true,
                         "sAjaxSource": tableUrl,
@@ -263,10 +263,9 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>窗口ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">窗口ID：</label>
                                         <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
+                                            <select class="form-control m-b table_content_zd" disabled="disabled"
                                                     id="windowId" name="windowId">
                                                 <option value="0">请选择窗口ID</option>
 
@@ -278,10 +277,9 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>窗口名称：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">窗口名称：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false" disabled="disabled"
                                                    class="form-control table_content_zd"
                                                    name="windowName" id="windowName">
                                         </div>
@@ -290,10 +288,9 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>人员姓名：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">人员姓名：</label>
                                         <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
+                                            <select class="form-control m-b table_content_zd" disabled="disabled"
                                                     id="userName" name="userName">
                                                 <option value="0">请选择人员</option>
 
@@ -304,10 +301,9 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>异常事件：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">异常事件：</label>
                                         <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
+                                            <select class="form-control m-b table_content_zd" disabled="disabled"
                                                     id="anomalyEvent" name="anomalyEvent">
                                                 <option value="">请选择异常事件</option>
                                                 <option value="离岗">离岗</option>
@@ -324,10 +320,9 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>开始时间：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">开始时间：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false" disabled="disabled"
                                                    class="form-control table_content_zd"
                                                    name="anomalyStartTime" id="anomalyStartTime">
                                         </div>
@@ -338,7 +333,7 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">结束时间：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false" disabled="disabled"
                                                    placeholder="" class="form-control table_content_zd"
                                                    name="anomalyEndTime" id="anomalyEndTime">
                                         </div>
@@ -349,17 +344,19 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">确认结果：</label>
+
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
-                                                    id="anomalyStatus" name="anomalyStatus">
+                                                    id="anomalyStatus" name="anomalyStatus" >
                                                 <option value="">请选择确认结果</option>
                                                 <option value="pending">待处理</option>
                                                 <option value="valid">有效</option>
                                                 <option value="invalid">无效</option>
                                             </select>
-                                        </div>
 
+                                        </div>
                                     </div>
+
                                 </td>
 
 
@@ -428,21 +425,21 @@
 
                                 <td class="table_menu_tr_td_right_zd" colspan="2">
                                     <div style="float: right;">
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="addCommit">新增--%>
+<%--                                        </button>--%>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="addCommit">新增
+                                                id="modifyCommit">确认结果
                                         </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="modifyCommit">修改
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="clearData">清除
-                                        </button>
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="clearData">清除--%>
+<%--                                        </button>--%>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"

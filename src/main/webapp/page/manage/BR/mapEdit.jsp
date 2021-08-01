@@ -163,7 +163,7 @@
 
 
                                 </td>
-                                <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 35%">
+                                <td class="table_menu_tr_td_left_zd" colspan="2" style="width: 38%">
                                     <label type="text"  style="width: 15%; float: left; margin-right: 10px"
                                            class="control-label input_lable_hm table_label_zd ">添加摄像头</label>
                                     <select

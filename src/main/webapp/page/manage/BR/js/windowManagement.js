@@ -196,7 +196,7 @@ function validateData(isAdd) {
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function(index,element){
         var objLs = $(element).find("td:eq(0)>input").val();
-        if($(element).find("td:eq(2)").text() == chooseName){
+        if($(element).find("td:eq(3)").text() == chooseName){
             if(isAdd){
                 isExit=true;
                 layer.alert("该窗口名称已存在！");
@@ -241,6 +241,8 @@ function clearData(){
     $("#floorName").val("");
     $("#windowActionAnalysis").val("");
     $("#windowNinePalaces").val("");
+    $("#camId").val("");
+
     // $("#txtDeptId").val("");
     // $("#otherId").val("");
 }
@@ -280,13 +282,13 @@ function addClick() {
             success : function(data) {
                 console.log(data)
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("新增成功！");
                 } else if (data.result == "no") {
-                    layer.alert("新增失败！");
+                    layer.alert("新增失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -309,13 +311,13 @@ function updateCoord(Coord){
         data: formData,
         success: function (data) {
             if (data.result == "error") {
-                layer.alert("后台服务器错误！");
+                layer.alert("错误！"+data.msg);
                 return;
             }
             if (data.result == "ok") {
                 layer.msg("坐标修改成功！");
             } else if (data.result == "no") {
-                layer.msg("坐标修改失败！");
+                layer.msg("坐标修改失败！"+data.msg);
             }
             table.draw(false);
             clearData();
@@ -358,13 +360,13 @@ function updateClick() {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert("错误！"+data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("修改成功！");
                 } else if (data.result == "no") {
-                    layer.alert("修改失败！");
+                    layer.alert("修改失败！"+data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -399,7 +401,7 @@ function deleteClick() {
                     data : data,
                     success : function(data) {
                         if (data.result == "error") {
-                            layer.alert("服务器错误！删除失败");
+                            layer.alert("服务器错误！删除失败"+data.msg);
                             return;
                         }
                         if (data.result == "ok") {

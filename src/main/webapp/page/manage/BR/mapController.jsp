@@ -60,15 +60,35 @@
         .active{
             background-color: #00aaff;
         }
-        .bubble{
-            position:relative;
-            padding:15px;
-            margin:1em 0em 3em;
-            width:300px;
-            line-height:1.2;
-            text-align:center;
-            color:#fff;
-            background:#075698;
+        .bubble-box{
+            background:#EEE;
+            width:200px;
+            margin-bottom:30px;
+
+        }
+        .bubble-box .wrap{
+            background:#EEE;
+            /* 修正IE6 */
+            _position:relative;
+            _z-index:10;
+        }
+        /* arrow-effect */
+        .arrow-left{ border-left:20px solid #FFF; border-top:20px solid #EEE; margin-top:20px;}
+        .arrow-right{ border-right:20px solid #FFF; border-top:20px solid #EEE;}
+        .arrow-top{ border-left:20px solid #EEE; border-top:20px solid #FFF; margin-left:20px;}
+        .arrow-bottom{ border-left:20px solid #EEE; border-bottom:20px solid #FFF; margin-left:20px;}
+        .arrow-left .wrap,
+        .arrow-right .wrap{
+            width:180px;
+            padding:12px 10px 12px 10px;
+            margin-top:-40px;
+        }
+        .arrow-top, .arrow-bottom{ width:140px;}
+        .arrow-top .wrap,
+        .arrow-bottom .wrap{
+            width:180px;
+            padding:12px 10px 12px 10px;
+            margin-left:-40px;
         }
     </style>
 
@@ -85,11 +105,10 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>地图ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">地图ID：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
+                                                   placeholder="" class="form-control table_content_zd" disabled="disabled"
                                                    name="mapId" id="mapId">
                                         </div>
                                     </div>
@@ -97,35 +116,15 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>地图名称：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">地图名称：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
+                                                   placeholder="" class="form-control table_content_zd" disabled="disabled"
                                                    name="mapName" id="mapName">
                                         </div>
                                     </div>
                                 </td>
-                                <td style="width: 25%;">
-                                    <div class="form-group">
-                                        <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">上传图片：</label>
-                                        <div class="col-sm-8" style="width: 60%;">
-                                            <input type="file" name="mapImage" id="mapImage"
-                                                   style="display: none;"> <input type="text"
-                                                                                  style="width: 65%;" autocomplete="off"
-<%--                                                                                  placeholder="768*365"--%>
-                                                                                  class="form-control m-b input_btn_input"
-                                                                                  readonly="readonly" name="mapImageFileName"
-                                                                                  id="mapImageFileName">
-                                            <button type="button"
-                                                    class="btn btn-primary btn-sm input_btn_btn"
-                                                    id="btnChooseMapImage"
-                                                    style="float: left; margin-left: 5px;">选择</button>
-                                        </div>
 
-                                    </div>
-                                </td>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
@@ -215,7 +214,9 @@
                         </div>
 
                     </div>
-<%--                    <blockquote class="bubble">床前明月光，疑是地上霜。</blockquote>--%>
+<%--                    <div class="bubble-box arrow-top">--%>
+<%--                        <div class="wrap">css bubble -- 箭头在上方哈哈hh</div>--%>
+<%--                    </div>--%>
                 </div>
             </div>
 
