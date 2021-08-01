@@ -475,7 +475,7 @@ public class UserController {
 
 					String uploadPath = "/uploads/user/";
 					String filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
-					if (existPath.equals("")) {
+					if (existPath == null || existPath.equals("")) {
 						queryUser.setUserPhoto(filePath);
 					}
 					else {
@@ -501,7 +501,7 @@ public class UserController {
 					return jsonObject;
 				}
 			} catch (Exception e) {
-				logger.error(e.getMessage());
+				logger.error(e);
 				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
