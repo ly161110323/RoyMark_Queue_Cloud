@@ -274,7 +274,9 @@ function addClick() {
             return;
         }
         var formData = new FormData();
-        // formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        if($('#staffPhotoFileName').val()!=""){
+            formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
+        }
         formData.append("userId", $('#userId').val());
         formData.append("userName", $("#userName").val());
         formData.append("userSex", $("#userSex").val());
@@ -294,13 +296,13 @@ function addClick() {
             success: function (data) {
                 console.log(data)
                 if (data.result == "error") {
-                    layer.alert("服务器错误！");
+                    layer.alert(data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.alert("新增成功！");
                 } else if (data.result == "no") {
-                    layer.alert("新增失败！");
+                    layer.alert(data.msg);
                 }
                 table.draw(false);
                 clearData();
@@ -378,7 +380,7 @@ function flashFaceManagerStatus(){
 
                 $('#faceManagerServerStatusLabel').text("人脸管理服务开启")
             }else {
-                $('#faceManagerServerStatusLabel').text("其他,请检查返回值")
+                $('#faceManagerServerStatusLabel').text("查询状态失败")
             }
         },error:function (data){
 
@@ -507,12 +509,11 @@ function deleteClick() {
                     url: url,
                     data: data,
                     success: function (data) {
-                        if (data.result == "error") {
-                            layer.alert("错误！"+data.msg);
-                            return;
-                        }
+
                         if (data.result == "ok") {
                             layer.alert("删除成功！");
+                        }else {
+                            layer.alert(data.msg);
                         }
                         table.draw(false);
                         clearData();
@@ -521,7 +522,7 @@ function deleteClick() {
                         layer.alert("错误:"+data.msg);
                     }
                 });
-                layer.close(index);
+
             }, function () {
 
             });

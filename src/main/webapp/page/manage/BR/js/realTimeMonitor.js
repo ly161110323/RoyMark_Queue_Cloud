@@ -143,6 +143,7 @@ function showVideoImg(){
             // console.log(data);
             if (data.code === -1) {
                 console.log(message)
+                layer.msg(data.msg,{time:4000});
             }
             if (data.code === 0) {
                 console.log(message)
