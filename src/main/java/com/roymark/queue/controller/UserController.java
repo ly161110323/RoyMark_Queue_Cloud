@@ -454,7 +454,7 @@ public class UserController {
 			String existPath = queryUser.getUserPhoto();
 			if (existPath!=null && !existPath.equals("")) {
 				String[] existPaths = existPath.split(",");
-				if (existPaths.length >= 10) {
+				if (existPaths.length >= 9) {
 					jsonObject.put("msg", "图片数量不能超过10个");
 					jsonObject.put("result", "no");
 					return jsonObject;
