@@ -18,6 +18,7 @@ import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.FaceVectorService;
 import com.roymark.queue.service.ParameterService;
 import com.roymark.queue.util.HttpUtil;
+import com.roymark.queue.util.ParamUtil;
 import com.roymark.queue.util.web.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
@@ -147,8 +148,8 @@ public class UserController {
 			}
 
 			// 处理发送地址
-			String ip_address = getFaceServerIp();
-			String port = getFaceManagerPort();
+			String ip_address = ParamUtil.getParamValueByName("face_server_ip");
+			String port = ParamUtil.getParamValueByName("face_manager_port");
 			if (ip_address.equals("") || port.equals("")) {
 				jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
@@ -281,8 +282,8 @@ public class UserController {
 					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 					requestParams.add("faceId", faceId);
 					// 处理发送地址
-					String ip_address = getFaceServerIp();
-					String port = getFaceManagerPort();
+					String ip_address = ParamUtil.getParamValueByName("face_server_ip");
+					String port = ParamUtil.getParamValueByName("face_manager_port");
 					if (ip_address.equals("") || port.equals("")) {
 						jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 						jsonObject.put("result", "no");
@@ -430,8 +431,8 @@ public class UserController {
 				return jsonObject;
 			}
 			// 处理发送地址
-			String ip_address = getFaceServerIp();
-			String port = getFaceManagerPort();
+			String ip_address = ParamUtil.getParamValueByName("face_server_ip");
+			String port = ParamUtil.getParamValueByName("face_manager_port");
 			if (ip_address.equals("") || port.equals("")) {
 				jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
@@ -567,8 +568,8 @@ public class UserController {
 				MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 				requestParams.add("faceId", faceId);
 				// 处理发送地址
-				String ip_address = getFaceServerIp();
-				String port = getFaceManagerPort();
+				String ip_address = ParamUtil.getParamValueByName("face_server_ip");
+				String port = ParamUtil.getParamValueByName("face_manager_port");
 				if (ip_address.equals("") || port.equals("")) {
 					jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
@@ -625,30 +626,6 @@ public class UserController {
 			jsonObject.put("msg", "删除人脸出现错误");
 			return jsonObject;
 		}
-	}
-
-	public String getFaceServerIp() {
-		// 处理发送地址
-		Parameter faceServerIp = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_server_ip"));
-		if (faceServerIp == null) {
-			return "";
-		}
-		if (!faceServerIp.getParamValue().equals("")) {
-			return faceServerIp.getParamValue();
-		}
-		return faceServerIp.getParamDefault();
-	}
-
-	public String getFaceManagerPort() {
-		// 处理发送地址
-		Parameter faceControllerPort = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "face_manager_port"));
-		if (faceControllerPort == null) {
-			return "";
-		}
-		if (!faceControllerPort.getParamValue().equals("")) {
-			return faceControllerPort.getParamValue();
-		}
-		return faceControllerPort.getParamDefault();
 	}
 }
 

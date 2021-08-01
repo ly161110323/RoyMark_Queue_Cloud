@@ -2,6 +2,7 @@ package com.roymark.queue.util.web;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.util.ParamUtil;
 import com.roymark.queue.util.WaterMarkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,8 +29,8 @@ import java.util.List;
 @ServerEndpoint(value = "/webSocketService",encoders = {ImageEncoder.class})
 public class WebSocketServer{
 
-    // 最大读取图片线程数量
-    public static int maxReadThreadCount = 9;
+    // 最大读取图片线程数量，可以从参数表中修改
+    public static int maxReadThreadCount = 10;
 
     // 使用的读取图片线程的次数,以CamId作Key
     public static Map<String, ReadPicThreadInfo> globalReadPicThreadMap = new HashMap<>();
@@ -414,6 +415,10 @@ public class WebSocketServer{
      */
     @OnOpen
     public void onOpen(Session session){
+        String maxReadThread = ParamUtil.getParamValueByName("max_read_thread");
+        if (maxReadThread != null) {
+            maxReadThreadCount = Integer.parseInt(maxReadThread);
+        }
         // 必须新建线程去发送图片，否则无法接收来自客户端的消息
         thread = new ProductFinalPicThread("websocket_thread", session);
         thread.start();
