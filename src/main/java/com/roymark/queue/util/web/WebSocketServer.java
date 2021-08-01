@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
@@ -18,10 +17,8 @@ import java.awt.image.BufferedImage;
 import javax.websocket.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author liucl
@@ -30,6 +27,30 @@ import java.util.Map;
 @Slf4j
 @ServerEndpoint(value = "/webSocketService",encoders = {ImageEncoder.class})
 public class WebSocketServer{
+
+    // 最大读取图片线程数量
+    public static int maxReadThreadCount = 9;
+
+    // 使用的读取图片线程的次数,以CamId作Key
+    public static Map<String, ReadPicThreadInfo> globalReadPicThreadMap = new HashMap<>();
+
+    public static class ReadPicThreadInfo {
+        private int useCount;
+        private final ReadPicThread readPicThread;
+        public ReadPicThreadInfo(ReadPicThread readPicThread, int useCount) {
+            this.readPicThread = readPicThread;
+            this.useCount = useCount;
+        }
+        public int getUseCount() {
+            return useCount;
+        }
+        public void setUseCount(int useCount) {
+            this.useCount = useCount;
+        }
+        public ReadPicThread getReadPicThread() {
+            return readPicThread;
+        }
+    }
     // 读取图片线程
     public static class ReadPicThread implements Runnable {
         private Thread t;
@@ -40,6 +61,10 @@ public class WebSocketServer{
         private final String picRtspUrl;
         private BufferedImage image;
         public volatile boolean flag = true;
+
+        public String getThreadName() {
+            return this.threadName;
+        }
 
         public BufferedImage getImage() {
             return image;
@@ -111,7 +136,7 @@ public class WebSocketServer{
     }
 
     // 合成图片并推流
-    static class ProductFinalPicThread implements Runnable {
+    public static class ProductFinalPicThread implements Runnable {
         private final Session session;
 
         // rtsp服务器地址
@@ -144,7 +169,6 @@ public class WebSocketServer{
         private final String threadName;
 
         private Thread t;
-
 
         public ProductFinalPicThread(String threadName, Session session) {
             this.threadName = threadName;
@@ -220,36 +244,107 @@ public class WebSocketServer{
 
         @Override
         public void run() {
+            // 由于多线程读取创建grabber并不慢，所以预加载grabbers,复用再释放
             this.grabbers = getGrabberByRtsp(rtspUrls, singleWidth, singleHeight);
+            StringBuilder grabberErrorMsg = new StringBuilder();
+            StringBuilder exceededMsg = new StringBuilder();
+
+            boolean delayFlag = true;
+
             // grabber和读取线程加载
-            // 读取图片线程
             List<ReadPicThread> readPicThreads = new ArrayList<>();
             for (int i=0; i<grabbers.size(); i++) {
                 try {
+                    // grabber为空，则在当前线程列表里置空
                     if (grabbers.get(i) == null) {
+                        grabberErrorMsg.append(camIds.get(i)).append("、");
                         readPicThreads.add(null);
                     }
-                    else {
-                        ReadPicThread readPicThread = new ReadPicThread("thread"+camIds.get(i), singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
-                        readPicThread.start();
-                        readPicThreads.add(readPicThread);
+                    // 超出最大数量则不再能创建新读取图片线程，线程列表置空
+                    else if (globalReadPicThreadMap.size() >= maxReadThreadCount) {
+                        if (delayFlag) {        // 当超出最大线程数且延迟标志为空，尝试等待1s重试
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                log.info("Thread Sleep Interrupt:", e);
+                            }
+                            delayFlag = false;
+                            i--;
+                        }
+                        else {
+                            exceededMsg.append(camIds.get(i)).append("、");
+                            readPicThreads.add(null);
+                            grabbers.get(i).release(); // 释放预加载grabber
+                        }
+
                     }
+                    else {
+                        ReadPicThread readPicThread;
+                        String readPicThreadName = "thread"+camIds.get(i);
+                        // 尝试从读取图片线程中去寻找线程
+                        if (globalReadPicThreadMap.containsKey(readPicThreadName)) {
+                            ReadPicThreadInfo readPicThreadInfo = globalReadPicThreadMap.get(readPicThreadName);
+                            readPicThread =  readPicThreadInfo.getReadPicThread(); // 从map中复用已存在线程
+                            int count = readPicThreadInfo.getUseCount() + 1; // 使用次数加一
+                            readPicThreadInfo.setUseCount(count);
+                            // 全局读取线程已存在，释放预加载grabber
+                            grabbers.get(i).release();
+                        }
+                        else {
+                            // 只加入有效线程
+                            readPicThread = new ReadPicThread(readPicThreadName, singleWidth, singleHeight, grabbers.get(i), rtspUrls.get(i));
+                            readPicThread.start();
+                            // 加入map中，
+                            globalReadPicThreadMap.put(readPicThreadName, new ReadPicThreadInfo(readPicThread, 1));
+                            readPicThreads.add(readPicThread);
+                        }
+                    }
+
                 }catch (Exception e) {  // 无法启动grabber时，跳过该线程捕获
                     log.error("rtsp:"+rtspUrls.get(i)+",线程创建失败", e);
                 }
-
             }
+            // 最终消息
+            StringBuilder finalMsg = new StringBuilder();
+            // 删掉最后一个间隔符
+            if (grabberErrorMsg.length() > 0) {
+                grabberErrorMsg.deleteCharAt(grabberErrorMsg.length()-1);
+                finalMsg.append(grabberErrorMsg).append(" 读取失败，请检查RTSP流");
+            }
+            if (exceededMsg.length() > 0) {
+                if (finalMsg.length() > 0) {
+                    finalMsg.append(";");
+                }
+                exceededMsg.deleteCharAt(exceededMsg.length()-1);
+                finalMsg.append(exceededMsg).append(" 因超出最大读取数量而不能显示");
+            }
+            if (finalMsg.length() > 0) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("msg", finalMsg);
+                jsonObject.put("code", -1);
+                sendMessageByStr(this.session, JSON.toJSONString(jsonObject));
+            }
+
+
             log.info("推送图片流开始");
-            // 合并并且推送图片
+
+            // 时间间隔优化
+            long start = 0;
+            long end = 100;
             while (this.openFlag) {
                 try {
+                    long diff = end - start;
+                    if (diff < 100) {
+                        Thread.sleep(100 - diff);
+                    }
+                    start = System.currentTimeMillis();
                     BufferedImage returnImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
                     int currentIndex = 0; // 当前页的起始点
 
                     int rtspNum = rtspUrls.size();
-                    for (int i=0; i<yPicNum; i++) {
-                        for (int j=0; j<xPicNum; j++) {
+                    for (int i = 0; i < yPicNum; i++) {
+                        for (int j = 0; j < xPicNum; j++) {
                             if (currentIndex >= readPicThreads.size()) {
                                 break;
                             }
@@ -262,17 +357,16 @@ public class WebSocketServer{
                             WaterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
                             int[] imageArray = new int[width * height];
                             imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
-                            returnImg.setRGB(j*singleWidth, i*singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
+                            returnImg.setRGB(j * singleWidth, i * singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             currentIndex++;
                         }
                         if (currentIndex >= rtspNum) {
                             break;
                         }
-
                     }
                     byte[] bytes = imageToBytes(returnImg, "jpg");
                     sendMessageByObject(this.session, new Image(bytes));
-
+                    end = System.currentTimeMillis();
                 } catch (Exception e) {
                     log.error("因为异常，grabber关闭，rtsp连接断开");
                     log.error("exception : " , e);
@@ -283,27 +377,36 @@ public class WebSocketServer{
             // 资源释放，先停止图片读取再关闭抓图器，否则触发抓图null错误
             log.info("推流结束");
             for (ReadPicThread readPicThread: readPicThreads) {
-                if (readPicThread != null)
-                    readPicThread.flag = false;
+                if (readPicThread != null) {
+                    String readThreadName = readPicThread.getThreadName();
+                    // 从线程资源Map中去寻找
+                    if (globalReadPicThreadMap.containsKey(readThreadName)) {
+                        // 如果只有一个，则表明只有当前在使用，进行释放
+                        ReadPicThreadInfo readPicThreadInfo = globalReadPicThreadMap.get(readThreadName);
+                        int useCount = readPicThreadInfo.getUseCount();
+                        if (useCount <= 1) {
+                            globalReadPicThreadMap.remove(readThreadName);
+                            readPicThread.flag = false;
+                        }
+                        // 否则不进行释放，将使用次数减一
+                        else {
+                            readPicThreadInfo.setUseCount(useCount-1);
+                        }
+                    }
+                    else {
+                        readPicThread.flag = false;
+                    }
+                }
+
             }
-            // 已经在readPicThread中释放 grabber
-//            try {
-//                for (FFmpegFrameGrabber grabber : grabbers) {
-//                    if (grabber != null) {
-//                        grabber.stop();
-//                        grabber.release();
-//                    }
-//
-//                }
-//            } catch (FrameGrabber.Exception ex) {
-//                log.error("grabber stop exception: ", ex);
-//            }
+
         }
     }
 
 
     private ProductFinalPicThread thread;
 
+    public boolean flag;
     /**
      * 连接建立成功调用的方法
      */
@@ -312,6 +415,7 @@ public class WebSocketServer{
         // 必须新建线程去发送图片，否则无法接收来自客户端的消息
         thread = new ProductFinalPicThread("websocket_thread", session);
         thread.start();
+        flag = true;
     }
 
     /**
@@ -321,13 +425,8 @@ public class WebSocketServer{
     public void onClose() {
         // 终止进程
         log.info("OnClose");
+        this.flag = false;
         this.thread.openFlag = false;
-//        if(this.thread != null){
-//            this.thread.interrupt();
-//            System.out.println("end: "+this.thread.getId());
-//            System.out.println("On close: " + this.thread.isInterrupted());
-//            log.info("一个连接已关闭！");
-//        }
     }
 
     /**
@@ -385,25 +484,26 @@ public class WebSocketServer{
         List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
         try {
             // 以线程创建，避免因为探测ip和端口导致开启延时很长
-            List<Thread> threadList = new ArrayList<>();
+            List<CreateGrabberThread> createGrabberThreads = new ArrayList<>();
             for (String rtspUrl : rtspUrls) {
                 log.info("连接rtsp："+rtspUrl+",开始创建grabber");
-                Runnable runnable = () -> {
-                    FFmpegFrameGrabber grabber = createGrabber(rtspUrl, singleWidth, singleHeight);
-                    grabbers.add(grabber);
-                };
-                Thread thread = new Thread(runnable);
-                thread.start();
-                threadList.add(thread);
+                CreateGrabberThread createGrabberThread = new CreateGrabberThread(rtspUrl, singleWidth, singleHeight);
+                createGrabberThread.start();
+                createGrabberThreads.add(createGrabberThread);
             }
 
             // 等待Grabber线程全部完成
             try {
-                for (Thread thread: threadList) {
-                    thread.join();
+                for (CreateGrabberThread thread: createGrabberThreads) {
+                    thread.thread.join();
                 }
             } catch (InterruptedException e) {
                 log.error("Thread join error:", e);
+            }
+
+            // 获得生成的grabber
+            for (int i=0; i<createGrabberThreads.size(); i++) {
+                grabbers.add(createGrabberThreads.get(i).getGrabber());
             }
 
             if (grabbers.size() > 0) {
@@ -444,7 +544,7 @@ public class WebSocketServer{
                 return null;
             }
             // socket探测
-            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 500)) {
+            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000)) {
                 log.info(rtsp + "Socket连接不可达");
                 return null;
             }
@@ -488,5 +588,34 @@ public class WebSocketServer{
         return out.toByteArray();
     }
 
+    public static class CreateGrabberThread implements Runnable {
+        private final String rtsp;
+        private final int width;
+        private final int height;
+        private FFmpegFrameGrabber grabber;
+        public Thread thread;
+
+        public FFmpegFrameGrabber getGrabber() {
+            return this.grabber;
+        }
+
+        public CreateGrabberThread(String rtsp, int width, int height) {
+            this.rtsp = rtsp;
+            this.width = width;
+            this.height = height;
+            this.grabber = null;
+            this.thread = null;
+        }
+        public void start() {
+            if (this.thread == null) {
+                this.thread = new Thread(this, this.rtsp);
+                this.thread.start();
+            }
+        }
+        @Override
+        public void run() {
+            this.grabber = createGrabber(rtsp, width, height);
+        }
+    }
 
 }

@@ -482,7 +482,7 @@ public class AnomalyController {
 
             // 以线程来执行摄像头状态设置
             Runnable cameraRunnable = () -> {
-                cameraService.setCamsStatus(cameras);
+                cameraService.setCamsStatus(cameras, 500);
             };
             Thread cameraThread = new Thread(cameraRunnable);
             cameraThread.start();
@@ -493,7 +493,7 @@ public class AnomalyController {
             }
             // 以线程来执行服务器状态设置
             Runnable serverRunnable = () -> {
-                serverService.setServersStatus(servers);
+                serverService.setServersStatus(servers, 500);
             };
             Thread serverThread = new Thread(serverRunnable);
             serverThread.start();

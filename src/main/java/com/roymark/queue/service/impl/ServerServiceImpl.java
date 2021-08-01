@@ -20,7 +20,7 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
 
 
     @Override
-    public void setServersStatus(List<Server> servers) {
+    public void setServersStatus(List<Server> servers, int timeout) {
         try {
             List<ServerStatusThread> serverStatusThreads = new ArrayList<>();
             long start = System.currentTimeMillis();
@@ -38,7 +38,7 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
             }
             boolean aliveFlag;
             long end;
-            // 当aliveFlag为True且时间差值小于0.5s时，等待
+            // 当aliveFlag为True且时间差值小于timeout时，等待
             do {
                 aliveFlag = false;
                 for (ServerStatusThread serverStatusThread : serverStatusThreads) {
@@ -50,7 +50,7 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
                 end = System.currentTimeMillis();
                 // 减少CPU压力
                 Thread.sleep(100);
-            } while (end - start < 500);
+            } while (end - start < timeout);
         } catch (Exception e) {
             logger.error("CameraService.getCamStatus Exception");
             logger.error(e.getMessage());

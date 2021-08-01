@@ -169,6 +169,7 @@ public class MapController {
                     jsonObject.put("msg", "数据不存在");
                     return jsonObject;
                 }
+
             }
             for (int i = 0; i < deletes.length; i++) {
                 // 首先删除所有关联摄像头
@@ -224,8 +225,8 @@ public class MapController {
 
         try {
             // 分页构造器
-            Page<Map> page = new Page<Map>(pageNo, pageSize);
-            QueryWrapper<Map> queryWrapper = new QueryWrapper<Map>();
+            Page<Map> page = new Page<>(pageNo, pageSize);
+            QueryWrapper<Map> queryWrapper = new QueryWrapper<>();
             queryWrapper.orderByAsc("map_id");
             // 执行分页
             IPage<Map> pageList = mapService.page(page, queryWrapper);

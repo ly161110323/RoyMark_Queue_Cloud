@@ -252,7 +252,7 @@ public class ServerController {
                 jsonObject.put("pageList", pageList);
                 return jsonObject;
             }
-            serverService.setServersStatus(pageList.getRecords());
+            serverService.setServersStatus(pageList.getRecords(), 500);
             jsonObject.put("pageList", pageList);
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "搜索成功");
@@ -312,7 +312,7 @@ public class ServerController {
                             List<Camera> cameras = cameraService.list(Wrappers.<Camera>lambdaQuery().eq(Camera::getServerHiddenId, serverHiddenId));
 
                             // 开启线程获取摄像头状态
-                            cameraService.setCamsStatus(cameras);
+                            cameraService.setCamsStatus(cameras, 1000);
 
                             // 服务器绑定的摄像头和窗口信息
                             List<CamAndWinInfo> camAndWinInfos = new ArrayList<>();

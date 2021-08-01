@@ -141,6 +141,9 @@ function showVideoImg(){
             //将接收到的图片数据进行刷新显示
             var data = JSON.parse(message);
             // console.log(data);
+            if (data.code === -1) {
+                console.log(message)
+            }
             if (data.code === 0) {
                 console.log(message)
             } else if (data.code === 201) {

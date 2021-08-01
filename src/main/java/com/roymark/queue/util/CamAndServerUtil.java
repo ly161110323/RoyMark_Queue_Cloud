@@ -17,25 +17,6 @@ import java.util.HashMap;
 @Slf4j
 public class CamAndServerUtil {
 
-
-    /* 获取摄像头实时画面，延迟10ms避免灰度*/
-    public static BufferedImage getCamRealPic(String rtsp, int width, int height) {
-        try {
-            FFmpegFrameGrabber grabber = WebSocketServer.createGrabber(rtsp, width, height);
-            if (grabber == null) {
-                return null;
-            }
-            ReadPicThread readPicThread = new ReadPicThread(rtsp, width, height, grabber, rtsp);
-            readPicThread.start();
-            BufferedImage image = readPicThread.getImage();
-            readPicThread.flag = false;
-            return image;
-        } catch (Exception e) {
-            log.error("CamRealPicUtil Exception:", e);
-            return null;
-        }
-    }
-
     public static class CamStatusThread implements Runnable {
         private final Camera camera;
         public Thread thread;
@@ -90,7 +71,6 @@ public class CamAndServerUtil {
                         HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
                         if (response.getStatusLine().getStatusCode() == 200) {
                             if ("on".equals(EntityUtils.toString(response.getEntity(), "UTF-8"))) {
-                                System.out.println("test");
                                 server.setServerStatus("在线");
                                 server.setProgramStatus("运行中");
                             } else {

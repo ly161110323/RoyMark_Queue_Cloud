@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.roymark.queue.util.CamAndServerUtil.CamStatusThread;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +34,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     }
 
     @Override
-    public void setCamsStatus(List<Camera> cameras) {
+    public void setCamsStatus(List<Camera> cameras, int timeout) {
         try {
             List<CamStatusThread> camStatusThreads = new ArrayList<>();
             long start = System.currentTimeMillis();
@@ -63,7 +62,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 end = System.currentTimeMillis();
                 // 减少CPU压力
                 Thread.sleep(100);
-            } while (end - start < 500);
+            } while (end - start < timeout);
         } catch (Exception e) {
             logger.error("CameraService.getCamStatus Exception");
             logger.error(e.getMessage());

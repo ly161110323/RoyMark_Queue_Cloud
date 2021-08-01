@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ServerService  extends IService<Server> {
 
-    void setServersStatus(List<Server> servers);
+    void setServersStatus(List<Server> servers, int timeout);
 }

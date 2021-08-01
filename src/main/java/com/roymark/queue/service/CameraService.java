@@ -7,5 +7,5 @@ import com.roymark.queue.entity.Camera;
 public interface CameraService  extends IService<Camera> {
     List<Camera> getAllCamera();
     Camera getCameraByHiddenId(Long camHiddenId);
-    void setCamsStatus(List<Camera> camera);
+    void setCamsStatus(List<Camera> camera, int timeout);
 }
