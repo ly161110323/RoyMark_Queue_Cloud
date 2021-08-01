@@ -474,13 +474,13 @@ public class ServerController {
         try {
             boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
-                msg.append("连接失败，请检查ip和端口;\n");
+                msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");
             } else {
                 Parameter milvusHostParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_host"));
                 Parameter milvusPortParam = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, "milvus_port"));
                 if (milvusHostParam == null || milvusPortParam == null) {
-                    msg.append("人脸管理配置不全，请检查");
+                    msg.append("milvus服务器配置错误，请检查参数milvus_host与milvus_port！");
                     result.append("no");
                 } else {
                     // 参数加入
@@ -504,7 +504,7 @@ public class ServerController {
                         if (!serverMsg.equals("")) {
                             msg.append(serverMsg);
                         } else
-                            msg.append("人脸管理服务器启动失败，服务器状态异常");
+                            msg.append("人脸服务器返回状态异常，请检查参数face_server_ip与face_controller_port！");
                         result.append("no");
                     }
                 }
@@ -530,7 +530,7 @@ public class ServerController {
         String ip_address = getFaceServerIp();
         String port = getFaceControllerPort();
         if (ip_address.equals("") || port.equals("")) {
-            jsonObject.put("msg", "人脸服务器配置错误，请检查");
+            jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_controller_port！");
             jsonObject.put("result", "no");
             return jsonObject;
         }
@@ -539,7 +539,7 @@ public class ServerController {
         try {
             boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
-                msg.append("连接失败，请检查ip和端口;\n");
+                msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");
             } else {
                 JSONObject requestData = new JSONObject();
@@ -559,7 +559,7 @@ public class ServerController {
                     if (!serverMsg.equals("")) {
                         msg.append(serverMsg);
                     } else
-                        msg.append("人脸管理服务器停止失败，服务器状态异常");
+                        msg.append("人脸服务器返回状态异常，请检查参数face_server_ip与face_controller_port！");
                     result.append("no");
                 }
             }
@@ -574,7 +574,7 @@ public class ServerController {
         }
     }
 
-    // 人脸管理停止
+    // 人脸管理状态
     @RequestMapping(value = "/getFaceManagerStatus", produces = "application/json;charset=utf-8")
     public Object getFaceManagerStatus() {
         JSONObject jsonObject = new JSONObject();
@@ -584,7 +584,7 @@ public class ServerController {
         String ip_address = getFaceServerIp();
         String port = getFaceControllerPort();
         if (ip_address.equals("") || port.equals("")) {
-            jsonObject.put("msg", "人脸服务器配置错误，请检查");
+            jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_controller_port！");
             jsonObject.put("result", "no");
             return jsonObject;
         }
@@ -593,7 +593,7 @@ public class ServerController {
         try {
             boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
             if (!connectResult) {
-                msg.append("连接失败，请检查ip和端口;\n");
+                msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");
             } else {
                 JSONObject requestData = new JSONObject();

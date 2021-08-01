@@ -150,14 +150,14 @@ public class UserController {
 			String ip_address = getFaceServerIp();
 			String port = getFaceManagerPort();
 			if (ip_address.equals("") || port.equals("")) {
-				jsonObject.put("msg", "人脸服务器配置错误，请检查");
+				jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
 			String host = "http://" + ip_address + ":" + port;
-			boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
 			if (!connectResult) {
-				jsonObject.put("msg", "连接失败，请检查配置");
+				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
@@ -178,7 +178,7 @@ public class UserController {
 						return jsonObject;
 					}
 					// 添加用户
-					tempActionUser.setUserHiddenId(Long.valueOf(0));
+					tempActionUser.setUserHiddenId(0L);
 					String filePath = "";
 					String uploadPath = "/uploads/user/";
 					filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
@@ -188,7 +188,7 @@ public class UserController {
 					boolean result = userService.save(tempActionUser);
 					if (!result) {
 						jsonObject.put("result", "no");
-						jsonObject.put("msg", "添加失败");
+						jsonObject.put("msg", "数据库添加失败");
 						return jsonObject;
 					}
 					ActionUser queryUser = userService.getOne(Wrappers.<ActionUser>lambdaQuery().eq(ActionUser::getUserId, tempActionUser.getUserId()));
@@ -206,13 +206,13 @@ public class UserController {
 				}
 				else {
 					logger.info("服务器拒绝;");
-					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage());
-				jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
@@ -270,41 +270,28 @@ public class UserController {
 				}
 			}
 			for (int i = 0; i < deletes.length; i++) {
-//				QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
-//				queryWrapper.eq("br_anomaly.user_hidden_id", Long.valueOf(deletes[i]));
-//				List<Anomaly> anomalyList = anomalyService.list(queryWrapper);
-//				for (Anomaly anomaly : anomalyList) {
-//					anomalyService.update(null, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
-//							.eq(Anomaly::getAnomalyHiddenId, anomaly.getAnomalyHiddenId()));
-//				}
 				Long userHiddenId = Long.valueOf(deletes[i]);
 				ActionUser queryUser = userService.getById(userHiddenId);
-				String imgPath = queryUser.getUserPhoto();
-				String[] imgPaths = imgPath.split(",");
-				// 删除图片
-				for (String path: imgPaths) {
-					UploadUtil.fileDelete(request, path);
-				}
-				// 删除人脸向量以及向服务器删除
 				List<FaceVector> faceVectors = faceVectorService.list(Wrappers.<FaceVector>lambdaQuery().eq(FaceVector::getUserHiddenId, userHiddenId));
 				StringBuilder msg = new StringBuilder();
+
+				boolean deleteUserFlag = true;
 				for (FaceVector faceVector: faceVectors) {
 					String faceId = faceVector.getFaceId();
-					faceVectorService.removeById(faceVector.getFaceVectorId());
 					MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
 					requestParams.add("faceId", faceId);
 					// 处理发送地址
 					String ip_address = getFaceServerIp();
 					String port = getFaceManagerPort();
 					if (ip_address.equals("") || port.equals("")) {
-						jsonObject.put("msg", "人脸服务器配置错误，请检查");
+						jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 						jsonObject.put("result", "no");
 						return jsonObject;
 					}
 					String host = "http://" + ip_address + ":" + port;
-					boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+					boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
 					if (!connectResult) {
-						jsonObject.put("msg", "连接失败，请检查配置");
+						jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 						jsonObject.put("result", "no");
 						return jsonObject;
 					}
@@ -315,18 +302,33 @@ public class UserController {
 							HashMap hashMap = JSON.parseObject(response.getBody(), HashMap.class);
 							if (hashMap.get("status").equals("False")) {
 								msg.append(hashMap.get("info")).append("\n");
+								deleteUserFlag = false;
+							}
+							// 服务器删除成功才允许删除
+							else {
+								// 删除人脸向量以及向服务器删除
+								faceVectorService.removeById(faceVector.getFaceVectorId());
+								String imgPath = queryUser.getUserPhoto();
+								if (imgPath != null && !imgPath.equals("")) {
+									String[] imgPaths = imgPath.split(",");
+									// 删除图片
+									for (String curImgPath: imgPaths) {
+										UploadUtil.fileDelete(request, curImgPath);
+									}
+								}
 							}
 						}
 						else {
-							msg.append("服务器返回状态异常\n");
+							msg.append("服务器返回状态异常,").append(queryUser.getUserId()).append("禁止删除");
+							deleteUserFlag = false;
 						}
 					}catch (Exception e) {
 						logger.error(e.getMessage());
-
 					}
 				}
-				logger.info(msg);
-				userService.removeById(userHiddenId);
+				if (deleteUserFlag) {
+					userService.removeById(userHiddenId);
+				}
 			}
 			jsonObject.put("result", "ok");
 			jsonObject.put("msg", "删除成功");
@@ -431,15 +433,15 @@ public class UserController {
 			String ip_address = getFaceServerIp();
 			String port = getFaceManagerPort();
 			if (ip_address.equals("") || port.equals("")) {
-				jsonObject.put("msg", "人脸服务器配置错误，请检查");
+				jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
 			String host = "http://" + ip_address + ":" + port;
-			boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
 			String path = "/insertFaceImage";
 			if (!connectResult) {
-				jsonObject.put("msg", "连接失败，请检查配置");
+				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
@@ -491,13 +493,13 @@ public class UserController {
 				}
 				else {
 					logger.info("服务器拒绝;");
-					jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+					jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage());
-				jsonObject.put("msg", "向人脸服务器添加失败！请检查人脸服务器配置");
+				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
 				return jsonObject;
 			}
@@ -516,6 +518,11 @@ public class UserController {
 		HttpServletRequest request = attributes.getRequest();
 
 		try {
+			if (imgPath == null || imgPath.equals("")) {
+				jsonObject.put("result", "no");
+				jsonObject.put("msg", "图片路径为空");
+				return jsonObject;
+			}
 			ActionUser queryUser = userService.getById(userHiddenId);
 
 			if (queryUser == null) {
@@ -563,14 +570,14 @@ public class UserController {
 				String ip_address = getFaceServerIp();
 				String port = getFaceManagerPort();
 				if (ip_address.equals("") || port.equals("")) {
-					jsonObject.put("msg", "人脸服务器配置错误，请检查");
+					jsonObject.put("msg", "人脸服务器配置错误，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
 				String host = "http://" + ip_address + ":" + port;
-				boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+				boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
 				if (!connectResult) {
-					jsonObject.put("msg", "连接失败，请检查配置");
+					jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}
@@ -587,13 +594,13 @@ public class UserController {
 						}
 					}
 					else {
-						jsonObject.put("msg", "人脸服务器返回异常");
+						jsonObject.put("msg", "人脸服务器连接状态异常，请检查参数face_server_ip与face_manager_port！");
 						jsonObject.put("result", "no");
 						return jsonObject;
 					}
 				}catch (Exception e) {
 					logger.error(e.getMessage());
-					jsonObject.put("msg", "向人脸服务器删除失败！请检查人脸服务器配置");
+					jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
 					return jsonObject;
 				}

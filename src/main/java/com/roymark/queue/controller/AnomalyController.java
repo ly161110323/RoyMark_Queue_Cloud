@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map;
 
@@ -511,12 +512,19 @@ public class AnomalyController {
                 Camera camera = cameras.get(i);
                 Server server = servers.get(i);
                 Long camHiddenId = camera.getCamHiddenId();
+
+                // 当天凌晨
+                Date date = new Date();
+                SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+                String dateStr = dateFormat.format(date).toString();
+
                 // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
                 QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("br_anomaly.cam_hidden_id", camHiddenId)
                         .isNull("anomaly_end_date")
                         .eq("anomaly_end_date_valid", true)
                         .ne("anomaly_status", "invalid")
+                        .ge("anomaly_start_date", dateStr+ " 00:00:00")             // 当天
                         .orderByDesc("anomaly_start_date");
                 anomalies = anomalyService.list(queryWrapper);
                 if (anomalies.size() > 3) {
