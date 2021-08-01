@@ -496,7 +496,7 @@ function deleteClick() {
             {
                 btn: ['确定', '取消']
             },
-            function () {
+            function (index) {
                 for (var i = 0; i < cBox.length; i++) {
                     items.push(cBox.eq(i).val());
                 }
@@ -521,6 +521,7 @@ function deleteClick() {
                         layer.alert("错误:"+data.msg);
                     }
                 });
+                layer.close(index);
             }, function () {
 
             });
