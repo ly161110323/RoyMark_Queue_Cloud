@@ -111,7 +111,7 @@ public class WebSocketServer{
                     try {
                         Frame frame = picGrabber.grabImage();
                         if (frame == null) {
-                            log.info("grab Frame is null");
+                            log.info("frame null");
                             image = null;
                         } else {
                             image = java2DFrameConverter.getBufferedImage(frame);
@@ -348,10 +348,12 @@ public class WebSocketServer{
                             if (currentIndex >= readPicThreads.size()) {
                                 break;
                             }
-                            BufferedImage partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
-                            partImage.setRGB(0, 0, 0);
+                            BufferedImage partImage = null;
                             if (readPicThreads.get(currentIndex) != null) {    // 当rtsp流正确时菜获取
                                 partImage = readPicThreads.get(currentIndex).getImage();
+                            }
+                            if (partImage == null) {
+                                partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
                             }
                             // 绘制CAM ID
                             WaterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
@@ -360,7 +362,7 @@ public class WebSocketServer{
                             returnImg.setRGB(j * singleWidth, i * singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             currentIndex++;
                         }
-                        if (currentIndex >= rtspNum) {
+                        if (currentIndex >= readPicThreads.size()) {
                             break;
                         }
                     }
@@ -531,16 +533,19 @@ public class WebSocketServer{
             // System.out.println(rtsp);
             // 首先对rtsp流格式、ip地址和端口做一个检测，如果有问题，则返回null
             if (rtsp == null || rtsp.equals("")) {
+                log.info("0");
                 return null;
             }
             String[] strings = rtsp.split("@");
             if (strings.length < 2) {
+                log.info("1");
                 return null;
             }
             String ipAndPortStr = strings[1].split("/")[0];
 
             String[] ipAndPort = ipAndPortStr.split(":");
             if (ipAndPort.length < 2) {
+                log.info("2");
                 return null;
             }
             // socket探测
