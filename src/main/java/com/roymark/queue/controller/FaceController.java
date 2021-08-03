@@ -7,6 +7,7 @@ import com.roymark.queue.service.AnomalyUserService;
 import com.roymark.queue.service.FaceVectorService;
 import com.roymark.queue.service.WindowService;
 import com.roymark.queue.util.AnomalyMsgUtil;
+import com.roymark.queue.util.ParamUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,15 @@ public class FaceController {
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
     public Object insert(Long windowHiddenId, String faceId, String boxId, String reId, double faceConf) {
         JSONObject jsonObject = new JSONObject();
+        // 不在工作时间
+        if (ParamUtil.checkForWorkOut() != 1) {
+            jsonObject.put("result", "no");
+            return jsonObject;
+        }
         Date date = new Date();
         try {
             // 接收消息时清空无效信息
             anomalyMsgUtil.deleteInvalidMsg();
-//             System.out.println("faceId:"+faceId);
-//             System.out.println("windowHiddenId:" + windowHiddenId);
-//             System.out.println("reId:"+ reId);
-//            System.out.println("boxId:"+boxId);
 
             // faceId不为空，则利用faceId在faceVector中获取uId，且保存faceId和reId的对应关系
             StringBuilder msg = new StringBuilder();

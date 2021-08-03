@@ -9,7 +9,7 @@ import com.roymark.queue.service.*;
 import com.alibaba.fastjson.JSONObject;
 import com.roymark.queue.util.AnomalyDateControlUtil;
 import com.roymark.queue.util.AnomalyMsgUtil;
-import com.roymark.queue.util.CamAndServerUtil.*;
+import com.roymark.queue.util.ParamUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,12 +155,11 @@ public class AnomalyController {
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath,
                                         String boxIds) {
-
+        // 不在工作时间
+        if (ParamUtil.checkForWorkOut() != 1) {
+            return;
+        }
         try {
-//            System.out.println(anomaly);
-//            System.out.println(imagePath);
-//            System.out.println(videoPath);
-//            System.out.println("BR:" + boxIds);
             String[] boxIdArray = boxIds.split(",");
             List<String> boxIdList = Arrays.asList(boxIdArray);
 
