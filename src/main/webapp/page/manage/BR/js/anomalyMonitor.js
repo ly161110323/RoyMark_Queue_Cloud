@@ -2,6 +2,7 @@
 $(document).ready(function () {
 
     // addClick();
+    addUser();
     anomalyConfirm();
     deleteClick();
     searchClick();
@@ -93,18 +94,40 @@ function queryUserList() {
             var list = data.pageList.records;
 //若未出错，则获取信息设置到控件中
             var str = "";
+            userInfos = []
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].userHiddenId + "'>" + list[i].userName + "</option>";
+                str += "<option  value='" + list[i].userHiddenId + "'>" + list[i].userName + "</option>";
+                userInfos.push({"name":list[i]['userName'].toString(),"hiddenId":list[i]['userHiddenId'].toString()});
             }
 
-            // $("#formCaseAreaLs").empty();
-            // $("#formCaseAreaLs").append(str);
-            $("#userName").empty();
-            $("#userName").append("<option value=''>请选择人员</option>");
+
+            // $("#userName").empty();
+            // $("#userName").append("<option value=''>请选择人员</option>");
             $("#userName").append(str);
-            // $("#selectCommitServerId").empty();
-            // $("#selectCommitServerId").append("<option value=''>请选择绑定服务器ID</option>");
-            // $("#selectCommitServerId").append(str);
+            $('#userName').editableSelect({
+                effects: 'slide',//点击的时候，下拉框的过渡效果  有default，slide，fade三个值，默认是default
+                filter: true,//选择option以后，是否过滤  默认 true
+                duration: 'fast',//下拉选项框展示的过度动画速度
+                onSelect: function (obj) {
+                    // console.log("下拉框选项被选中");
+                    var userHiddenId = $(obj).val();//获取当前数据的id
+                    var userName = $(obj).text();//获取当前数据的name
+                    // console.info(userHiddenId + '===' + userName);
+
+                },
+                onCreate: function () {
+                    // console.log("下拉框创建");
+                },
+                onShow: function() {
+                    // console.log("下拉框显示");
+
+                },
+                onHide: function() {
+                    // console.log("下拉框隐藏");
+                    // selectInfo.userHiddenId = $(obj).val();
+                }
+            });
+
         }
     });
 }
@@ -139,18 +162,18 @@ function trClick() {
             "anomalyStartTime": $(this).find("td:eq(6)").text(),
             "anomalyEndTime": $(this).find("td:eq(7)").text(),
             "windowHiddenId": $(this).find("td:eq(10)").text(),
-            "userHiddenId": $(this).find("td:eq(11)").text(),
+            "userHiddenIds": $(this).find("td:eq(11)").text().split(','),
             "anomalyConfidence": $(this).find("td:eq(8)").text(),
             "anomalyFaceConfidence": $(this).find("td:eq(9)").text(),
             "anomalyVideoPath": $(this).find("td:eq(12)").text(),
             "anomalyImagePath":$(this).find("td:eq(13)").text(),
             "anomalyStatus":res
         }
-
+        // console.log(selectInfo.userHiddenIds)
         $("#windowId").val($(this).find("td:eq(10)").text());
 
         $("#windowName").val($(this).find("td:eq(3)").text());
-        $("#userName").val($(this).find("td:eq(11)").text());
+        // $("#userName").val($(this).find("td:eq(11)").text().split(',')[0]);
         $("#anomalyEvent").val($(this).find("td:eq(5)").text());
         $("#anomalyStartTime").val($(this).find("td:eq(6)").text());
         $("#anomalyEndTime").val($(this).find("td:eq(7)").text());
@@ -271,7 +294,60 @@ function clearSearch() {
     $("#selectCommitAnomalyEvent").val("");
     $("#selectCommitDate").val("");
 }
+function addUser(){
+    $('#addUser').click(function (){
+        let userInputName = $('#userName').val();
 
+        let userIndex = userInfos.findIndex(e=>e.name==userInputName);
+        if(userIndex==-1){
+            layer.alert(userInputName+" 不存在，请重新输入！");
+            return
+        }
+
+        let userHiddenId = userInfos[userIndex].hiddenId;
+
+        if(selectInfo.userHiddenIds.indexOf(userHiddenId)!=-1){
+            layer.alert(userInputName+" 已存在该异常人员中，请勿重复添加！");
+            return
+        }
+        // return ;
+        if (dataId=='') {
+            layer.alert("请选择要修改的数据！");
+            return;
+        }
+        if (userHiddenId=='') {
+            layer.alert("请选择新增人员姓名！");
+            return;
+        }
+        var formData = new FormData();
+        formData.append("anomalyHiddenId", dataId);
+        formData.append("userHiddenId", userHiddenId);
+        var rootPath = getWebRootPath();
+        var url = rootPath + "/anomaly/manualAddUser";
+        $.ajax({
+            type: 'POST',
+            url: url,
+            cache: false,
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
+            data: formData,
+            success: function (data) {
+                console.log(data)
+                if (data.result == "error") {
+                    layer.alert(data.msg);
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.msg("新增成功！");
+                } else if (data.result == "no") {
+                    layer.alert(data.msg);
+                }
+                table.draw(false);
+                clearData();
+            }
+        });
+    });
+}
 function addClick() {
     $(document).on('click', '#addCommit', function () {
         if (!validateData(true)) {
@@ -312,6 +388,7 @@ function addClick() {
         });
     });
 }
+
 //删除摄像头
 function deleteCamera() {
     var inx = hasCoordCams.findIndex(e => e.camHiddenId == rightHiidenId);

@@ -102,8 +102,10 @@
                         oriUrls.splice(curIndex,1);
                         loadimages();
                         ren.reload();
+
                     } else if (data.result == "no") {
                         layer.alert(data.msg);
+
                     }
 
 

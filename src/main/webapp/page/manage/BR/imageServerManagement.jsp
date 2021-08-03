@@ -172,7 +172,7 @@
                 data : params,
                 success : function(result) {
 
-                    isSearch = "0";
+                    // isSearch = "0";
                     var pagelist = result.pageList;
                     var datainfos = pagelist.records
                     var obj = {};

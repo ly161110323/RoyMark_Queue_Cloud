@@ -151,7 +151,7 @@
                 dataType : 'json',
                 data : params,
                 success : function(result) {
-                    isSearch = "0";
+                    // isSearch = "0";
                     var pagelist = result.pageList;
                     var datainfos = pagelist.records
                     var obj = {};
@@ -277,10 +277,10 @@
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="deleteCommit">删除</button>
-                                        <button type="button"
-                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
-                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
-                                                id="configWindow">显示配置按钮</button>
+<%--                                        <button type="button"--%>
+<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
+<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
+<%--                                                id="configWindow">显示配置按钮</button>--%>
                                     </div>
                                 </td>
                             </tr>

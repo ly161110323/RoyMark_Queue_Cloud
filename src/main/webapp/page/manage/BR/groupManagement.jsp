@@ -160,7 +160,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    isSearch = "0";
+                    // isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records
                     var obj = {};

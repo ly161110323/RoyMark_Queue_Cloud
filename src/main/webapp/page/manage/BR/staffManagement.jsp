@@ -25,6 +25,8 @@
 
     <script type="text/javascript" src="./js/staffManagement.js">
     </script>
+<%--    <script src="${ctx}/resources/inputSelect/jQuery/jquery-2.1.1.min.js"></script>--%>
+
 
     <script type="text/javascript">
         var table;
@@ -175,7 +177,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    isSearch = "0";
+                    // isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records;
                     var obj = {};
