@@ -90,7 +90,44 @@ public class AnomalyController {
             return jsonObject;
         }
     }
-            /* 快速更新异常记录的状态 */
+
+    /* 为异常手动清除人员 */
+    @RequestMapping(value = "/manualClearUser", produces = "application/json;charset=utf-8")
+    public Object manualClearUser(Long anomalyHiddenId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            String msg;
+            String result;
+            Anomaly anomaly = anomalyService.getById(anomalyHiddenId);
+            List<AnomalyUser> anomalyUserList = anomalyUserService.list(Wrappers.<AnomalyUser>lambdaQuery()
+                    .eq(AnomalyUser::getAnomalyHiddenId, anomalyHiddenId));
+            if (anomaly == null && anomalyUserList.size() == 0) {
+                msg = "当前异常记录没有人员";
+                result = "no";
+            }
+            else {
+                if (anomaly != null)
+                    anomalyService.update(anomaly, Wrappers.<Anomaly>lambdaUpdate().set(Anomaly::getUserHiddenId, null)
+                            .eq(Anomaly::getAnomalyHiddenId, anomalyHiddenId));
+                for (AnomalyUser anomalyUser: anomalyUserList) {
+                    anomalyUserService.removeById(anomalyUser.getId());
+                }
+                msg = "删除成功";
+                result = "ok";
+            }
+
+            jsonObject.put("msg", msg);
+            jsonObject.put("result", result);
+            return jsonObject;
+        } catch (Exception e) {
+            logger.error("/anomaly/manualClearUser 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "清除出现错误");
+            return jsonObject;
+        }
+    }
+
+    /* 快速更新异常记录的状态 */
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
         JSONObject jsonObject = new JSONObject();

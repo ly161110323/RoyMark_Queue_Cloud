@@ -12,6 +12,7 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpSession;
 import javax.websocket.server.ServerEndpoint;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -21,19 +22,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-/**
- * @author liucl
- * @create 2021-01-14 10:41
- */
+
 @Slf4j
-@ServerEndpoint(value = "/webSocketService", encoders = {ImageEncoder.class})
+@ServerEndpoint(value = "/webSocketService", encoders = {ImageEncoder.class}, configurator = WebSocketServerConfigurator.class)
 public class WebSocketServer {
-
-    // 最大读取图片线程数量，可以从参数表中修改
-    public static int maxReadThreadCount = 10;
-
-    // 使用的读取图片线程的次数,以CamId作Key
-    public static Map<String, ReadPicThreadInfo> globalReadPicThreadMap = new HashMap<>();
 
     public static class ReadPicThreadInfo {
         private int useCount;
@@ -115,7 +107,7 @@ public class WebSocketServer {
                     try {
                         Frame frame = picGrabber.grabImage();
                         if (frame == null) {
-                            log.info("frame null");
+                            // log.info("frame null");
                             image = null;
                         } else {
                             image = java2DFrameConverter.getBufferedImage(frame);
@@ -167,11 +159,14 @@ public class WebSocketServer {
         // y轴上的图片个数
         private final int yPicNum;
 
-        List<FFmpegFrameGrabber> grabbers;
+        private List<FFmpegFrameGrabber> grabbers;
 
         private final String threadName;
 
         private Thread t;
+
+        List<ReadPicThread> readPicThreads;
+
 
         public ProductFinalPicThread(String threadName, Session session) {
             this.threadName = threadName;
@@ -248,10 +243,8 @@ public class WebSocketServer {
             StringBuilder grabberErrorMsg = new StringBuilder();
             StringBuilder exceededMsg = new StringBuilder();
 
-            int delayTry = 3;
-
             // grabber和读取线程加载
-            List<ReadPicThread> readPicThreads = new ArrayList<>();
+            readPicThreads = new ArrayList<>();
             for (int i = 0; i < grabbers.size(); i++) {
                 ReadPicThread readPicThread;
                 String readPicThreadName = "thread_" + camIds.get(i);
@@ -270,30 +263,31 @@ public class WebSocketServer {
                         grabbers.get(i).release();
 
                     }
-                    // 超出最大数量则不再能创建新读取图片线程，线程列表置空
-                    else if (globalReadPicThreadMap.size() >= maxReadThreadCount) {
-                        int currentTry = 0;
-                        while (currentTry < delayTry) {        // 当超出最大线程数且未超过最大重连次数，尝试等待1s重试
-                            try {
-                                Thread.sleep(1000);
-                                // 发现存在空闲，退出重试（i--完成
-                                if (globalReadPicThreadMap.size() < maxReadThreadCount) {
-                                    i--;
-                                    break;
-                                }
-                            } catch (InterruptedException e) {
-                                log.info("Thread Sleep Interrupt:", e);
-                            }
-                            currentTry++;
-                        }
-                        // 重试后仍没有空闲
-                        if (globalReadPicThreadMap.size() >= maxReadThreadCount) {
-                            exceededMsg.append(camIds.get(i)).append("、");
-                            readPicThreads.add(null);
-                            grabbers.get(i).release(); // 释放预加载grabber
-                        }
-
-                    }
+//                    // 超出最大数量则不再能创建新读取图片线程，线程列表置空
+//                    int delayTry = 3;
+//                    else if (globalReadPicThreadMap.size() >= maxReadThreadCount) {
+//                        int currentTry = 0;
+//                        while (currentTry < delayTry) {        // 当超出最大线程数且未超过最大重连次数，尝试等待1s重试
+//                            try {
+//                                Thread.sleep(1000);
+//                                // 发现存在空闲，退出重试（i--完成
+//                                if (globalReadPicThreadMap.size() < maxReadThreadCount) {
+//                                    i--;
+//                                    break;
+//                                }
+//                            } catch (InterruptedException e) {
+//                                log.info("Thread Sleep Interrupt:", e);
+//                            }
+//                            currentTry++;
+//                        }
+//                        // 重试后仍没有空闲
+//                        if (globalReadPicThreadMap.size() >= maxReadThreadCount) {
+//                            exceededMsg.append(camIds.get(i)).append("、");
+//                            readPicThreads.add(null);
+//                            grabbers.get(i).release(); // 释放预加载grabber
+//                        }
+//
+//                    }
                     // grabber不为空，没有可重用，且空闲
                     else {
                         // 只加入有效线程
@@ -377,9 +371,8 @@ public class WebSocketServer {
                     break;
                 }
             }
-
-            // 资源释放，先停止图片读取再关闭抓图器，否则触发抓图null错误
             log.info("推流结束");
+            // 资源释放，先停止图片读取再关闭抓图器，否则触发抓图null错误
             for (ReadPicThread readPicThread : readPicThreads) {
                 if (readPicThread != null) {
                     String readThreadName = readPicThread.getThreadName();
@@ -409,16 +402,72 @@ public class WebSocketServer {
     // 最终图片合成线程
     private ProductFinalPicThread thread;
 
+//    // 最大读取图片线程数量，可以从参数表中修改
+//    public static int maxReadThreadCount = 10;
+
+    // 使用的读取图片线程的次数,以CamId作Key
+    public static Map<String, ReadPicThreadInfo> globalReadPicThreadMap = new HashMap<>();
+
+
+    // 最大打开窗口数
+    public static int maxMonitorWindow = 5;
+
+    // 当前打开窗口数
+    public static int currentMonitorWindow = 0;
 
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session) {
-        String maxReadThread = ParamUtil.getParamValueByName("max_read_thread");
-        if (maxReadThread != null && !maxReadThread.equals("")) {
-            maxReadThreadCount = Integer.parseInt(maxReadThread);
+        // 最大线程数读取
+//        String maxReadThread = ParamUtil.getParamValueByName("max_read_thread");
+//        if (maxReadThread != null && !maxReadThread.equals("")) {
+//            maxReadThreadCount = Integer.parseInt(maxReadThread);
+//        }
+        // 窗口数判断
+        String maxMonitorWindowStr = ParamUtil.getParamValueByName("max_monitor_window");
+        if (maxMonitorWindowStr!=null && !maxMonitorWindowStr.equals("")) {
+            maxMonitorWindow = Integer.parseInt(maxMonitorWindowStr);
         }
+        if (currentMonitorWindow >= maxMonitorWindow) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "实时视频监控由于影响服务器性能，已超出最大支持打开窗口数:" + maxMonitorWindow);
+            jsonObject.put("code", -2);
+            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+            return;
+        }
+
+        // 限制IP确认
+        HttpSession httpSession = (HttpSession) session.getUserProperties().get(HttpSession.class.getName());
+        // System.out.println("onOpen#" + httpSession.getAttribute("ClientIP"));
+        // 对象可能为空
+        if (httpSession.getAttribute("ClientIP") == null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "获取本地IP失败，请重试。");
+            jsonObject.put("code", -2);
+            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+            return;
+        }
+        String currentIp = httpSession.getAttribute("ClientIP").toString();
+        // 获取IP失败
+        if (currentIp==null || currentIp.equals("")) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "获取本地IP失败，请重试。");
+            jsonObject.put("code", -2);
+            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+            return;
+        }
+        String allowedIps = ParamUtil.getParamValueByName("allow_ip_list");
+        // 不是本机IP或允许IP推出
+        if (!currentIp.equals("0:0:0:0:0:0:0:1") && !allowedIps.contains(currentIp)) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "实时视频监控由于影响服务器性能，限制只有"+ allowedIps +"的ip地址可以访问。");
+            jsonObject.put("code", -2);
+            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+            return;
+        }
+        currentMonitorWindow++;
         // 必须新建线程去发送图片，否则无法接收来自客户端的消息
         thread = new ProductFinalPicThread("websocket_thread", session);
         thread.start();
@@ -435,6 +484,7 @@ public class WebSocketServer {
         if (this.thread != null) {
             this.thread.openFlag = false;
         }
+        currentMonitorWindow--;
     }
 
     /**
@@ -630,5 +680,6 @@ public class WebSocketServer {
             this.grabber = createGrabber(rtsp, width, height);
         }
     }
+
 
 }
