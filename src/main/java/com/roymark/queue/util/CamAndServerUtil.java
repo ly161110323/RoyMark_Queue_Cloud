@@ -3,15 +3,9 @@ package com.roymark.queue.util;
 import com.roymark.queue.entity.Camera;
 import com.roymark.queue.entity.Server;
 import com.roymark.queue.util.web.HttpUtils;
-import com.roymark.queue.util.web.WebSocketServer;
-import com.roymark.queue.util.web.WebSocketServer.ReadPicThread;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-
-
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 @Slf4j
@@ -33,7 +27,18 @@ public class CamAndServerUtil {
         }
         @Override
         public void run() {
-            boolean result = HttpUtils.isHostReachable(camera.getCamIp(), 1000);
+            // 从rtsp流分离出IP和PORT
+            String rtsp = camera.getCamVideoAddr();
+            String[] strings = rtsp.split("@");
+            if (strings.length < 2) {
+                return;
+            }
+            String ipAndPortStr = strings[1].split("/")[0];
+            String[] ipAndPort = ipAndPortStr.split(":");
+            if (ipAndPort.length < 2) {
+                return;
+            }
+            boolean result = HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000);
             if (result) {
                 camera.setCamStatus("正常");
             }

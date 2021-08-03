@@ -52,7 +52,45 @@ public class AnomalyController {
 
     AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
 
-    /* 快速更新异常记录的状态 */
+    /* 为异常手动添加人员 */
+    @RequestMapping(value = "/manualAddUser", produces = "application/json;charset=utf-8")
+    public Object manualAddUser(Long anomalyHiddenId, Long userHiddenId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            String msg;
+            String result = "no";
+            if (anomalyService.getById(anomalyHiddenId) == null) {
+                msg = "异常不存在";
+            }
+            else if (userService.getById(userHiddenId) == null) {
+                msg = "用户不存在";
+            }
+            else if (anomalyUserService.list(Wrappers.<AnomalyUser>lambdaQuery()
+                    .eq(AnomalyUser::getUserHiddenId, userHiddenId)
+                    .eq(AnomalyUser::getAnomalyHiddenId, anomalyHiddenId)).size() > 0) {
+                msg = "该异常已有该用户";
+            }
+            else {
+                boolean saveResult = anomalyUserService.save(new AnomalyUser(0L, anomalyHiddenId, userHiddenId, 1));
+                if (saveResult) {
+                    msg = "添加成功";
+                    result = "ok";
+                }
+                else {
+                    msg = "数据库添加失败";
+                }
+            }
+            jsonObject.put("msg", msg);
+            jsonObject.put("result", result);
+            return jsonObject;
+        } catch (Exception e) {
+            logger.error("/anomaly/manualAddUser 错误:" + e.getMessage(), e);
+            jsonObject.put("result", "error");
+            jsonObject.put("msg", "添加出现错误");
+            return jsonObject;
+        }
+    }
+            /* 快速更新异常记录的状态 */
     @RequestMapping(value = "/updateAnomalyStatus", produces = "application/json;charset=utf-8")
     public Object updateAnomalyStatus(Long anomalyHiddenId, String anomalyStatus) {
         JSONObject jsonObject = new JSONObject();
@@ -144,7 +182,7 @@ public class AnomalyController {
             if (window != null) {
                 Date lastUpdateTime = window.getUserUpdateTime();
                 Date currentTime = new Date();
-                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 10 * 1000 * 60) // 10分钟以内以更新的用户为准
+                if (lastUpdateTime != null && currentTime.getTime() - lastUpdateTime.getTime() <= 1000 * 60) // 1分钟以内以更新的用户为准
                     anomaly.setUserHiddenId(window.getUserHiddenId());
                     anomaly.setAnomalyFaceConfidence(window.getUserFaceConfidence());
 //            }

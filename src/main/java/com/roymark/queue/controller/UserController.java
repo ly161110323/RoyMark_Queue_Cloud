@@ -449,7 +449,6 @@ public class UserController {
 			String url = host+path;
 
 			MultiValueMap<String, Object> requestParams = new LinkedMultiValueMap<>();
-
 			requestParams.add("image", uploadinfo.getResource());
 			String existPath = queryUser.getUserPhoto();
 			if (existPath!=null && !existPath.equals("")) {

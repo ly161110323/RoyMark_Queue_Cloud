@@ -46,7 +46,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 // 使用Util中线程探测其ip，达到加速探测的目的
                 CamStatusThread camStatusThread = new CamStatusThread(camera);
                 camStatusThread.start();
-                camStatusThreads.add(camStatusThread);// 超时判定
+                camStatusThreads.add(camStatusThread);
             }
             boolean aliveFlag;
             long end;

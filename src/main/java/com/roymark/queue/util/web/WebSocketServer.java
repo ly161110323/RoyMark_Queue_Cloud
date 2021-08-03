@@ -343,7 +343,6 @@ public class WebSocketServer{
 
                     int currentIndex = 0; // 当前页的起始点
 
-                    int rtspNum = rtspUrls.size();
                     for (int i = 0; i < yPicNum; i++) {
                         for (int j = 0; j < xPicNum; j++) {
                             if (currentIndex >= readPicThreads.size()) {
@@ -406,23 +405,20 @@ public class WebSocketServer{
         }
     }
 
-
     private ProductFinalPicThread thread;
 
-    public boolean flag;
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session){
         String maxReadThread = ParamUtil.getParamValueByName("max_read_thread");
-        if (maxReadThread != null) {
+        if (maxReadThread != null && !maxReadThread.equals("")) {
             maxReadThreadCount = Integer.parseInt(maxReadThread);
         }
         // 必须新建线程去发送图片，否则无法接收来自客户端的消息
         thread = new ProductFinalPicThread("websocket_thread", session);
         thread.start();
-        flag = true;
     }
 
     /**
@@ -432,8 +428,10 @@ public class WebSocketServer{
     public void onClose() {
         // 终止进程
         log.info("OnClose");
-        this.flag = false;
-        this.thread.openFlag = false;
+        // 线程可能还没有创建就陷入OnClose
+        if (this.thread != null) {
+            this.thread.openFlag = false;
+        }
     }
 
     /**

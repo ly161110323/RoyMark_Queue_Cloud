@@ -24,8 +24,7 @@ import org.apache.logging.log4j.Logger;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -339,15 +338,17 @@ public class HttpUtils {
 			String cmd;
 
 			if(System.getProperty("os.name").startsWith("Windows"))
-				cmd = "cmd /C ping -n 1 " + host + " | find \"TTL\"";
+				cmd = "cmd /C ping -n 1 " + host + " -w " + timeout;
 			else
 				cmd = "ping -c 1 " + host;
 
 			Process myProcess = Runtime.getRuntime().exec(cmd);
+
 			myProcess.waitFor();
 
 			return myProcess.exitValue() == 0;
 		} catch( Exception e ) {
+			logger.error("exception", e);
 			return false;
 		}
 	}

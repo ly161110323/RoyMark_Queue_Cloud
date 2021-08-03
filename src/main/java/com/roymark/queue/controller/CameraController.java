@@ -251,7 +251,7 @@ public class CameraController {
 			}
 			// 以线程来执行 状态设置，以达到和数据库访问同时进行
             Runnable runnable = () -> {
-                cameraService.setCamsStatus(pageList.getRecords(), 500);
+                cameraService.setCamsStatus(pageList.getRecords(), 2000);
             };
 			Thread thread = new Thread(runnable);
 			thread.start();
