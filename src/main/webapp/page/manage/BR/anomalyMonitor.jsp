@@ -32,7 +32,6 @@
     <script src="${ctx}/resources/inputSelect/jquery.editable-select/jquery.editable-select.min.js"></script>
     <script type="text/javascript">
         var table;
-
         var dataId = "";
         var selectInfo = {}
         var isSearch = "0";

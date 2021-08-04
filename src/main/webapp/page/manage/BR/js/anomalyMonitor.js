@@ -411,11 +411,12 @@ function anomalyConfirm() {
             return;
         }
 
-
+        let status = $('#anomalyStatus').val()
+        console.log('status:',status)
         $.ajax({
             type: 'POST',
             url: getWebRootPath() + '/anomaly/updateAnomalyStatus',
-            data: {'anomalyStatus': 'valid', 'anomalyHiddenId': dataId.toString()},
+            data: {'anomalyStatus': status, 'anomalyHiddenId': dataId.toString()},
             dataType: "json",
             async: true,
             success: function (data) {
