@@ -307,7 +307,7 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         table.draw(false);
-        clearSearch();
+        // clearSearch();
     });
 
 }

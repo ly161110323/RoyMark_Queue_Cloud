@@ -9,14 +9,14 @@ $(document).ready(function () {
     init_areaInfo();
     queryWindowList();
     insertPhoto()
-    icon_operate();//部门图标处理
+    choosePhoto();//部门图标处理
     faceManagerButton();
-    caseAreaClick();
+
     selectAreaClick();
     flashFaceManagerStatus();
 });
 
-function icon_operate() {
+function choosePhoto() {
     $(document).on('click', '#btnChooseStaffPhoto', function () {
         //让文件选择组件做一次点击
         $("#staffPhoto").click();
@@ -400,8 +400,13 @@ function faceManagerButton(){
             // contentType: false, // 不要设置Content-Type请求头
             // data: formData,
             success: function (data) {
-                layer.alert(data.msg)
-                flashFaceManagerStatus()
+
+
+                if(data.result=="ok"){
+                    flashFaceManagerStatus()
+                }else {
+                    layer.alert(data.msg)
+                }
                 // $('#faceManagerServerStatusLabel').text("人脸管理服务开启")
             }
         });
@@ -441,7 +446,10 @@ function showPhotos(){
         area: ['820px','560px'],
         // skin: 'layui-layer-nobg', //没有背景色
         shadeClose: true,
-        content: getWebRootPath()+'/page/manage/BR/showFacePhoto.jsp'
+        content: getWebRootPath()+'/page/manage/BR/showFacePhoto.jsp',
+        cancel:function (){
+            table.draw(false);
+        }
     });
 
 
@@ -556,16 +564,7 @@ function configClick() {
 }
 
 
-function caseAreaClick() {
-    var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click', '#caseArea_administration', function () {
-        var targetUrl = rootPath + "/page/manage/dept/Queue_CaseArea.jsp";
-        var argTitle = "人员信息管理";
-        // openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
-        showPhotos()
-    });
-}
+
 
 function selectAreaClick() {
     var rootPath = getWebRootPath();

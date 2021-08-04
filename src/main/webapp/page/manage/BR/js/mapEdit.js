@@ -283,13 +283,13 @@ function updateClick(callback) {
             data: formData,
             success: function (data) {
                 if (data.result == "error") {
-                    layer.msg("服务器错误！");
+                    layer.msg(data.msg);
                     return;
                 }
                 if (data.result == "ok") {
                     layer.msg("修改成功！");
                 } else if (data.result == "no") {
-                    layer.msg("修改失败！");
+                    layer.msg(data.msg);
                 }
                 // table.draw(false);
                 queryMap();
@@ -298,7 +298,11 @@ function updateClick(callback) {
 
             }
         });
-        saveCamera();
+        // console.log("cam:",hasCoordCams,noCoordCams)
+        if(hasCoordCams.length>0||noCoordCams.length>0){
+            saveCamera();
+        }
+
     });//修改事件处理完毕
 }
 
@@ -467,7 +471,7 @@ function saveCamera(callback) {
         success: function (res) {
 
             if (res.result == 'ok') {
-                layer.msg('保存成功!');
+                layer.msg('摄像头保存成功!');
                 isChange = false;
                 if (typeof callback == 'function') {
                     callback();

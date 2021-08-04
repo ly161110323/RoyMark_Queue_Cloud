@@ -262,7 +262,7 @@ function validateData(isAdd) {
     // var chooseName = $("#txtDeptName").val();
     var chooseId = $("#camId").val();
     var isExit = false;
-
+    var chooseIp = $("#camIp").val();
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function (index, element) {
         var objLs = $(element).find("td:eq(0)>input").val();
@@ -280,6 +280,19 @@ function validateData(isAdd) {
                 }
             }
         }
+        // if ($(element).find("td:eq(3)").text() == chooseIp) {
+        //     if (isAdd) {
+        //         isExit = true;
+        //         layer.alert("摄像头IP已存在！");
+        //         return false;
+        //     } else {
+        //         if (objLs != dataId) {
+        //             isExit = true;
+        //             layer.alert("摄像头IP已存在！");
+        //             return false;
+        //         }
+        //     }
+        // }
     });
 
     if (isExit) {

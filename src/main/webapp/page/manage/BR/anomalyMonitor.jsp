@@ -26,7 +26,10 @@
     </script>
     <script type="text/javascript" src="${ctx}/resources/js/layDate-v5.3.0/laydate/laydate.js">
     </script>
-
+<%--    <link href="${ctx}/resources/inputSelect/bootstrap/bootstrap.min.css" rel="stylesheet" />--%>
+    <script src="${ctx}/resources/inputSelect/bootstrap/bootstrap.js"></script>
+    <link href="${ctx}/resources/inputSelect/jquery.editable-select/jquery.editable-select.min.css" rel="stylesheet" />
+    <script src="${ctx}/resources/inputSelect/jquery.editable-select/jquery.editable-select.min.js"></script>
     <script type="text/javascript">
         var table;
         var dataId = "";
@@ -34,6 +37,7 @@
         var isSearch = "0";
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
+        var userInfos = [];
         var ctx = "${pageContext.request.contextPath}";
         $(document).ready(function () {
             //加载表格
@@ -74,7 +78,7 @@
                             {'mData': 'anomalyConfidence', 'sTitle': '异常置信度', 'sName': 'anomalyConfidence', 'sClass': 'center'},
                             {'mData': 'faceConfs', 'sTitle': '身份置信度', 'sName': 'faceConfs', 'sClass': 'center'},
                             {'mData': 'windowHiddenId', 'sTitle': 'windowHiddenId', 'sName': 'windowHiddenId', 'sClass': 'hidden'},
-                            {'mData': 'userHiddenId', 'sTitle': 'userHiddenId', 'sName': 'userHiddenId', 'sClass': 'hidden'},
+                            {'mData': 'userHiddenIds', 'sTitle': 'userHiddenIds', 'sName': 'userHiddenIds', 'sClass': 'hidden'},
                             {'mData': 'anomalyVideoPath', 'sTitle': 'anomalyVideoPath', 'sName': 'anomalyVideoPath', 'sClass': 'hidden'},
                             {'mData': 'anomalyImagePath', 'sTitle': 'anomalyImagePath', 'sName': 'anomalyImagePath', 'sClass': 'hidden'},
                             {'mData': 'anomalyStatus', 'sTitle': '确认结果', 'sName': 'anomalyStatus', 'sClass': 'center'},
@@ -197,23 +201,30 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    isSearch = "0";
+                    // isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records
                     var obj = {};
                     obj['data'] = datainfos;
                     var status = {'pending':'待处理','valid':"有效","invalid":"无效"};
+
                     obj['data'].forEach(function (item) {
                         item['anomalyStatus'] =status[item.anomalyStatus];
                         item['anomalyConfidence'] = parseFloat(item.anomalyConfidence).toFixed(2).toString();
                         let faceConfs = [];
                         let userNames = [];
+                        let userIds = [];
+
                         item.userShortInfos.forEach(function (x){
                             faceConfs.push(parseFloat(x['faceConf']).toFixed(2));
                             userNames.push(x['userName']);
+                            userIds.push(x['userId'])
+
                         });
+
                         item['faceConfs'] = faceConfs.toString();
                         item['userNames'] = userNames.toString()
+                        item['userHiddenIds'] = userIds.toString()
                         // if(faceConfs.length==0){ // 保留2位小数
                         //     item['faceConfs'] = '';
                         // }else {
@@ -267,7 +278,7 @@
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd" disabled="disabled"
                                                     id="windowId" name="windowId">
-                                                <option value="0">请选择窗口ID</option>
+                                                <option value="">请选择窗口ID</option>
 
                                             </select>
                                         </div>
@@ -289,11 +300,10 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">人员姓名：</label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd" disabled="disabled"
-                                                    id="userName" name="userName">
-                                                <option value="0">请选择人员</option>
-
+                                        <div class="col-sm-8" style="width: 60%;">
+                                            <select class="form-control m-b table_content_zd es-input" autocomplete="off"
+                                                    id="userName" name="userName" >
+                                                <option value="">请选择新增人员姓名</option>
                                             </select>
                                         </div>
                                     </div>
@@ -340,14 +350,13 @@
 
                                     </div>
                                 </td>
-                                <td style="width: 25%;">
+                                <td >
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">确认结果：</label>
-
-                                        <div class="col-sm-8">
-                                            <select class="form-control m-b table_content_zd"
-                                                    id="anomalyStatus" name="anomalyStatus" >
+                                        <div class="col-sm-8" >
+                                            <select class="form-control m-b "
+                                                    id="anomalyStatus" name="anomalyStatus">
                                                 <option value="">请选择确认结果</option>
                                                 <option value="pending">待处理</option>
                                                 <option value="valid">有效</option>
@@ -355,9 +364,11 @@
                                             </select>
 
                                         </div>
+
                                     </div>
 
                                 </td>
+
 
 
 
@@ -435,11 +446,16 @@
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="modifyCommit">确认结果
                                         </button>
-<%--                                        <button type="button"--%>
-<%--                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"--%>
-<%--                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"--%>
-<%--                                                id="clearData">清除--%>
-<%--                                        </button>--%>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="clearUser">清除人员
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="addUser">新增人员
+                                        </button>
                                         <button type="button"
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
