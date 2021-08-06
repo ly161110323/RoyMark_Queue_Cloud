@@ -33,8 +33,9 @@
     <script type="text/javascript">
         var table;
         var dataId = "";
-        var selectInfo = {}
+        var selectInfo = {};
         var isSearch = "0";
+        var searchData = {};
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
         var userInfos = [];
@@ -148,21 +149,12 @@
         function loadData(sSource, aoData, fnCallback) {
             console.log(sSource)
             console.log(aoData)
-
+            var that = this;
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
-            var inputWindowId = $("#inputCommitWindowId").val();
-            var inputUserName = $("#inputCommitUserName").val();
-            var selectAnomalyEvent = $("#selectCommitAnomalyEvent").find("option:selected").text();
-            var selectDate = $("#selectCommitDate").val();
-            var showPendingList = [];
-            $("input[name='filter']").each(function (index,ele){
-                if($(ele).is(":checked")){
-                    showPendingList.push($(ele).val())
-                }
-            })
-            var showPending = showPendingList.toString();
+
+
             // console.log(showPending);
             var params;
             params = {
@@ -170,26 +162,14 @@
                 "pageSize":pageSize,
                 "pageNo":pageNo,
             };
+
             if(isSearch=="1"){
-                if(inputWindowId != ""){
-                    params["windowId"] = inputWindowId;
-
-                }
-                if(inputUserName!=""){
-                    params["userName"] = inputUserName;
-                }
-                if(selectAnomalyEvent !="请选择异常事件"){
-                    params["event"] = selectAnomalyEvent;
-
-                }
-                if(selectDate !=""){
-                    params["date"] = selectDate;
-                }
-                if(showPending!= ''){
-                    params["anomalyStatus"] = showPending;
-                }
-
+                params = {
+                    "pageSize":pageSize,
+                    "pageNo":1,
+                };
             }
+            $.extend(params,searchData);
             dataId = "";
 
 
@@ -201,7 +181,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    // isSearch = "0";
+                    isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records
                     var obj = {};
@@ -243,6 +223,7 @@
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
                         obj.iTotalDisplayRecords = pageList.total;
+                        that.api().page(pageList.current-1);
                         fnCallback(obj);
                     } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();

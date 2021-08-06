@@ -542,6 +542,26 @@ function searchClick() {
     //为查询按钮绑定点击事件
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
+        var inputUserName = $("#inputCommitUserName").val();
+        var inputUserId = $("#inputCommitUserId").val();
+        var inputUserDepartment = $("#inputCommitUserDepartment").val();
+
+        let params = {};
+        if(inputUserName != ""){
+            params["userName"] = inputUserName;
+
+        }
+        if(inputUserId !=""){
+            params["userId"] = inputUserId;
+
+        }
+        if(inputUserDepartment !=""){
+            params["userDepartment"] = inputUserDepartment;
+        }
+
+
+        searchData =params;
+
         table.draw(false);
         // clearSearch();
         flashFaceManagerStatus();

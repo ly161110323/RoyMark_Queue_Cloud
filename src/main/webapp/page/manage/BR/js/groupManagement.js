@@ -306,6 +306,10 @@ function searchClick() {
     //为查询按钮绑定点击事件
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
+
+        let params = {};
+
+        searchData =params;
         table.draw(false);
         // clearSearch();
     });

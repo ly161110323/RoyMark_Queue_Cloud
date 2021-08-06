@@ -29,6 +29,7 @@
         var table;
         var dataId = "";
         var isSearch = "0";
+        var searchData = {};
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
 
@@ -141,33 +142,25 @@
         function loadData(sSource, aoData, fnCallback) {
             console.log(sSource)
             console.log(aoData)
-
+            var that = this;
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
-            var inputCamId = $("#inputCommitCamId").val();
-            var selectServerId = $("#selectCommitServerId").find("option:selected").text();
-            // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
+
             var params;
             params = {
 
                 "pageSize": pageSize,
                 "pageNo": pageNo,
             };
-            if (isSearch == "1") {
-                if (selectServerId != "请选择绑定服务器ID") {
-                    params["serverId"] = selectServerId;
 
-                }
-                // if(selectWindowId !="请选择绑定窗口ID"){
-                //     params["windowId"] = selectWindowId;
-                //
-                // }
-                if (inputCamId != "") {
-                    params["camId"] = inputCamId;
-                }
-
+            if(isSearch=="1"){
+                params = {
+                    "pageSize":pageSize,
+                    "pageNo":1,
+                };
             }
+            $.extend(params,searchData);
             dataId = "";
 
 
@@ -179,7 +172,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    // isSearch = "0";
+                    isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records
                     var obj = {};
@@ -192,6 +185,7 @@
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
                         obj.iTotalDisplayRecords = pageList.total;
+                        that.api().page(pageList.current-1);
                         fnCallback(obj);
                     } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();

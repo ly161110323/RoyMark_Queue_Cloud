@@ -29,9 +29,10 @@
         var table;
         var dataId = "";
         var isSearch = "0";
-        var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";
-        var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";
-        var clickitem = null
+        var searchData = {};
+        var selectInfo = {};
+
+
         $(document).ready(function() {
             //加载表格
             loadTable();
@@ -138,11 +139,7 @@
 
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength+1  : aoData.iDisplayStart / aoData.iDisplayLength;
-            //设置参数
-            // var caseAreaObj = $("[name=selectCaseLs]>option:selected");
-            // var selectedArea = caseAreaObj.val();
-            var serverName = $("#inputCommitServerName").val();
-            var serverId = $("#inputCommitServerId").val();
+            var that =this;
             var params;
             params = {
 
@@ -150,16 +147,12 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(serverName != ""){
-                    params["serverName"] = serverName;
-
-                }
-                if(serverId !=""){
-                    params["serverId"] = serverId;
-
-                }
-
+                params = {
+                    "pageSize":pageSize,
+                    "pageNo":1,
+                };
             }
+            $.extend(params,searchData);
             dataId = "";
 
 
@@ -172,15 +165,16 @@
                 data : params,
                 success : function(result) {
 
-                    // isSearch = "0";
-                    var pagelist = result.pageList;
-                    var datainfos = pagelist.records
+                    isSearch = "0";
+                    var pageList = result.pageList;
+                    var datainfos = pageList.records
                     var obj = {};
                     obj['data'] = datainfos;
                     console.log(obj)
                     if(typeof(datainfos)!="undefined"&&datainfos.length>0){
-                        obj.iTotalRecords = pagelist.total;
-                        obj.iTotalDisplayRecords = pagelist.total;
+                        obj.iTotalRecords = pageList.total;
+                        obj.iTotalDisplayRecords = pageList.total;
+                        that.api().page(pageList.current-1);
                         fnCallback(obj);
                     }else if((typeof(datainfos)=="undefined")&&pageNo>1){
                         var oTable = $("#itemResultTable").dataTable();
