@@ -45,4 +45,7 @@ public class ActionUser implements Serializable {
     @TableField(exist = false)
     private String windowId;
 
+    @TableField(exist = false)
+    private String windowName;
+
 }

@@ -26,6 +26,9 @@ public class Camera implements Serializable {
     @TableField(value = "cam_id")
     private String camId;
 
+    @TableField(value = "cam_name")
+	private String camName;
+
     @TableField(value = "cam_ip")
 	private String camIp;
 
@@ -53,6 +56,9 @@ public class Camera implements Serializable {
 
 	@TableField(exist = false)
 	private String serverId;
+
+	@TableField(exist = false)
+	private String serverName;
 
 	@TableField(value = "map_hidden_id")
 	private Long mapHiddenId;

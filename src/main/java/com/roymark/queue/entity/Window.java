@@ -55,4 +55,7 @@ public class Window implements Serializable {
     @TableField(exist = false)
 	private String camId;
 
+    @TableField(exist = false)
+    private String camName;
+
 }

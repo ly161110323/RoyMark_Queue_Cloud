@@ -16,6 +16,7 @@
         <result column="user_update_time" property="userUpdateTime" />
         <result column="user_face_confidence" property="userFaceConfidence" />
         <result column="cam_id" property="camId" />
+        <result column="cam_name" property="camName" />
     </resultMap>
 
 

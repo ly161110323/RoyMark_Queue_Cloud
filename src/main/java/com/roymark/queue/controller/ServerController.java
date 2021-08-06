@@ -96,7 +96,7 @@ public class ServerController {
                 if (server.getServerIp().equals(queryServer.getServerIp())
                         && server.getServerPort().equals(queryServer.getServerPort())) {
                     jsonObject.put("result", "no");
-                    jsonObject.put("msg", "IP地址和端口不能重复");
+                    jsonObject.put("msg", "IP地址和端口不能同时重复");
                     return jsonObject;
                 }
             }
