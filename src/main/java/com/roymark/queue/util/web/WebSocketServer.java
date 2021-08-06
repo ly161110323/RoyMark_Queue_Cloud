@@ -181,16 +181,16 @@ public class WebSocketServer {
             List<String> camIdList = map.get("cam_id");
 
             // 参数预处理
-            if (map.containsKey("x")) {
-                xPicNum = Integer.parseInt(map.get("x").get(0));
-            } else {
-                xPicNum = 3;
-            }
-            if (map.containsKey("y")) {
-                yPicNum = Integer.parseInt(map.get("y").get(0));
-            } else {
-                yPicNum = 3;
-            }
+//            if (map.containsKey("x")) {
+//                xPicNum = Integer.parseInt(map.get("x").get(0));
+//            } else {
+//                xPicNum = 3;
+//            }
+//            if (map.containsKey("y")) {
+//                yPicNum = Integer.parseInt(map.get("y").get(0));
+//            } else {
+//                yPicNum = 3;
+//            }
             if (map.containsKey("width")) {
                 width = Integer.parseInt(map.get("width").get(0));
             } else {
@@ -201,12 +201,7 @@ public class WebSocketServer {
             } else {
                 height = 540;
             }
-            singleWidth = width / xPicNum;
-            singleHeight = height / yPicNum;
 
-            // 重构width和height (可能不能除尽)
-            width = singleWidth * xPicNum;
-            height = singleHeight * yPicNum;
 
             String rtspUrlsStr = "";
             if (rtspList != null && rtspList.size() > 0) {
@@ -220,6 +215,37 @@ public class WebSocketServer {
             rtspUrls = Arrays.asList(rtspUrlsStr.split(","));
             camIds = Arrays.asList(camIdStr.split(","));
 
+            // 自适配窗口格
+            switch (rtspUrls.size()) {
+                case 1:
+                    xPicNum = 1;
+                    yPicNum = 1;
+                    break;
+                case 2:
+                    xPicNum = 2;
+                    yPicNum = 1;
+                    break;
+                case 3:
+                case 4:
+                    xPicNum = 2;
+                    yPicNum = 2;
+                    break;
+                case 5:
+                case 6:
+                    xPicNum = 3;
+                    yPicNum = 2;
+                    break;
+                default:
+                    xPicNum = 3;
+                    yPicNum = 3;
+            }
+
+            // 重构width和height (可能不能除尽)
+            singleWidth = width / xPicNum;
+            singleHeight = height / yPicNum;
+
+            width = singleWidth * xPicNum;
+            height = singleHeight * yPicNum;
             log.info("用户连接");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户连接上了");
@@ -415,6 +441,8 @@ public class WebSocketServer {
     // 当前打开窗口数
     public static int currentMonitorWindow = 0;
 
+    // 启动标志
+    private boolean startedFlag = false;
     /**
      * 连接建立成功调用的方法
      */
@@ -433,7 +461,7 @@ public class WebSocketServer {
         if (currentMonitorWindow >= maxMonitorWindow) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "实时视频监控由于影响服务器性能，已超出最大支持打开窗口数:" + maxMonitorWindow);
-            jsonObject.put("code", -2);
+            jsonObject.put("code", -1);
             sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
             return;
         }
@@ -445,28 +473,31 @@ public class WebSocketServer {
         if (httpSession.getAttribute("ClientIP") == null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "获取本地IP失败，请重试。");
-            jsonObject.put("code", -2);
+            jsonObject.put("code", -1);
             sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
             return;
         }
-        String currentIp = httpSession.getAttribute("ClientIP").toString();
-        // 获取IP失败
-        if (currentIp==null || currentIp.equals("")) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("msg", "获取本地IP失败，请重试。");
-            jsonObject.put("code", -2);
-            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
-            return;
+        if (ParamUtil.getParamValueByName("enable_allow_ip_list").equals("是")) {
+            String currentIp = httpSession.getAttribute("ClientIP").toString();
+            // 获取IP失败
+            if (currentIp==null || currentIp.equals("")) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("msg", "获取本地IP失败，请重试。");
+                jsonObject.put("code", -1);
+                sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+                return;
+            }
+            String allowedIps = ParamUtil.getParamValueByName("allow_ip_list");
+            // 不是本机IP或允许IP推出
+            if (!currentIp.equals("0:0:0:0:0:0:0:1") && !allowedIps.contains(currentIp)) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("msg", "实时视频监控由于影响服务器性能，限制只有"+ allowedIps +"的ip地址可以访问。");
+                jsonObject.put("code", -1);
+                sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
+                return;
+            }
         }
-        String allowedIps = ParamUtil.getParamValueByName("allow_ip_list");
-        // 不是本机IP或允许IP推出
-        if (!currentIp.equals("0:0:0:0:0:0:0:1") && !allowedIps.contains(currentIp)) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("msg", "实时视频监控由于影响服务器性能，限制只有"+ allowedIps +"的ip地址可以访问。");
-            jsonObject.put("code", -2);
-            sendMessageByStr(session, JSONObject.toJSONString(jsonObject));
-            return;
-        }
+        startedFlag = true;
         currentMonitorWindow++;
         // 必须新建线程去发送图片，否则无法接收来自客户端的消息
         thread = new ProductFinalPicThread("websocket_thread", session);
@@ -484,7 +515,8 @@ public class WebSocketServer {
         if (this.thread != null) {
             this.thread.openFlag = false;
         }
-        currentMonitorWindow--;
+        if (startedFlag)
+            currentMonitorWindow--;
     }
 
     /**

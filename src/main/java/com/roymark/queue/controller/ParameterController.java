@@ -9,6 +9,7 @@ import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.Parameter;
 import com.roymark.queue.service.ParameterService;
 import com.alibaba.fastjson.JSONObject;
+import com.roymark.queue.util.ParamUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -55,8 +58,24 @@ public class ParameterController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            parameter.setParamHiddenId(Long.valueOf(0));
+            parameter.setParamHiddenId(0L);
 
+            if (parameter.getParamName().equals("work_time")) {
+                if (!checkForWorkTime(parameter.getParamValue()) || !checkForWorkTime(parameter.getParamDefault())) {
+                    jsonObject.put("msg", "参数值或默认值设置格式有误");
+                    jsonObject.put("result", "no");
+                    return jsonObject;
+                }
+            }
+            List<Parameter> queryParameters = parameterService.list();
+
+            for (Parameter queryParam: queryParameters) {
+                if (queryParam.getParamName().equals(parameter.getParamName())) {
+                    jsonObject.put("msg", "参数名已存在");
+                    jsonObject.put("result", "no");
+                    return jsonObject;
+                }
+            }
             boolean result = parameterService.save(parameter);
             if (result) {
                 jsonObject.put("result", "ok");
@@ -79,8 +98,15 @@ public class ParameterController {
     @RequestMapping(value = "/update", produces = "application/json;charset=utf-8")
     public Object update(Parameter parameter) {
         JSONObject jsonObject = new JSONObject();
-
         try {
+            if (parameter.getParamName().equals("work_time")) {
+                if (!checkForWorkTime(parameter.getParamValue()) || !checkForWorkTime(parameter.getParamDefault())) {
+                    jsonObject.put("msg", "参数值或默认值设置格式有误");
+                    jsonObject.put("result", "no");
+                    return jsonObject;
+                }
+            }
+
             Parameter queryParameter = parameterService.getById(parameter.getParamHiddenId());
             if (queryParameter == null) {
                 jsonObject.put("result", "no");
@@ -88,6 +114,12 @@ public class ParameterController {
                 return jsonObject;
             }
 
+            queryParameter = parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, parameter.getParamName()));
+            if (queryParameter != null && !queryParameter.getParamHiddenId().equals(parameter.getParamHiddenId())) {
+                jsonObject.put("result", "no");
+                jsonObject.put("msg", "参数名已存在");
+                return jsonObject;
+            }
             boolean result = parameterService.update(parameter, Wrappers.<Parameter>lambdaUpdate().eq(Parameter::getParamHiddenId, parameter.getParamHiddenId()));
             if (result) {
                 jsonObject.put("result", "ok");
@@ -201,4 +233,43 @@ public class ParameterController {
         }
     }
 
+    // 检查工作时间格式
+    public static boolean checkForWorkTime(String workTimeStr) {
+        Date date = new Date();
+        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        // 不能缺省
+        if (workTimeStr.equals("")) {
+            return false;
+        }
+        else {
+            String[] workTimeArray = workTimeStr.split(",");
+            for (String workTimeInterval : workTimeArray) {
+                String[] startAndEnd = workTimeInterval.split("-");
+                // 格式检查 startTime-endTime
+                if (startAndEnd.length != 2) {
+                    return false;
+                } else {
+                    String startTime = dateStr + " " + startAndEnd[0] + ":00";
+                    String endTime = dateStr + " " + startAndEnd[1] + ":00";
+                    SimpleDateFormat checkFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                    try {
+                        checkFormat.setLenient(false);
+                        Date startDate = checkFormat.parse(startTime);
+                        Date endDate = checkFormat.parse(endTime);
+                        // 结束时间在开始时间之前
+                        if (endDate.before(startDate)) {
+                            return false;
+                        }
+
+                    } catch (Exception e) {
+                        logger.error("Param workTime Format:", e);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+    }
 }

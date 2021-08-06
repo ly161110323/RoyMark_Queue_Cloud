@@ -30,52 +30,14 @@ public class ParamUtil {
         Parameter parameter = paramUtil.parameterService.getOne(Wrappers.<Parameter>lambdaQuery().eq(Parameter::getParamName, name));
         if (parameter == null) {
             return "";
-        }
-        else if (parameter.getParamValue()!=null && !parameter.getParamValue().equals("")) {
+        } else if (parameter.getParamValue() != null && !parameter.getParamValue().equals("")) {
             return parameter.getParamValue();
-        }
-        else if (parameter.getParamDefault()!=null && !parameter.getParamDefault().equals("")) {
+        } else if (parameter.getParamDefault() != null && !parameter.getParamDefault().equals("")) {
             return parameter.getParamDefault();
         }
         return "";
     }
 
-    // -1代表格式不正确，0代表不在工作时间，1代表在工作时间
-    public static int checkForWorkOut() {
-        Date date = new Date();
-        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        String workTimeStr = getParamValueByName("work_time");
-        // 缺省代表无限制
-        if (workTimeStr.equals("")) {
-            return 1;
-        }
-        else {
-            String[] workTimeArray = workTimeStr.split(",");
-            for (String workTimeInterval: workTimeArray) {
-                String[] startAndEnd = workTimeInterval.split("-");
-                // 格式检查 startTime-endTime
-                if (startAndEnd.length != 2) {
-                    return -1;
-                }
-                else {
-                    String startTime = dateStr + " " + startAndEnd[0] + ":00";
-                    String endTime = dateStr + " " + startAndEnd[1] + ":00";
-                    SimpleDateFormat checkFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    try {
-                        checkFormat.setLenient(false);
-                        Date startDate = checkFormat.parse(startTime);
-                        Date endDate = checkFormat.parse(endTime);
-                        if (date.after(startDate) && date.before(endDate)) {
-                            return 1;
-                        }
-                    } catch (Exception e) {
-                        log.error("ParamUtil.checkForWorkOut:", e);
-                        return -1;
-                    }
-                }
-            }
-            return 0;
-        }
 
-    }
+
 }

@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -136,12 +138,18 @@ public class CameraController {
                 return jsonObject;
             }
             boolean result;
-            if (camera.getServerHiddenId() != null) {
-                result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
-            } else {
-                result = cameraService.update(camera, Wrappers.<Camera>lambdaUpdate().set(Camera::getServerHiddenId, null).eq(Camera::getCamHiddenId, camera.getCamHiddenId()));
+            LambdaUpdateWrapper<Camera> wrappers = Wrappers.<Camera>lambdaUpdate().eq(Camera::getCamHiddenId, camera.getCamHiddenId());
+            if (camera.getServerHiddenId() == null) {
+                wrappers.set(Camera::getServerHiddenId, null);
+            }
+            if (camera.getGroupHiddenId() == null) {
+                wrappers.set(Camera::getGroupHiddenId, null);
+            }
+            if (camera.getMapHiddenId() == null) {
+                wrappers.set(Camera::getMapHiddenId, null);
             }
 
+            result = cameraService.update(camera, wrappers);
             if (result) {
                 jsonObject.put("result", "ok");
                 jsonObject.put("msg", "修改成功");

@@ -38,11 +38,7 @@ public class FaceController {
     @RequestMapping(value = "/upload", produces = "application/json;charset=utf-8")
     public Object insert(Long windowHiddenId, String faceId, String boxId, String reId, double faceConf) {
         JSONObject jsonObject = new JSONObject();
-        // 不在工作时间
-        if (ParamUtil.checkForWorkOut() != 1) {
-            jsonObject.put("result", "no");
-            return jsonObject;
-        }
+
         Date date = new Date();
         try {
             // 接收消息时清空无效信息

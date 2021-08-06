@@ -59,7 +59,8 @@ public class AnomalyController {
         try {
             String msg;
             String result = "no";
-            if (anomalyService.getById(anomalyHiddenId) == null) {
+            Anomaly anomaly = anomalyService.getById(anomalyHiddenId);
+            if (anomaly == null) {
                 msg = "异常不存在";
             }
             else if (userService.getById(userHiddenId) == null) {
@@ -71,14 +72,16 @@ public class AnomalyController {
                 msg = "该异常已有该用户";
             }
             else {
-                boolean saveResult = anomalyUserService.save(new AnomalyUser(0L, anomalyHiddenId, userHiddenId, 1));
-                if (saveResult) {
-                    msg = "添加成功";
-                    result = "ok";
+                // 将默认用户转至中间表
+                if (anomaly.getDefaultUserFlag()) {
+                    anomalyUserService.checkInsert(new AnomalyUser(0L, anomalyHiddenId, anomaly.getUserHiddenId(), anomaly.getAnomalyFaceConfidence()));
                 }
-                else {
-                    msg = "数据库添加失败";
-                }
+                anomalyUserService.checkInsert(new AnomalyUser(0L, anomalyHiddenId, userHiddenId, 1));
+
+                msg = "添加成功";
+                result = "ok";
+
+
             }
             jsonObject.put("msg", msg);
             jsonObject.put("result", result);
@@ -155,19 +158,10 @@ public class AnomalyController {
     @RequestMapping(value = "/updateAnomalyFromServer", produces = "application/json;charset=utf-8")
     public void updateAnomalyFromServer(Anomaly anomaly, String imagePath, String videoPath,
                                         String boxIds) {
-        // 不在工作时间
-        if (ParamUtil.checkForWorkOut() != 1) {
-            return;
-        }
         try {
             String[] boxIdArray = boxIds.split(",");
             List<String> boxIdList = Arrays.asList(boxIdArray);
-
-            System.out.println(anomaly);
-            if (anomaly.getAnomalyEvent() == null || anomaly.getWindowHiddenId() == null || anomaly.getAnomalyStartDate() == null) {
-                logger.info("回传格式有误");
-                return;
-            }
+            // System.out.println(anomaly);
 
             // 获取服务器信息
             String[] imagePaths = imagePath.split(",");
@@ -493,9 +487,9 @@ public class AnomalyController {
                         anomalyHiddenIdSet.add(anomalyUser.getAnomalyHiddenId());
                     }
                     // 处理窗口中默认的
-                    List<Anomaly> anomalies = anomalyService.list(Wrappers.<Anomaly>lambdaQuery()
-                            .eq(Anomaly::getUserHiddenId, user.getUserHiddenId())
-                            .eq(Anomaly::getDefaultUserFlag, true));
+                    List<Anomaly> anomalies = anomalyService.list(new QueryWrapper<Anomaly>()
+                            .eq("br_anomaly.user_hidden_id", user.getUserHiddenId())
+                            .eq("default_user_flag", true));
                     for (Anomaly anomaly: anomalies) {
                         anomalyHiddenIdSet.add(anomaly.getAnomalyHiddenId());
                     }

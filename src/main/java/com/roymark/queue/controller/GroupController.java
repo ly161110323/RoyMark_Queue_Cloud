@@ -93,18 +93,18 @@ public class GroupController {
 
             if (queryGroup == null) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层不存在");
+                jsonObject.put("msg", "摄像头组不存在");
                 return jsonObject;
             }
             if (group.getGroupId() == null || group.getGroupId().equals("")) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层ID不能为空");
+                jsonObject.put("msg", "摄像头组ID不能为空");
                 return jsonObject;
             }
             queryGroup = groupService.getOne(Wrappers.<Group>lambdaQuery().eq(Group::getGroupId, group.getGroupId()));
             if (queryGroup != null && !queryGroup.getGroupHiddenId().equals(group.getGroupHiddenId())) {
                 jsonObject.put("result", "no");
-                jsonObject.put("msg", "楼层ID已存在");
+                jsonObject.put("msg", "摄像头组ID已存在");
                 return jsonObject;
             }
 

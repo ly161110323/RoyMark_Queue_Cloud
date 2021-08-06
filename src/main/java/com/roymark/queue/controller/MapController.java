@@ -122,11 +122,6 @@ public class MapController {
                 return jsonObject;
             }
 
-            if (queryMap != null && !queryMap.getMapHiddenId().equals(map.getMapHiddenId())) {
-                jsonObject.put("result", "no");
-                jsonObject.put("msg", "区域ID已存在");
-                return jsonObject;
-            }
             if (uploadMap != null) {
                 String uploadPath = "/uploads/map/";
                 String filePath = UploadUtil.fileupload(request, uploadMap, uploadPath);
