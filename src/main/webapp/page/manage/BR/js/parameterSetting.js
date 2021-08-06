@@ -336,10 +336,15 @@ function deleteClick() {
 }
 function searchClick()
 {
-
     //为查询按钮绑定点击事件
     $(document).on('click','#queCommit',function(){
         isSearch="1";
+        let inputParamName = $("#inputCommitParamName").val();
+        let params = {};
+        if(inputParamName != ""){
+            params["paramName"] = inputParamName;
+        }
+        searchData=params;
         table.draw(false);
         // $('#inputCommitParamValue').val("");
         // $('#inputCommitParamName').val("");

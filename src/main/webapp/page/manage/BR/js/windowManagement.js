@@ -425,6 +425,24 @@ function searchClick()
     //为查询按钮绑定点击事件
     $(document).on('click','#queCommit',function(){
         isSearch="1";
+        var windowId = $("#inputCommitWindowId").val();
+        var windowName = $("#inputCommitWindowName").val();
+        var windowDepartment = $("#inputCommitWindowDepartment").val();
+        var params={};
+
+        if (windowId != "") {
+            params["windowId"] = windowId;
+
+        }
+        if (windowName != "") {
+            params["windowName"] = windowName;
+
+        }
+        if (windowDepartment != "") {
+            params["windowDepartment"] = windowDepartment;
+
+        }
+        searchData =params;
         table.draw(false);
 
     });

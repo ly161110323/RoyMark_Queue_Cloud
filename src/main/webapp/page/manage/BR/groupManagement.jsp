@@ -36,6 +36,7 @@
         var table;
         var dataId = "";
         var isSearch = "0";
+        var searchData = {};
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
 
@@ -139,7 +140,7 @@
 
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
-
+            var that = this;
 
             // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
             var params;
@@ -148,7 +149,13 @@
                 "pageSize": pageSize,
                 "pageNo": pageNo,
             };
-
+            if(isSearch=="1"){
+                params = {
+                    "pageSize":pageSize,
+                    "pageNo":1,
+                };
+            }
+            $.extend(params,searchData);
             dataId = "";
 
 
@@ -160,7 +167,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    // isSearch = "0";
+                    isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records
                     var obj = {};
@@ -173,6 +180,7 @@
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
                         obj.iTotalDisplayRecords = pageList.total;
+                        that.api().page(pageList.current-1);
                         fnCallback(obj);
                     } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();

@@ -319,7 +319,7 @@ function updateClick() {
                     return;
                 }
                 if (data.result == "ok") {
-                    layer.msg("修改成功！"+data.msg);
+                    layer.msg("修改成功！");
                 } else if (data.result == "no") {
                     layer.alert("修改失败！"+data.msg);
                 }
@@ -487,6 +487,20 @@ function searchClick()
     //为查询按钮绑定点击事件
     $(document).on('click','#queCommit',function(){
         isSearch="1";
+        var serverName = $("#inputCommitServerName").val();
+        var serverId = $("#inputCommitServerId").val();
+        var params={};
+
+        if(serverName != ""){
+            params["serverName"] = serverName;
+
+        }
+        if(serverId !=""){
+            params["serverId"] = serverId;
+
+        }
+        searchData =params;
+
         table.draw(false);
         // clearSearch();
     });

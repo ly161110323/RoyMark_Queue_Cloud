@@ -33,6 +33,7 @@
         var dataId = "";
         var staffInfo = {}
         var isSearch = "0";
+        var searchData = {};
         var defaultAreaLs = "${sessionScope.DEFAULT_PROJECT.areaLs}";
         var defaultAreaName = "${sessionScope.DEFAULT_PROJECT.areaName}";
 
@@ -139,13 +140,10 @@
         function loadData(sSource, aoData, fnCallback) {
             console.log(sSource)
             console.log(aoData)
-
+            var that = this;
             var pageSize = aoData.iDisplayLength;
             var pageNo = aoData.iDisplayStart % aoData.iDisplayLength == 0 ? aoData.iDisplayStart / aoData.iDisplayLength + 1 : aoData.iDisplayStart / aoData.iDisplayLength;
 
-            var inputUserName = $("#inputCommitUserName").val();
-            var inputUserId = $("#inputCommitUserId").val();
-            var inputUserDepartment = $("#inputCommitUserDepartment").val();
             var params;
             params = {
 
@@ -153,19 +151,12 @@
                 "pageNo":pageNo,
             };
             if(isSearch=="1"){
-                if(inputUserName != ""){
-                    params["userName"] = inputUserName;
-
-                }
-                if(inputUserId !=""){
-                    params["userId"] = inputUserId;
-
-                }
-                if(inputUserDepartment !=""){
-                    params["userDepartment"] = inputUserDepartment;
-                }
-
+                params = {
+                    "pageSize":pageSize,
+                    "pageNo":1,
+                };
             }
+            $.extend(params,searchData);
             dataId = "";
 
 
@@ -177,7 +168,7 @@
                 dataType: 'json',
                 data: params,
                 success: function (result) {
-                    // isSearch = "0";
+                    isSearch = "0";
                     var pageList = result.pageList;
                     var datainfos = pageList.records;
                     var obj = {};
@@ -190,6 +181,7 @@
                     if (typeof (datainfos) != "undefined" && datainfos.length > 0) {
                         obj.iTotalRecords = pageList.total;
                         obj.iTotalDisplayRecords = pageList.total;
+                        that.api().page(pageList.current-1);
                         fnCallback(obj);
                     } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
                         var oTable = $("#itemResultTable").dataTable();

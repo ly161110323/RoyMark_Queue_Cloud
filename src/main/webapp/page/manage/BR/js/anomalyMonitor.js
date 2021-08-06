@@ -607,6 +607,37 @@ function searchClick() {
     //为查询按钮绑定点击事件
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
+        var inputWindowId = $("#inputCommitWindowId").val();
+        var inputUserName = $("#inputCommitUserName").val();
+        // var selectAnomalyEvent = $("#selectCommitAnomalyEvent").find("option:selected").text();
+        var selectAnomalyEvent = $("#selectCommitAnomalyEvent").val();
+        var selectDate = $("#selectCommitDate").val();
+        var showPendingList = [];
+        $("input[name='filter']").each(function (index,ele){
+            if($(ele).is(":checked")){
+                showPendingList.push($(ele).val())
+            }
+        })
+        var showPending = showPendingList.toString();
+        let params = {};
+        if(inputWindowId != ""){
+            params["windowId"] = inputWindowId;
+        }
+        if(inputUserName!=""){
+            params["userName"] = inputUserName;
+        }
+        if(selectAnomalyEvent !=""){
+            params["event"] = selectAnomalyEvent;
+
+        }
+        if(selectDate !=""){
+            params["date"] = selectDate;
+        }
+        if(showPending!= ''){
+            params["anomalyStatus"] = showPending;
+        }
+        searchData =params;
+
         table.draw(false);
         // clearSearch();
     });

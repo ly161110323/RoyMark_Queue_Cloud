@@ -474,6 +474,22 @@ function searchClick() {
     //为查询按钮绑定点击事件
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
+        var inputCamId = $("#inputCommitCamId").val();
+        var selectServerId = $("#selectCommitServerId").find("option:selected").text();
+        // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
+        let params = {};
+        if ($("#selectCommitServerId").val() != "") {
+            params["serverId"] = selectServerId;
+
+        }
+        // if(selectWindowId !="请选择绑定窗口ID"){
+        //     params["windowId"] = selectWindowId;
+        //
+        // }
+        if (inputCamId != "") {
+            params["camId"] = inputCamId;
+        }
+        searchData =params;
         table.draw(false);
         // clearSearch();
     });
