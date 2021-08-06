@@ -464,30 +464,34 @@ function insertPhoto(){
             layer.alert("请选择人员信息！");
             return
         }
-        var formData = new FormData();
-        formData.append("userHiddenId", dataId);
-        formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
-        var rootPath = getWebRootPath();
-        var url = rootPath + "/user/insertFace";
+        compressImg($('#staffPhoto')[0].files[0],function (newFile){
+            var formData = new FormData();
+            formData.append("userHiddenId", dataId);
+            formData.append("uploadinfo", newFile);
+            var rootPath = getWebRootPath();
+            var url = rootPath + "/user/insertFace";
 
-        $.ajax({
-            url: url,
-            type: "post",
-            datatype: "json",
-            processData: false, // 使数据不做处理
-            contentType: false, // 不要设置Content-Type请求头
-            data: formData,
-            success: function (data) {
-                console.log(data.result=="no")
-                if (data.result == "ok") {
-                    layer.msg("上传成功！");
-                } else  {
-                    console.log(data.msg)
-                    layer.alert("上传失败！"+data.msg);
+            $.ajax({
+                url: url,
+                type: "post",
+                datatype: "json",
+                processData: false, // 使数据不做处理
+                contentType: false, // 不要设置Content-Type请求头
+                data: formData,
+                success: function (data) {
+                    console.log(data.result=="no")
+                    if (data.result == "ok") {
+                        layer.msg("上传成功！");
+                    } else  {
+                        console.log(data.msg)
+                        layer.alert("上传失败！"+data.msg);
+                    }
+
                 }
-
-            }
+            });
         });
+
+
 
     });
 }
@@ -536,7 +540,97 @@ function deleteClick() {
             });
     });
 }
+function imgSizeCheck(file){//$("#fileUpload")[0].files[0]
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (e){
+        //初始化JavaScript图片对象
+        var image = new Image();
+        //FileReader获得Base64字符串
+        image.src = e.target.result;
+        image.onload = function () {
+            //获得图片高宽
+            var height = this.height;
+            var width = this.width;
+            // layer.msg("图片高=" + height + "px, 宽=" + width + "px");
+            // if(height>720||width>720)
+            return true;
+        }
+    }
+}
+function compressImg(file,callback) {
 
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    // 缩放图片需要的canvas
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    reader.onload=function () {
+        var content = this.result; //图片的src，base64格式
+        var img = new Image();
+        img.src = content;
+        img.onload = function (){ //图片加载完毕
+            // 图片原始尺寸
+            var originWidth = this.width;
+            var originHeight = this.height;
+            // 最大尺寸限制，可通过国设置宽高来实现图片压缩程度
+            var maxWidth = 1000,
+                maxHeight = 1000;
+            // 目标尺寸
+            var targetWidth = originWidth
+            var targetHeight = originHeight;
+
+            // 图片尺寸超过限制
+            if(originWidth > maxWidth || originHeight > maxHeight) {
+                if(originWidth / originHeight > maxWidth / maxHeight) {
+                    // 更宽，按照宽度限定尺寸
+                    targetWidth = maxWidth;
+                    targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+                } else {
+                    targetHeight = maxHeight;
+                    targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+                }
+            }
+            // canvas对图片进行缩放
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            // 清除画布
+            context.clearRect(0, 0, targetWidth, targetHeight);
+            // 图片压缩
+            context.drawImage(img, 0, 0, targetWidth, targetHeight);
+            /*第一个参数是创建的img对象；第二个参数是左上角坐标，后面两个是画布区域宽高*/
+            //压缩后的图片base64 url
+            /*canvas.toDataURL(mimeType, qualityArgument),mimeType 默认值是'image/jpeg';
+             * qualityArgument表示导出的图片质量，只要导出为jpg和webp格式的时候此参数才有效果，默认值是0.92*/
+            var dataURL = canvas.toDataURL(file.type||"image/*", 0.92);//base64 格式
+
+            // let blob = dataURItoBlob(dataURL,file.name);
+            let newFile = dataURItoBlob(dataURL,file.name);
+
+            // let  formData = new FormData();
+            // // formData.append(option.fileName,blob);
+            // formData.append(option.fileName,newFile,file.name);
+            callback(newFile);
+            return ;
+        }
+    };
+};
+function dataURItoBlob(dataurl,filename){   //dataurl是base64格式
+    var arr = dataurl.split(',');
+    var mime = arr[0].match(/:(.*?);/)[1];
+    var bstr = atob(arr[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    //发现ios11不支持new File()
+    let newFile = new File([u8arr], filename, {
+      type: mime || "image/*"
+    });
+    return newFile;
+    // return new Blob([u8arr], {type:mime || "image/*"});
+};
 function searchClick() {
 
     //为查询按钮绑定点击事件

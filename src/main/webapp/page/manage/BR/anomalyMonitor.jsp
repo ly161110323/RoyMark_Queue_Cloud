@@ -30,6 +30,7 @@
     <script src="${ctx}/resources/inputSelect/bootstrap/bootstrap.js"></script>
     <link href="${ctx}/resources/inputSelect/jquery.editable-select/jquery.editable-select.min.css" rel="stylesheet" />
     <script src="${ctx}/resources/inputSelect/jquery.editable-select/jquery.editable-select.min.js"></script>
+
     <script type="text/javascript">
         var table;
         var dataId = "";
@@ -393,7 +394,7 @@
                                     </select>
 
                                     <input
-                                            type="date"
+                                            type="text"
                                             placeholder="请选择查询时间"
                                             autocomplete="off"
                                             spellcheck="false"

@@ -185,6 +185,8 @@ function validateData(isAdd) {
     var trs = $("#itemResultTable tr:gt(0)");
     var chooseName = $("#serverName").val();
     var chooseId = $("#serverId").val();
+    var chooseIp = $("#serverIp").val();
+    var choosePort = $("#serverPort").val();
     var isExit = false;
     console.log(chooseName)
 //循环列表判断是否已经存在,放在客户端校验
@@ -213,6 +215,19 @@ function validateData(isAdd) {
                 if(objLs!=dataId){
                     isExit=true;
                     layer.alert("该服务器id已存在！");
+                    return false;
+                }
+            }
+        }
+        if($(element).find("td:eq(4)").text() == chooseIp&&$(element).find("td:eq(5)").text()== choosePort){
+            if(isAdd){
+                isExit=true;
+                layer.alert("IP地址和端口不能同时重复");
+                return false;
+            }else{
+                if(objLs!=dataId){
+                    isExit=true;
+                    layer.alert("IP地址和端口不能同时重复");
                     return false;
                 }
             }

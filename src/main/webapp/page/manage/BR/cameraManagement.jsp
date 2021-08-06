@@ -24,7 +24,8 @@
           type="image/x-icon"/>
     <script type="text/javascript" src="./js/cameraManagement.js">
     </script>
-
+    <script type="text/javascript" src="${ctx}/resources/js/layDate-v5.3.0/laydate/laydate.js">
+    </script>
     <script type="text/javascript">
         var table;
         var dataId = "";
@@ -327,7 +328,7 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">生产日期：</label>
                                         <div class="col-sm-8">
-                                            <input type="date" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"
                                                    name="camBirth" id="camBirth">
                                         </div>

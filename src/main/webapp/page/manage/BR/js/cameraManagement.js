@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+    init_Date();
     addClick();
     updateClick();
     deleteClick();
@@ -18,9 +18,16 @@ $(document).ready(function () {
 
 
 
-function init_areaInfo() {
-    $("#Area_Ls").val(defaultAreaLs);
-    $("#Area_Name").val(defaultAreaName);
+function init_Date() {
+    // var time = new Date();
+    // var day = ("0" + time.getDate()).slice(-2);
+    // var month = ("0" + (time.getMonth() + 1)).slice(-2);
+    // var today = time.getFullYear() + "-" + (month) + "-" + (day);
+    // $('#selectCommitDate').val(today);
+    laydate.render({
+        elem: '#camBirth'
+        ,value: new Date() //参数即为：2018-08-20 20:08:08 的时间戳
+    });
 
 }
 
