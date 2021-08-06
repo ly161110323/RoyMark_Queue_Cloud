@@ -151,14 +151,14 @@
                 success : function(result) {
                     isSearch = "0";
 
-                    var pagelist = result.pageList;
-                    var datainfos = pagelist.records
+                    var pageList = result.pageList;
+                    var datainfos = pageList.records
                     var obj = {};
                     obj['data'] = datainfos;
                     console.log(obj)
                     if(typeof(datainfos)!="undefined"&&datainfos.length>0){
-                        obj.iTotalRecords = pagelist.total;
-                        obj.iTotalDisplayRecords = pagelist.total;
+                        obj.iTotalRecords = pageList.total;
+                        obj.iTotalDisplayRecords = pageList.total;
                         that.api().page(pageList.current-1);
                         fnCallback(obj);
                     }else if((typeof(datainfos)=="undefined")&&pageNo>1){

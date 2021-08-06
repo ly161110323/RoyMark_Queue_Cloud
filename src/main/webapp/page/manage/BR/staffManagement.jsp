@@ -292,7 +292,7 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">个人照片：</label>
                                         <div class="col-sm-8" style="width: 60%;">
-                                            <input type="file" name="staffPhoto" id="staffPhoto"
+                                            <input type="file" name="staffPhoto" id="staffPhoto" accept="image/*"
                                                    style="display: none;"> <input type="text"
                                                                                   style="width: 65%;" autocomplete="off"
                                                                                   placeholder=""
