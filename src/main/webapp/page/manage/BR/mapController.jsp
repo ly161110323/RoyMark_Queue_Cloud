@@ -72,6 +72,36 @@
             _position:relative;
             _z-index:10;
         }
+        .arrow_box {
+            position: relative;
+            background: #88b7d5;
+            border: 4px solid #c2e1f5;
+            /*max-width:200px;*/
+            /*height: 30px;*/
+        }
+        .arrow_box:after, .arrow_box:before {
+            top: 100%;
+            left: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .arrow_box:after {
+            border-color: rgba(136, 183, 213, 0);
+            border-top-color: #88b7d5;
+            border-width: 10px;
+            margin-left: -10px;
+        }
+        .arrow_box:before {
+            border-color: rgba(194, 225, 245, 0);
+            border-top-color: #c2e1f5;
+            border-width: 16px;
+            margin-left: -16px;
+        }
         /* arrow-effect */
         .arrow-left{ border-left:20px solid #FFF; border-top:20px solid #EEE; margin-top:20px;}
         .arrow-right{ border-right:20px solid #FFF; border-top:20px solid #EEE;}
@@ -214,9 +244,7 @@
                         </div>
 
                     </div>
-<%--                    <div class="bubble-box arrow-top">--%>
-<%--                        <div class="wrap">css bubble -- 箭头在上方哈哈hh</div>--%>
-<%--                    </div>--%>
+
                 </div>
             </div>
 

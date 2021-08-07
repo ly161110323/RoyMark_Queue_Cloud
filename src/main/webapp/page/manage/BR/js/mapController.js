@@ -33,6 +33,7 @@ var normal_src = green_src;
 
 var status_src = {'play': yellow_src, 'sleep': red_src, 'leave': gray_src, 'gather': black_src}
 $(document).ready(function () {
+
     queryMap();
     icon_operate();
     setInterval(queryAnomalyEvent,3000);
@@ -179,6 +180,7 @@ function loadMapAndCamera(url, mapHiddenId) {
                 });
                 loadDivNodes(hasCoordCams);
                 flashAddibleCamera(noCoordCams);
+                // showLabel("111111111111111111------------1111",{top:0,left:0});
             },
             error: function (response) {
                 console.log(response);
@@ -673,7 +675,7 @@ function changeAllCameraColor() {
             // console.log(1111111)
             if (anomalyRecord[key.toString()].length > 0) {
                 // console.log(3333333)
-                let anomalyEvent = anomalyRecord[key.toString()][0]
+                let anomalyEvent = anomalyRecord[key.toString()][0]//第一个窗口的异常 设置颜色
                 console.log(anomalyEvent)
                 switch (anomalyEvent.anomalyEvent) {
 
@@ -690,8 +692,22 @@ function changeAllCameraColor() {
                         $('#main').children('#' + anomalyEvent.camHiddenId).children('img').attr('src', gray_src);
                         break;
                 }
+
+                let offset = $('#main').children('#' + anomalyEvent.camHiddenId).position();
+                let posi = {top:offset.top,left:offset.left};
+                let msg = "";
+                anomalyRecord[key.toString()].forEach(function (item,i){
+                    msg +=item.windowName+" "+item.anomalyEvent;
+                    item.userShortInfos.forEach(function (user){
+                        msg+=" "+user.userName;
+                    });
+                    msg+=" ";
+                });
+                showLabel(msg,posi,key.toString());
+
             }else {
                 $('#main').children('#' + key).children('img').attr('src', green_src);
+                showLabel('',null,key.toString());
             }
 
 
@@ -703,6 +719,34 @@ function changeAllCameraColor() {
 
 function setOneCameraColor(camHiddenId, imgsrc) {
 
+}
+
+function showLabel(text,offset,camHiddenId){
+    if(text==''){
+        let mainDiv = $('#main');
+        mainDiv.find("div[name='"+camHiddenId+"']").remove();
+        return
+    }
+    let label ='<div class="bubble-box arrow-bottom" id="label"><div class="wrap">css bubble -- 箭头在下方哈哈hh</div></div>';
+    let divNode = $('<div></div>');
+    // divNode.attr('id', camObj.camHiddenId);
+    let labDiv = $('<div></div>');
+    // labDiv.css('font-size','30px')
+    // labDiv.addClass('wrap');
+    labDiv.text(text);
+    divNode.css('position', 'absolute');
+    divNode.addClass( 'arrow_box');
+    divNode.append(labDiv);
+    divNode.attr('name',camHiddenId);
+    // divNode.offset({top: offset.top-45, left: offset.left-100});
+
+    let mainDiv = $('#main');
+
+    mainDiv.find("div[name='"+camHiddenId+"']").remove();
+
+    mainDiv.append(divNode)
+
+    divNode.offset({top: offset.top-divNode.outerHeight()+mainDiv.offset().top-10, left: offset.left-divNode.outerWidth()/2+mainDiv.offset().left+camSize/2});
 }
 
 //删除摄像头
