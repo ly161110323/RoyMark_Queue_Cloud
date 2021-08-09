@@ -2,20 +2,26 @@ package com.roymark.queue.util;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.roymark.queue.entity.Parameter;
+import com.roymark.queue.entity.SmsContact;
 import com.roymark.queue.service.ParameterService;
+import com.roymark.queue.service.SmsContactService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import java.util.List;
 
 @Slf4j
 @Component
 public class ParamUtil {
     @Autowired
     ParameterService parameterService;
+
+    @Autowired
+    SmsContactService smsContactService;
+
 
     public static ParamUtil paramUtil;
 
@@ -38,6 +44,9 @@ public class ParamUtil {
         return "";
     }
 
-
+    // 获取所有短信联系人
+    public static List<SmsContact> getSmsContacts() {
+        return  paramUtil.smsContactService.list();
+    }
 
 }

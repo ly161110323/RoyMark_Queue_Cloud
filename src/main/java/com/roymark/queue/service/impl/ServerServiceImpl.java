@@ -18,7 +18,6 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
 
     private static final Logger logger = LogManager.getLogger(ServerServiceImpl.class);
 
-
     @Override
     public void setServersStatus(List<Server> servers, int timeout) {
         try {

@@ -120,9 +120,11 @@ public class CameraController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
-            camera.setCamBirth(cameraBirth);
+            if (!cameraBirthStr.equals("")) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
+                camera.setCamBirth(cameraBirth);
+            }
 
             Camera queryCamera = cameraService.getById(camera.getCamHiddenId());
             if (queryCamera == null) {

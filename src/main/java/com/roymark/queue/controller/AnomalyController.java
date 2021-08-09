@@ -48,6 +48,7 @@ public class AnomalyController {
     @Autowired
     private UserService userService;
 
+
     private final AnomalyDateControlUtil anomalyDateControlUtil = new AnomalyDateControlUtil();
 
     AnomalyMsgUtil anomalyMsgUtil = new AnomalyMsgUtil();
@@ -219,7 +220,7 @@ public class AnomalyController {
             }
 
             Long boxAnomalyHiddenId;         // 记录box对应的Anomaly
-
+            boolean insertFlag = false;
             // 首先检查是否有与开始时间完全相同的一项
             Timestamp startTime = anomaly.getAnomalyStartDate();
 
@@ -245,34 +246,33 @@ public class AnomalyController {
 //                    anomalyService.updateById(anomaly);
 //                    boxAnomalyHiddenId = queryAnomaly.getAnomalyHiddenId();
 //                } else {
+
+                // 数据库更新
                 anomaly.setAnomalyHiddenId((long) 0);
                 anomalyService.save(anomaly);
                 Anomaly newAnomaly = anomalyService.getOne(Wrappers.<Anomaly>lambdaQuery().eq(Anomaly::getAnomalyEvent, anomaly.getAnomalyEvent())
                         .eq(Anomaly::getWindowHiddenId, anomaly.getWindowHiddenId())
                         .eq(Anomaly::getAnomalyStartDate, anomaly.getAnomalyStartDate()));
                 boxAnomalyHiddenId = newAnomaly.getAnomalyHiddenId();
-//              }
+
+                insertFlag = true;
             }
 
             // 接收时间和结束时间控制
-
             anomalyDateControlUtil.deal(boxAnomalyHiddenId, anomaly.getAnomalyEndDate());
-            // 将获取到的异常id和最近接收时间的映射更新进数据库
-//            System.out.println(idAndDateMap);
-//            if (idAndDateMap != null) {
-//                for (Map.Entry<Long, Date> entry : idAndDateMap.entrySet()) {
-//                    LambdaUpdateWrapper<Anomaly> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-//                    lambdaUpdateWrapper.eq(Anomaly::getAnomalyHiddenId, entry.getKey())
-//                            .set(Anomaly::getAnomalyEndDate, entry.getValue())
-//                            .set(Anomaly::getAnomalyEndDateValid, false);
-//                    anomalyService.update(null, lambdaUpdateWrapper);
-//                }
-//
-//            }
 
             // 获取的已匹配的faceId与anomalyHiddenId的Map
+            Anomaly withInfoAnomaly = anomalyService.getByHiddenId(boxAnomalyHiddenId);
+            if (withInfoAnomaly == null) {
+                return;
+            }
             Map<String, Double> anomalyFaceMap = anomalyMsgUtil.addMap(boxIdList, boxAnomalyHiddenId);
             if (anomalyFaceMap != null) {
+                // 更新默认用户值
+                if (withInfoAnomaly.getDefaultUserFlag()) { // 当前若发现默认用户标志是true但人脸向量中有则更新
+                    withInfoAnomaly.setDefaultUserFlag(false);
+                    anomalyService.update(withInfoAnomaly, Wrappers.<Anomaly>lambdaUpdate().eq(Anomaly::getAnomalyHiddenId, boxAnomalyHiddenId));
+                }
                 // 向异常与用户的中间表中加入匹配的信息
                 for (Map.Entry<String, Double> entry : anomalyFaceMap.entrySet()) {
                     String faceId = entry.getKey();
@@ -284,6 +284,42 @@ public class AnomalyController {
                 }
             }
 
+            // 发送短信只能在中间表完成之后，因为可能人脸先到，行为后到，此时可填入人脸姓名
+            if (insertFlag) {
+                // 线程执行发送
+                Runnable runnable = () -> {
+                    SmsSendService smsSendService = new SmsSendService();
+                    List<SmsContact> smsContacts = ParamUtil.getSmsContacts();
+                    if (smsContacts.size() > 0) {
+                        Camera curCam = cameraService.getById(withInfoAnomaly.getCamHiddenId());
+                        Anomaly newQueryAnomaly = anomalyService.getByHiddenId(boxAnomalyHiddenId); // 需要重新查询
+                        StringBuilder userNames = new StringBuilder();
+                        List<UserShortInfo> userShortInfoList = newQueryAnomaly.getUserShortInfos();
+                        if (newQueryAnomaly.getUserShortInfos() == null || newQueryAnomaly.getUserShortInfos().size() == 0) {
+                            userNames.append("无");
+                        }
+                        else {
+                            for (UserShortInfo userShortInfo: userShortInfoList) {
+                                userNames.append(userShortInfo.getUserName()).append(",");
+                            }
+                            userNames.deleteCharAt(userNames.length()-1);
+                        }
+
+                        String msg = "异常名称：" + newQueryAnomaly.getAnomalyEvent() + "" +
+                                "，时间为" + newQueryAnomaly.getAnomalyStartDate() +
+                                "，发生在ID为" + (curCam==null?"无":curCam.getCamId()) +
+                                "的摄像头中，人员姓名为" + userNames + "。";
+                        logger.info("msg:" + msg);
+
+                        for (SmsContact smsContact: smsContacts) {
+                            System.out.println(smsContact.getSmsContactPhone());
+                            smsSendService.SendMsg(smsContact.getSmsContactPhone(), msg);
+                        }
+                    }
+                };
+                Thread thread = new Thread(runnable);
+                thread.start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -629,6 +665,5 @@ public class AnomalyController {
             anomaly.setUserShortInfos(userShortInfos);
         }
     }
-
 
 }
