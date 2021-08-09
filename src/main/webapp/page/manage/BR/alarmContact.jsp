@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: liucl
-  Date: 2021/3/28
-  Time: 9:42 上午
+  Date: 2021/8/9
+  Time: 1:59 下午
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -29,7 +29,7 @@
             margin: auto !important;
         }
     </style>
-    <script type="text/javascript" src="./js/groupManagement.js">
+    <script type="text/javascript" src="./js/alarmContact.js">
     </script>
 
     <script type="text/javascript">
@@ -50,7 +50,7 @@
 
         function loadTable() {
 
-            var tableUrl = "${ctx}/group/queryData";
+            var tableUrl = "${ctx}/smsContact/queryData";
             table = $('#itemResultTable')
                 .DataTable(
                     {
@@ -68,10 +68,10 @@
                         "fnServerData": loadData,
                         "bLengthChange": false,
                         "aoColumns": [
-                            {'mData': 'groupHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'groupHiddenId', 'sClass': 'center'},
-                            {'mData': 'groupHiddenId', 'sTitle': '序号', 'sName': 'groupHiddenId', 'sClass': 'center'},
-                            {'mData': 'groupId', 'sTitle': '分组名称', 'sName': 'groupId', 'sClass': 'center'},
-                            {'mData': 'camNumber', 'sTitle': '已绑定摄像头数量', 'sName': 'camNumber', 'sClass': 'center'},
+                            {'mData': 'smsContactId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'smsContactId', 'sClass': 'center'},
+                            {'mData': 'smsContactId', 'sTitle': '序号', 'sName': 'smsContactId', 'sClass': 'center'},
+                            {'mData': 'smsContactName', 'sTitle': '姓名', 'sName': 'smsContactName', 'sClass': 'center'},
+                            {'mData': 'smsContactPhone', 'sTitle': '电话', 'sName': 'smsContactPhone', 'sClass': 'center'},
                         ],
                         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                             let api = this.api();
@@ -111,9 +111,9 @@
                         },
                         "columnDefs": [
                             {
-                                targets: 0, data: "groupHiddenId", title: "操作",
+                                targets: 0, data: "smsContactId", title: "操作",
                                 render: function (data, type, row, meta) {
-                                    var html = "<input type='checkbox' value=" + row.groupHiddenId + " class='lsCheck' name='choice' />";
+                                    var html = "<input type='checkbox' value=" + row.smsContactId + " class='lsCheck' name='choice' />";
                                     // html += "<input type='hidden' name='deptImagepath' value=" + row.deptImagepath + "></input>";
                                     return html;
                                 }
@@ -213,12 +213,12 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>分组名称：</label>
+                                                style="color: red;">*</span>联系人姓名：</label>
 
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="groupId" id="groupId">
+                                                   placeholder="" class="form-control table_content_zd" maxlength="10"
+                                                   name="smsContactName" id="smsContactName">
                                         </div>
                                     </div>
                                 </td>
@@ -226,12 +226,12 @@
                                     <div class="form-group">
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>该分组摄像头数量：</label>
+                                                style="color: red;">*</span>联系人电话：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    class="form-control table_content_zd"
-                                                   disabled="disabled"
-                                                   name="camNumber" id="camNumber">
+                                                    maxlength="11"
+                                                   name="smsContactPhone" id="smsContactPhone">
                                         </div>
                                     </div>
                                 </td>
@@ -298,60 +298,3 @@
 </body>
 
 </html>
-
-<%--<table id="table_id" class="display">--%>
-<%--    <thead>--%>
-<%--    <tr>--%>
-<%--        <th>服务器ID</th>--%>
-<%--        <th>服务器IP</th>--%>
-<%--        <th>端口</th>--%>
-<%--        <th>服务器状态</th>--%>
-<%--        <th>程序状态</th>--%>
-<%--        <th>操作</th>--%>
-
-
-<%--    </tr>--%>
-<%--    </thead>--%>
-<%--    <tbody>--%>
-<%--    <tr>--%>
-<%--        <td>Row 1 Data 1</td>--%>
-<%--        <td>Row 1 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    <tr>--%>
-<%--        <td>Row 2 Data 1</td>--%>
-<%--        <td>Row 2 Data 2</td>--%>
-<%--    </tr>--%>
-<%--    </tbody>--%>
-<%--</table>--%>
-<%--<script>--%>
-<%--    var table;--%>
-<%--    var dataId = "";--%>
-<%--    var isSearch = "0";--%>
-<%--    var  defaultAreaLs ="${sessionScope.DEFAULT_PROJECT.areaLs}";--%>
-<%--    var defaultAreaName="${sessionScope.DEFAULT_PROJECT.areaName}";--%>
-<%--    $(document).ready( function () {--%>
-<%--        $('#table_id').DataTable({--%>
-<%--            // "scrollY": 400,--%>
-<%--            // select: true,--%>
-<%--            ajax : {--%>
-<%--                "url" : "${ctx}/server/getAll",--%>
-<%--                "type" : "get",--%>
-
-<%--                "dataSrc" : "servers"--%>
-<%--            },--%>
-<%--            columns: [--%>
-<%--                {"data": "id"},--%>
-<%--                {"data": "ip"},--%>
-<%--                {"data": "port"},--%>
-<%--                {"data": "name"},--%>
-
-<%--            ],--%>
-<%--            processing: true,--%>
-<%--            language: {--%>
-<%--                "url": "${ctx}/page/manage/BR/js/datatables_language.json"--%>
-<%--            }--%>
-
-
-<%--        });--%>
-<%--    } );--%>
-<%--</script>--%>

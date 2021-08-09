@@ -2,17 +2,18 @@ $(document).ready(function () {
 
     addClick();
     updateClick();
+    contactManagerClick();
     deleteClick();
     searchClick();
     clearClick();
     configClick();
-    init_areaInfo();
+
     queryWindowList();
     insertPhoto()
-    choosePhoto();//部门图标处理
+    choosePhoto();
     faceManagerButton();
 
-    selectAreaClick();
+
     flashFaceManagerStatus();
 });
 
@@ -29,11 +30,7 @@ function choosePhoto() {
     });
 }
 
-function init_areaInfo() {
-    $("#Area_Ls").val(defaultAreaLs);
-    $("#Area_Name").val(defaultAreaName);
 
-}
 
 function queryWindowList() {
 
@@ -73,43 +70,7 @@ function queryWindowList() {
     });
 }
 
-function queryServerList() {
 
-    var rootPath = getWebRootPath();
-    var url = rootPath + "/server/queryData"
-    var params = {
-        "pageNo": 1,
-        "pageSize": -1
-    }
-
-// //获取问卷调查
-    $.ajax({
-        type: 'POST',
-        url: url,
-        cache: false,
-        async: true,
-        dataType: 'json',
-        data: params,
-        success: function (data) {
-// 调用成功时对返回的值进行解析
-            var list = data.pageList.records;
-//若未出错，则获取信息设置到控件中
-            var str = "";
-            for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverId + "</option>";
-            }
-
-            // $("#formCaseAreaLs").empty();
-            // $("#formCaseAreaLs").append(str);
-            $("#serverId").empty();
-            $("#serverId").append("<option value=''>请选择绑定服务器ID</option>");
-            $("#serverId").append(str);
-            $("#selectCommitServerId").empty();
-            $("#selectCommitServerId").append("<option value=''>请选择绑定服务器ID</option>");
-            $("#selectCommitServerId").append(str);
-        }
-    });
-}
 
 
 
@@ -677,15 +638,21 @@ function configClick() {
     });
 }
 
-
-
-
-function selectAreaClick() {
-    var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click', '#selectArea_administration', function () {
-        var targetUrl = rootPath + "/page/manage/dept/Queue_SelectArea.jsp";
-        var argTitle = "行政区域管理";
-        openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
+function contactManagerClick(){
+    $('#contactManagerButton').click(function (){
+        var targetUrl = getWebRootPath() + "/page/manage/BR/alarmContact.jsp";
+        layer.open({
+            type: 2,
+            title: "报警联系人管理",
+            shadeClose: true,
+            shade: 0.8,
+            area: ['1280px', '720px'],
+            content: targetUrl,
+            cancel:function (index,layero){
+                // queryMap();
+            }
+        });
     });
 }
+
+

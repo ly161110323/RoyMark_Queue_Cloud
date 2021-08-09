@@ -18,3 +18,4 @@ tmp/
 .settings
 
 out/
+src/main/resources/jdbc.properties

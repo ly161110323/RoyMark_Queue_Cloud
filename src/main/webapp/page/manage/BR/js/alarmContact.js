@@ -40,9 +40,9 @@ function trClick() {
         });
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
 
-        $("#groupId").val($(this).find("td:eq(2)").text());
+        $("#smsContactName").val($(this).find("td:eq(2)").text());
 
-        $("#camNumber").val($(this).find("td:eq(3)").text());
+        $("#smsContactPhone").val($(this).find("td:eq(3)").text());
         // $("#windowId").val($(this).find("td:eq(4)").text());
         // $("#serverId").val($(this).find("td:eq(4)").text());
         // $("#camVideoAddr").val($(this).find("td:eq(6)").text());
@@ -68,22 +68,7 @@ function trClick() {
 
 }
 
-function formatDate(date, format) {
-    var o = {
-        "M+": date.getMonth() + 1, //month
-        "d+": date.getDate(),    //day
-        "h+": date.getHours(),   //hour
-        "m+": date.getMinutes(), //minute
-        "s+": date.getSeconds(), //second
-        "q+": Math.floor((date.getMonth() + 3) / 3),  //quarter
-        "S": date.getMilliseconds() //millisecond
-    }
-    if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o) if (new RegExp("(" + k + ")").test(format))
-        format = format.replace(RegExp.$1,
-            RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-    return format;
-}
+
 
 //表格选择框操作
 function checkBoxStyle_Control() {
@@ -114,11 +99,20 @@ function checkBoxStyle_Control() {
 
 //页面数据合法性验证
 function validateData(isAdd) {
-    if ($("#groupId").val().trim() == "") {
-        layer.alert("分组ID不能为空！");
+    if ($("#smsContactName").val().trim() == "") {
+        layer.alert("联系人名称不能为空！");
         return;
     }
-
+    if ($("#smsContactPhone").val().trim() == "") {
+        layer.alert("联系人电话不能为空！");
+        return;
+    }
+    let reg = /^1([0-9])\d{9}$/;
+    let phone = $("#smsContactPhone").val().trim();
+    if(!reg.test(phone)){
+        layer.alert("请输入正确的手机号！");
+        return ;
+    }
     var trs = $("#itemResultTable tr:gt(0)");
     // var chooseName = $("#txtDeptName").val();
     var chooseId = $("#groupId").val();
@@ -128,15 +122,15 @@ function validateData(isAdd) {
     trs.each(function (index, element) {
         var objLs = $(element).find("td:eq(0)>input").val();
 
-        if ($(element).find("td:eq(2)").text() == chooseId) {
+        if ($(element).find("td:eq(3)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;
-                layer.alert("分组ID已存在！");
+                layer.alert("联系人电话已存在！");
                 return false;
             } else {
                 if (objLs != dataId) {
                     isExit = true;
-                    layer.alert("分组ID已存在！");
+                    layer.alert("联系人电话已存在！");
                     return false;
                 }
             }
@@ -155,10 +149,8 @@ function clearData() {
 
 
 
-
-
-    $("#groupId").val("")
-
+    $("#smsContactName").val("");
+    $("#smsContactPhone").val("");
 
 }
 function clearSearch(){
@@ -175,11 +167,11 @@ function addClick() {
 
 
         var formData = new FormData();
-        formData.append("groupId", $('#groupId').val());
-
+        formData.append("smsContactName", $('#smsContactName').val());
+        formData.append("smsContactPhone", $('#smsContactPhone').val());
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/group/insert";
+        var url = rootPath + "/smsContact/insert";
         $.ajax({
             type: 'POST',
             url: url,
@@ -216,13 +208,14 @@ function updateClick() {
             return;
         }
         var formData = new FormData();
-        formData.append("groupHiddenId", dataId);
-        formData.append("groupId", $('#groupId').val());
+        formData.append("smsContactId", dataId);
+        formData.append("smsContactName", $('#smsContactName').val());
+        formData.append("smsContactPhone", $('#smsContactPhone').val());
 
 
 
         var rootPath = getWebRootPath();
-        var url = rootPath + "/group/update";
+        var url = rootPath + "/smsContact/update";
 
         $.ajax({
             url: url,
@@ -252,7 +245,7 @@ function deleteClick() {
 //为删除按钮绑定点击事件
     $(document).on('click', '#deleteCommit', function () {
         var rootPath = getWebRootPath();
-        var url = rootPath + "/group/delete";
+        var url = rootPath + "/smsContact/delete";
         var items = new Array();
         var cBox = $("[name=choice]:checked");
         if (cBox.length == 0) {
@@ -317,22 +310,6 @@ function clearClick() {
 }
 
 
-function groupManagementClick() {
-    var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click', '#groupManagementButton', function () {
-        var targetUrl = rootPath + "/page/manage/BR/groupManagement.jsp";
-        var argTitle = "摄像头分组管理";
-        openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
-    });
-}
 
-function selectAreaClick() {
-    var rootPath = getWebRootPath();
-//字典类型管理按钮
-    $(document).on('click', '#selectArea_administration', function () {
-        var targetUrl = rootPath + "/page/manage/dept/Queue_SelectArea.jsp";
-        var argTitle = "行政区域管理";
-        openwindowNoRefresh(targetUrl, argTitle, 1020, 480);
-    });
-}
+
+

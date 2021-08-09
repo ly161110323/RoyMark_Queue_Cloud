@@ -217,7 +217,7 @@
                                                 style="color: red;">*</span>姓名：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
+                                                   placeholder="" class="form-control table_content_zd"  maxlength="8"
                                                    name="userName" id="userName">
                                         </div>
 
@@ -243,7 +243,7 @@
                                                class="col-sm-3 control-label input_lable_hm table_label_zd"><span
                                                 style="color: red;">*</span>编号：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
+                                            <input type="text" autocomplete="off" spellcheck="false"  maxlength="10"
                                                    class="form-control table_content_zd"
                                                    name="userId" id="userId">
                                         </div>
@@ -414,6 +414,11 @@
                                                 class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="showPhoto">查看照片
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="contactManagerButton">报警联系人
                                         </button>
 
                                     </div>
