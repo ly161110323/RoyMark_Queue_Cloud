@@ -244,15 +244,15 @@
 
 <div>
     <ul id="rightMenu" style="width: 100px; position: absolute;">
-        <li>
-            <button id="realtimeMinitor" onclick="realtimeMinitor()" value="实时监控">实时监控</button>
-        </li>
-        <li>
-            <button id="reviewVideo" onclick="reviewVideo()" value="录像回放">录像回放</button>
-        </li>
-        <li>
-            <button id="anomalyConfirm" onclick="anomalyConfirm()" value="异常确认">异常确认</button>
-        </li>
+<%--        <li>--%>
+<%--            <button id="realtimeMinitor" onclick="realtimeMinitor()" value="实时监控">实时监控</button>--%>
+<%--        </li>--%>
+<%--        <li>--%>
+<%--            <button id="reviewVideo" onclick="reviewVideo()" value="录像回放">录像回放</button>--%>
+<%--        </li>--%>
+<%--        <li>--%>
+<%--            <button id="anomalyConfirm" onclick="anomalyConfirm()" value="异常确认">异常确认</button>--%>
+<%--        </li>--%>
         <li>
             <button id="deleteCamera" onclick="deleteCamera()" type="button"  value="删除">删除</button>
         </li>

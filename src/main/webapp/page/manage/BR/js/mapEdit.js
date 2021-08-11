@@ -82,7 +82,10 @@ function loadOneCameraIcon(mainDiv, camObj) {
     divNode.offset({top: parseInt(coord[1]), left: parseInt(coord[0])});
     var imgNode = new Image(camSize,camSize);
     imgNode.src = green_src;
+    var labelNode = $('<div></div>');
+    labelNode.text(camObj.camName);
     divNode.append(imgNode);
+    divNode.append(labelNode);
     mainDiv.append(divNode);
     // 绑定每个摄像头右键事件
     divNode.contextmenu(function (e) {
@@ -262,6 +265,7 @@ function updateClick(callback) {
         if (!validateData(false)) {
             return;
         }
+
         compressImg($('#mapImage')[0].files[0],function (newFile){
             var formData = new FormData();
             formData.append("mapHiddenId", mapList[curMapIndex].mapHiddenId);
@@ -392,7 +396,10 @@ function uploadMap() {
 }
 //图片压缩
 function compressImg(file,callback) {
-
+    if(typeof file !='Blob'){
+        callback();
+        return ;
+    }
     var reader = new FileReader();
     reader.readAsDataURL(file);
     // 缩放图片需要的canvas

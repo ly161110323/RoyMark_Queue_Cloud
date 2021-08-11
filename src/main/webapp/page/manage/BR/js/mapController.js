@@ -13,6 +13,7 @@ var rm = null
 
 var mapList = null;
 var anomalyRecord = {}//只保存最新的异常
+var camState = {}
 var curMapIndex = 0;
 var curMap = null
 var hasCoordCams = []
@@ -78,9 +79,12 @@ function loadOneCameraIcon(mainDiv, camObj) {
     divNode.attr('id', camObj.camHiddenId);
     divNode.css('position', 'absolute');
     divNode.offset({top: parseInt(coord[1]), left: parseInt(coord[0])});
+    var labelNode = $('<div></div>');
+    labelNode.text(camObj.camName);
     var imgNode = new Image(camSize, camSize);
     imgNode.src = green_src;
     divNode.append(imgNode);
+    divNode.append(labelNode);
     mainDiv.append(divNode);
     // 绑定每个摄像头右键事件
     divNode.contextmenu(function (e) {
@@ -607,6 +611,11 @@ function cameraEdit() {
 }
 
 function queryAnomalyEvent() {
+    let mainPosi = $('#main').position();
+    if(mainPosi.top==0&&mainPosi.left==0){//切换为其他页面
+        console.log("其他页面地图管理停止更新！")
+        return ;
+    }
     $.ajax({
         type: 'POST',
         url: getWebRootPath() + '/anomaly/getLatestAnomaly',
@@ -622,14 +631,17 @@ function queryAnomalyEvent() {
             }
             if (data.result == "ok") {
                 let mydata = data.data;
-                anomalyRecord={}
+                anomalyRecord={};
+                camState = {};
                 $.each(mydata, function (key) {
                     if(key.split(',')[1]=='1'&&key.split(',')[2]=='1'){
-                        anomalyRecord[key.split(',')[0]]=mydata[key]
+                        camState[key.split(',')[0]]=true;
                     }else {
+                        camState[key.split(',')[0]]=false;
                         console.log(key.split(',')[0],"error")
-                        $('#main').children('#' + key.split(',')[0]).children('img').attr('src', error_src);
+                        // $('#main').children('#' + key.split(',')[0]).children('img').attr('src', error_src);
                     }
+                    anomalyRecord[key.split(',')[0]]=mydata[key];
                 });
 
             } else if (data.result == "no") {
@@ -646,7 +658,9 @@ function changeAllCameraColor() {
 
     // $('#main').children().children("img").attr('src', green_src);
     $.each(anomalyRecord, function (key) { //key表示camHIddenId
-        console.log(key)
+        let camHiddenId = key.toString();
+        let state=camState[camHiddenId];
+        console.log(camHiddenId,state)
         // anomalyRecord[key.toString()].forEach(function (anomalyEvent) {
         //
         //     // console.log(anomalyEvent.anomalyEvent)
@@ -671,9 +685,9 @@ function changeAllCameraColor() {
 
 
             // console.log(1111111)
-            if (anomalyRecord[key.toString()].length > 0) {
+            if (anomalyRecord[camHiddenId].length > 0) {
                 // console.log(3333333)
-                let anomalyEvent = anomalyRecord[key.toString()][0]//第一个窗口的异常 设置颜色
+                let anomalyEvent = anomalyRecord[camHiddenId][0]//第一个窗口的异常 设置颜色
                 console.log(anomalyEvent)
                 switch (anomalyEvent.anomalyEvent) {
 
@@ -691,22 +705,53 @@ function changeAllCameraColor() {
                         break;
                 }
 
-                let offset = $('#main').children('#' + anomalyEvent.camHiddenId).position();
-                let posi = {top:offset.top,left:offset.left};
-                console.log("posi:",posi)
-                let msg = "";
-                anomalyRecord[key.toString()].forEach(function (item,i){
-                    msg +=item.windowName+" "+item.anomalyEvent;
-                    item.userShortInfos.forEach(function (user){
-                        msg+=" "+user.userName;
-                    });
-                    msg+=" ";
-                });
-                showLabel(msg,posi,key.toString());
+                // let offset = $('#main').children('#' + anomalyEvent.camHiddenId).position();
+                let camId = hasCoordCams.findIndex(e=>e.camHiddenId==camHiddenId);
+                if(camId!=-1){
+                    let coord = hasCoordCams[camId].camCoordinates.split(',');
+                    let posi = {top:coord[1],left:coord[0]};
+                    let mainPosi = $('#main').position();
+                    if(mainPosi.top==0&&mainPosi.left==0){//切换为其他页面
+                        console.log("其他页面label不绘制！")
+                        return true;
+                    }
 
-            }else {
-                $('#main').children('#' + key).children('img').attr('src', green_src);
-                showLabel('',null,key.toString());
+                    let msg = "";
+                    anomalyRecord[camHiddenId].forEach(function (item,i){
+                        msg +=item.windowName+" "+item.anomalyEvent;
+                        item.userShortInfos.forEach(function (user){
+                            msg+=" "+user.userName;
+                        });
+                        msg+=" ";
+                    });
+                    showLabel(msg,posi,camHiddenId);
+                }
+
+
+            }else if(state){
+                $('#main').children('#' + camHiddenId).children('img').attr('src', green_src);
+                // showLabel('',null,key.toString());
+                let camId = hasCoordCams.findIndex(e=>e.camHiddenId==camHiddenId);
+                if(camId!=-1) {
+                    removeLabel(key.toString());//该摄像头无异常移除label
+                }
+            }else{
+                let camId = hasCoordCams.findIndex(e=>e.camHiddenId==camHiddenId);
+                if(camId!=-1){
+                    let coord = hasCoordCams[camId].camCoordinates.split(',');
+                    let posi = {top:coord[1],left:coord[0]};
+                    let mainPosi = $('#main').position();
+                    if(mainPosi.top==0&&mainPosi.left==0){//切换为其他页面
+                        console.log("其他页面label不绘制！")
+                        return true;
+                    }
+
+                    let msg = "摄像头离线或未进行行为识别";
+
+                    showLabel(msg,posi,camHiddenId);
+                }
+
+                $('#main').children('#' + camHiddenId).children('img').attr('src', error_src);
             }
 
 
@@ -721,13 +766,16 @@ function setOneCameraColor(camHiddenId, imgsrc) {
 }
 
 
+function removeLabel(camHiddenId){
 
+    let mainDiv = $('#main');
+    mainDiv.find("div[name='"+camHiddenId+"']").remove();
+    return
+
+}
 function showLabel(text,offset,camHiddenId){
-    if(text==''){
-        let mainDiv = $('#main');
-        mainDiv.find("div[name='"+camHiddenId+"']").remove();
-        return
-    }
+    console.log("offset",offset)
+
     let label ='<div class="bubble-box arrow-bottom" id="label"><div class="wrap">css bubble -- 箭头在下方哈哈hh</div></div>';
     let divNode = $('<div></div>');
     // divNode.attr('id', camObj.camHiddenId);
