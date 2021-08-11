@@ -632,11 +632,9 @@ function queryAnomalyEvent() {
                     }
                 });
 
-
             } else if (data.result == "no") {
                 // anomalyRecord = data.data;
                 // layer.msg(data.msg);
-
             }
             changeAllCameraColor();
             // setInterval(changeAllCameraColor,1000);
@@ -695,6 +693,7 @@ function changeAllCameraColor() {
 
                 let offset = $('#main').children('#' + anomalyEvent.camHiddenId).position();
                 let posi = {top:offset.top,left:offset.left};
+                console.log("posi:",posi)
                 let msg = "";
                 anomalyRecord[key.toString()].forEach(function (item,i){
                     msg +=item.windowName+" "+item.anomalyEvent;
@@ -720,6 +719,8 @@ function changeAllCameraColor() {
 function setOneCameraColor(camHiddenId, imgsrc) {
 
 }
+
+
 
 function showLabel(text,offset,camHiddenId){
     if(text==''){
@@ -766,9 +767,16 @@ function deleteCamera() {
 function anomalyConfirm() {
     if (anomalyRecord[rightHiidenId]) {
         var anomalyList = anomalyRecord[rightHiidenId];
-        var firstAnomaly = anomalyList[0];
+        var firstAnomaly = '';
+        if(anomalyList.length>0){
+            firstAnomaly = anomalyList[0];
+        }else {
+            layer.msg('当前摄像头无异常')
+            return
+        }
+
         layer.confirm('请确认当前异常，选择确认或忽略！', {
-                btn: ['确认', '放弃', '稍后处理']
+                btn: ['有效', '无效', '稍后处理']
             },
             function () {
 
@@ -781,8 +789,8 @@ function anomalyConfirm() {
                     dataType: "json",
                     async: true,
                     success: function (data) {
-                        if (data.result == "error") {
-                            layer.msg("服务器错误！确认失败");
+                        if (data.result != "ok") {
+                            layer.alert(data.msg);
                             return;
                         }
                         if (data.result == "ok") {
@@ -800,13 +808,42 @@ function anomalyConfirm() {
                     }
                 });
             },
-            function () {
+            function (layero, index) {
+                var anomalyHiddenId = firstAnomaly.anomalyHiddenId;
+                console.log(rightHiidenId)
+                $.ajax({
+                    type: 'POST',
+                    url: getWebRootPath() + '/anomaly/updateAnomalyStatus',
+                    data: {'anomalyStatus': 'invalid', 'anomalyHiddenId': anomalyHiddenId.toString()},
+                    dataType: "json",
+                    async: true,
+                    success: function (data) {
+                        if (data.result != "ok") {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        if (data.result == "ok") {
+                            layer.msg("确认成功！");
 
+                            // $('#main').children('#' + rightHiidenId).children('img').attr('src', green_src);
+
+                        }
+                        // table.draw(false);
+                        // clearData();
+
+                    },
+                    error: function (data) {
+                        layer.msg("网络错误！");
+                    }
+                });
             },
-            function () {
-
+            function (layero,index) {
+                layer.close(index);
             }
         )
+    }else {
+        layer.msg("当前摄像头无异常");
+        return
     }
 }
 
@@ -850,16 +887,61 @@ function mapEdit() {
 
     });
 }
+// 异常照片展示函数
+function reviewImage() {//只查看第一个异常录像
+    console.log(anomalyRecord[rightHiidenId])
+    if(!anomalyRecord.hasOwnProperty(rightHiidenId)){
+        layer.msg("当前摄像头无异常");
+        return
+    }
+    if(anomalyRecord[rightHiidenId].length==0){
+        layer.msg("当前摄像头无异常");
+        return
+    }
+    let videoImgList = anomalyRecord[rightHiidenId][0].anomalyImagePath;
+    let imgs = videoImgList.split(',');
+    showPhotos(imgs);
+}
+function showPhotos(imgs) {
 
+
+    window.imgs = imgs
+    layer.open({
+        type: 2,
+        title: false,
+        area: ['820px', '520px'],
+        // skin: 'layui-layer-nobg', //没有背景色
+        shadeClose: true,
+        content: getWebRootPath() + '/page/manage/BR/photoShow.jsp'
+    });
+}
 // 录像回放函数
-function reviewVideo() {
+function reviewVideo() {//只查看第一个异常录像
+    console.log(anomalyRecord[rightHiidenId])
+    if(!anomalyRecord.hasOwnProperty(rightHiidenId)){
+        layer.msg("当前摄像头无异常");
+        return
+    }
+    if(anomalyRecord[rightHiidenId].length==0){
+        layer.msg("当前摄像头无异常");
+        return
+    }
+    let videoAddr = anomalyRecord[rightHiidenId][0].anomalyVideoPath;
+    showVideo(videoAddr);
+}
+function showVideo(videopath){
 
+    var video = '<video width="720" controls="controls"> <source src="'+videopath+'" type="video/mp4"></video>'
+    layer.open({
+        type: 1,
+        title: false,
+        area: ['720px','480px'],
+        // skin: 'layui-layer-nobg', //没有背景色
+        shadeClose: true,
+        content: video
+    });
 }
 
-// 异常情况确认
-function abnormalyComfirm() {
-
-}
 
 // 设定某元素可拖拽，如果有多个元素，应该要遍历，通过name确定是哪一个摄像头，做更新
 

@@ -262,46 +262,49 @@ function updateClick(callback) {
         if (!validateData(false)) {
             return;
         }
-        var formData = new FormData();
-        formData.append("mapHiddenId", mapList[curMapIndex].mapHiddenId);
-        formData.append("mapId", $('#mapId').val());
-        formData.append("mapName", $("#mapName").val());
-        if ($('#mapImageFileName').val() != "") {
-            formData.append("uploadMap", $('#mapImage')[0].files[0]);
-        }
-
-
-        var rootPath = getWebRootPath();
-        var url = rootPath + "/map/update";
-
-        $.ajax({
-            url: url,
-            type: "post",
-            datatype: "json",
-            processData: false, // 使数据不做处理
-            contentType: false, // 不要设置Content-Type请求头
-            data: formData,
-            success: function (data) {
-                if (data.result == "error") {
-                    layer.msg(data.msg);
-                    return;
-                }
-                if (data.result == "ok") {
-                    layer.msg("修改成功！");
-                } else if (data.result == "no") {
-                    layer.msg(data.msg);
-                }
-                // table.draw(false);
-                queryMap();
-                clearData();
-
-
+        compressImg($('#mapImage')[0].files[0],function (newFile){
+            var formData = new FormData();
+            formData.append("mapHiddenId", mapList[curMapIndex].mapHiddenId);
+            formData.append("mapId", $('#mapId').val());
+            formData.append("mapName", $("#mapName").val());
+            if ($('#mapImageFileName').val() != "") {
+                formData.append("uploadMap", newFile);
             }
-        });
-        // console.log("cam:",hasCoordCams,noCoordCams)
-        if(hasCoordCams.length>0||noCoordCams.length>0){
-            saveCamera();
-        }
+
+
+            var rootPath = getWebRootPath();
+            var url = rootPath + "/map/update";
+
+            $.ajax({
+                url: url,
+                type: "post",
+                datatype: "json",
+                processData: false, // 使数据不做处理
+                contentType: false, // 不要设置Content-Type请求头
+                data: formData,
+                success: function (data) {
+                    if (data.result == "error") {
+                        layer.msg(data.msg);
+                        return;
+                    }
+                    if (data.result == "ok") {
+                        layer.msg("修改成功！");
+                    } else if (data.result == "no") {
+                        layer.msg(data.msg);
+                    }
+                    // table.draw(false);
+                    queryMap();
+                    clearData();
+
+
+                }
+            });
+            // console.log("cam:",hasCoordCams,noCoordCams)
+            if(hasCoordCams.length>0||noCoordCams.length>0){
+                saveCamera();
+            }
+        })
+
 
     });//修改事件处理完毕
 }
@@ -311,37 +314,41 @@ function addClick() {
         if (!validateData(true)) {
             return;
         }
-        var formData = new FormData();
-        formData.append("uploadMap", $('#mapImage')[0].files[0]);
-        formData.append("mapId", $('#mapId').val());
-        formData.append("mapName", $("#mapName").val());
+
+        compressImg($('#mapImage')[0].files[0],function (newFile){
+            var formData = new FormData();
+            formData.append("uploadMap",newFile );
+            formData.append("mapId", $('#mapId').val());
+            formData.append("mapName", $("#mapName").val());
 
 
-        var rootPath = getWebRootPath();
-        var url = rootPath + "/map/insert";
-        $.ajax({
-            type: 'POST',
-            url: url,
-            cache: false,
-            processData: false, // 使数据不做处理
-            contentType: false, // 不要设置Content-Type请求头
-            data: formData,
-            success: function (data) {
-                console.log(data)
-                if (data.result == "error") {
-                    layer.alert("服务器错误！");
-                    return;
+            var rootPath = getWebRootPath();
+            var url = rootPath + "/map/insert";
+            $.ajax({
+                type: 'POST',
+                url: url,
+                cache: false,
+                processData: false, // 使数据不做处理
+                contentType: false, // 不要设置Content-Type请求头
+                data: formData,
+                success: function (data) {
+                    console.log(data)
+                    if (data.result == "error") {
+                        layer.alert("服务器错误！");
+                        return;
+                    }
+                    if (data.result == "ok") {
+                        layer.alert("新增成功！");
+                    } else if (data.result == "no") {
+                        layer.alert("新增失败！");
+                    }
+                    queryMap();
+                    // table.draw(false);
+                    clearData();
                 }
-                if (data.result == "ok") {
-                    layer.alert("新增成功！");
-                } else if (data.result == "no") {
-                    layer.alert("新增失败！");
-                }
-                queryMap();
-                // table.draw(false);
-                clearData();
-            }
-        });
+            });
+        })
+
     });
 }
 
@@ -362,25 +369,101 @@ function clearData() {
 function uploadMap() {
     var file_data = $('#file').prop('files')[0];
     console.log(file_data);
-    var form_data = new FormData();
-    form_data.append('file', file_data);
-    $.ajax({
-        url: "",
-        dataType: 'text', // what to expect back from the server
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: form_data,
-        type: 'post',
-        success: function (response) {
-            console.log(response);
-        },
-        error: function (response) {
-            console.log(response);
-        }
-    });
-}
+    compressImg(file_data,function (newFile){
+        var form_data = new FormData();
+        form_data.append('file', newFile);
+        $.ajax({
+            url: "",
+            dataType: 'text', // what to expect back from the server
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'post',
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    })
 
+}
+//图片压缩
+function compressImg(file,callback) {
+
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    // 缩放图片需要的canvas
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    reader.onload=function () {
+        var content = this.result; //图片的src，base64格式
+        var img = new Image();
+        img.src = content;
+        img.onload = function (){ //图片加载完毕
+            // 图片原始尺寸
+            var originWidth = this.width;
+            var originHeight = this.height;
+            // 最大尺寸限制，可通过设置宽高来实现图片压缩程度
+            var maxWidth = 1500,
+                maxHeight = 1000;
+            // 目标尺寸
+            var targetWidth = originWidth
+            var targetHeight = originHeight;
+
+            // 图片尺寸超过限制
+            if(originWidth > maxWidth || originHeight > maxHeight) {
+                if(originWidth / originHeight > maxWidth / maxHeight) {
+                    // 更宽，按照宽度限定尺寸
+                    targetWidth = maxWidth;
+                    targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+                } else {
+                    targetHeight = maxHeight;
+                    targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+                }
+            }
+            // canvas对图片进行缩放
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            // 清除画布
+            context.clearRect(0, 0, targetWidth, targetHeight);
+            // 图片压缩
+            context.drawImage(img, 0, 0, targetWidth, targetHeight);
+            /*第一个参数是创建的img对象；第二个参数是左上角坐标，后面两个是画布区域宽高*/
+            //压缩后的图片base64 url
+            /*canvas.toDataURL(mimeType, qualityArgument),mimeType 默认值是'image/jpeg';
+             * qualityArgument表示导出的图片质量，只要导出为jpg和webp格式的时候此参数才有效果，默认值是0.92*/
+            var dataURL = canvas.toDataURL(file.type||"image/*", 0.92);//base64 格式
+
+            // let blob = dataURItoBlob(dataURL,file.name);
+            let newFile = dataURItoBlob(dataURL,file.name);
+
+            // let  formData = new FormData();
+            // // formData.append(option.fileName,blob);
+            // formData.append(option.fileName,newFile,file.name);
+            callback(newFile);
+            return ;
+        }
+    };
+};
+function dataURItoBlob(dataurl,filename){   //dataurl是base64格式
+    var arr = dataurl.split(',');
+    var mime = arr[0].match(/:(.*?);/)[1];
+    var bstr = atob(arr[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    //发现ios11不支持new File()
+    let newFile = new File([u8arr], filename, {
+        type: mime || "image/*"
+    });
+    return newFile;
+    // return new Blob([u8arr], {type:mime || "image/*"});
+};
 //查询所有地图
 function queryMap(id = "", name = "") {
     var rootPath = getWebRootPath();

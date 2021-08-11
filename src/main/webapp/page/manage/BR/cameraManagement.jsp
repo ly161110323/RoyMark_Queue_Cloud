@@ -283,19 +283,19 @@
 
                             </tr>
                             <tr>
-<%--                                <td style="width: 25%;">--%>
-                                    <div class="form-group" style="float: left; width: 100%">
-                                        <label style="width: 10%;"
-                                               class="col-sm-6 control-label input_lable_hm table_label_zd"><span
-                                                style="color: red;">*</span>视频流地址：</label>
-                                        <div class="col-sm-8" style="width: 90%">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   placeholder="" class="form-control table_content_zd"
-                                                   name="camVideoAddr" id="camVideoAddr">
-                                        </div>
+<%--&lt;%&ndash;                                <td style="width: 25%;">&ndash;%&gt;--%>
+<%--                                    <div class="form-group" style="float: left; width: 100%">--%>
+<%--                                        <label style="width: 10%;"--%>
+<%--                                               class="col-sm-6 control-label input_lable_hm table_label_zd"><span--%>
+<%--                                                style="color: red;">*</span>视频流地址：</label>--%>
+<%--                                        <div class="col-sm-8" style="width: 90%">--%>
+<%--                                            <input type="text" autocomplete="off" spellcheck="false"--%>
+<%--                                                   placeholder="" class="form-control table_content_zd"--%>
+<%--                                                   name="camVideoAddr" id="camVideoAddr">--%>
+<%--                                        </div>--%>
 
-                                    </div>
-<%--                                </td>--%>
+<%--                                    </div>--%>
+<%--&lt;%&ndash;                                </td>&ndash;%&gt;--%>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
@@ -359,6 +359,18 @@
                                                     id="groupId" name="groupId">
                                                 <option value="">请选择所在分组</option>
                                             </select>
+                                        </div>
+
+                                    </div>
+                                </td>
+                                <td style="width: 25%;" colspan="2">
+                                    <div class="form-group">
+                                        <label style="width: 144px;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">视频流地址：</label>
+                                        <div class="col-sm-9" style="padding-left: 1px;width: 77%;">
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   placeholder="" class="form-control table_content_zd"
+                                                   name="camVideoAddr" id="camVideoAddr">
                                         </div>
 
                                     </div>

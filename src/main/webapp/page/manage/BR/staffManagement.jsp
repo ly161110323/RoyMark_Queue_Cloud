@@ -366,7 +366,7 @@
                                     </button>
                                     <sapn
 
-                                            style="width: 16%;"
+                                            style="width: 16%; margin-left:10px; line-height: 25px"
                                             class="form-control input_btn_input table_content_zd"
                                             name="faceManagerServerStatus"
                                             id="faceManagerServerStatusLabel">

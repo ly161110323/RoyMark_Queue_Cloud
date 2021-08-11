@@ -38,7 +38,7 @@
     const minWidth=0,minHeight=0,maxWidth=9000,maxHeight=7000;
     const img=document.createElement('img');
     const elementWidth=720,elementHeight=405;
-    const minDis = 10
+    const minDis = 50
     let startx,//起始x坐标
         starty,//起始y坐标
         flag,//是否点击鼠标的标志
@@ -51,7 +51,7 @@
         type=0;
     let layers=[];//图层
     let currentR;//当前点击的矩形框
-    let coord=window.parent.windowCoordinates
+    let coord=window.parent.windowCoordinates;
     console.log("windowCoordinates:",coord)
     let msg = window.parent.windowId
     ctx.font = '30px "微软雅黑"';

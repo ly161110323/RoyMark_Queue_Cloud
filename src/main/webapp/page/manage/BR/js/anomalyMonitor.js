@@ -8,7 +8,7 @@ $(document).ready(function () {
     searchClick();
     clearClick();
     configClick();
-
+    clearUser();
     queryWindowList();
     queryUserList();
     // icon_operate();//部门图标处理
@@ -292,8 +292,41 @@ function clearData() {
     $("#anomalyStartTime").val("");
     $("#anomalyEndTime").val("");
     $("#anomalyStatus").val("");
+}
 
-
+function clearUser(){
+    $('#clearUser').click(function (){
+        if (dataId=='') {
+            layer.alert("请选择要清除的数据！");
+            return;
+        }
+        var rootPath = getWebRootPath();
+        var url = rootPath + "/anomaly/manualClearUser";
+        var formData = new FormData();
+        formData.append("anomalyHiddenId", dataId);
+        $.ajax({
+            type: 'POST',
+            url: url,
+            cache: false,
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
+            data: formData,
+            success: function (data) {
+                console.log(data)
+                if (data.result == "error") {
+                    layer.alert(data.msg);
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.msg("清除成功！");
+                } else if (data.result == "no") {
+                    layer.alert(data.msg);
+                }
+                table.draw(false);
+                clearData();
+            }
+        });
+    });
 }
 
 function clearSearch() {
@@ -549,9 +582,8 @@ function deleteClick() {
     });
 }
 
-function showPhotos() {
-    var rootPath = getWebRootPath();
-    var imgs = selectInfo.anomalyImagePath.split(',')
+function showPhotos(imgs) {
+
 
     window.imgs = imgs
     layer.open({
@@ -594,10 +626,10 @@ function showPhotos() {
 
 
 }
-function showVideo(){
-    var rootPath = getWebRootPath();
-    var videopath = selectInfo.anomalyVideoPath
-    var videopath = videopath
+function showVideo(videopath){
+
+
+
     var video = '<video width="720" controls="controls"> <source src="'+videopath+'" type="video/mp4"></video>'
     layer.open({
                 type: 1,
@@ -661,10 +693,21 @@ function clearClick() {
 function configClick() {
 //更多配置
     $(document).on('click', '#showPhoto', function () {
-        showPhotos()
+        if (dataId=='') {
+            layer.alert("请选择要查看的数据！");
+            return;
+        }
+
+        var imgs = selectInfo.anomalyImagePath.split(',')
+        showPhotos(imgs);
     });
     $(document).on('click', '#showVideo', function () {
-        showVideo()
+        if (dataId=='') {
+            layer.alert("请选择要查看的数据！");
+            return;
+        }
+        var videopath = selectInfo.anomalyVideoPath;
+        showVideo(videopath);
     });
 }
 

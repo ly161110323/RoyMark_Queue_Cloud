@@ -101,7 +101,7 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">上传图片：</label>
                                         <div class="col-sm-8" style="width: 60%;">
-                                            <input type="file" name="mapImage" id="mapImage"
+                                            <input type="file" name="mapImage" id="mapImage" accept="image/*"
                                                    style="display: none;"> <input type="text"
                                                                                   style="width: 65%;" autocomplete="off"
                                         <%--                                                                                  placeholder="768*365"--%>

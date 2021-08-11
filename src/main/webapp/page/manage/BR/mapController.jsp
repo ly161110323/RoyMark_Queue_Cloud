@@ -264,11 +264,12 @@
             <button id="reviewVideo" onclick="reviewVideo()" value="录像回放">录像回放</button>
         </li>
         <li>
-            <button id="anomalyConfirm" onclick="anomalyConfirm()" value="异常确认">异常确认</button>
+            <button id="deleteCamera" onclick="reviewImage()" type="button"  value="截图回放">截图回放</button>
         </li>
         <li>
-            <button id="deleteCamera" onclick="deleteCamera()" type="button"  value="删除">删除</button>
+            <button id="anomalyConfirm" onclick="anomalyConfirm()" value="异常确认">异常确认</button>
         </li>
+
     </ul>
 </div>
 
