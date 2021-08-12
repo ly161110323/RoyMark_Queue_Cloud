@@ -234,41 +234,44 @@ function addClick() {
         if (!validateData(true)) {
             return;
         }
-        var formData = new FormData();
-        if($('#staffPhotoFileName').val()!=""){
-            formData.append("uploadinfo", $('#staffPhoto')[0].files[0]);
-        }
-        formData.append("userId", $('#userId').val());
-        formData.append("userName", $("#userName").val());
-        formData.append("userSex", $("#userSex").val());
-        formData.append("userDepartment", $("#userDepartment").val());
-        formData.append("userPost", $("#userPost").val());
-        formData.append("windowHiddenId", $("#windowId").val());
-
-        var rootPath = getWebRootPath();
-        var url = rootPath + "/user/insert";
-        $.ajax({
-            type: 'POST',
-            url: url,
-            cache: false,
-            processData: false, // 使数据不做处理
-            contentType: false, // 不要设置Content-Type请求头
-            data: formData,
-            success: function (data) {
-                console.log(data)
-                if (data.result == "error") {
-                    layer.alert(data.msg);
-                    return;
-                }
-                if (data.result == "ok") {
-                    layer.alert("新增成功！");
-                } else if (data.result == "no") {
-                    layer.alert(data.msg);
-                }
-                table.draw(false);
-                clearData();
+        compressImg($('#staffPhoto')[0].files[0],function (newFile){
+            var formData = new FormData();
+            if($('#staffPhotoFileName').val()!=""){
+                formData.append("uploadinfo", newFile);
             }
+            formData.append("userId", $('#userId').val());
+            formData.append("userName", $("#userName").val());
+            formData.append("userSex", $("#userSex").val());
+            formData.append("userDepartment", $("#userDepartment").val());
+            formData.append("userPost", $("#userPost").val());
+            formData.append("windowHiddenId", $("#windowId").val());
+
+            var rootPath = getWebRootPath();
+            var url = rootPath + "/user/insert";
+            $.ajax({
+                type: 'POST',
+                url: url,
+                cache: false,
+                processData: false, // 使数据不做处理
+                contentType: false, // 不要设置Content-Type请求头
+                data: formData,
+                success: function (data) {
+                    console.log(data)
+                    if (data.result == "error") {
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    if (data.result == "ok") {
+                        layer.alert("新增成功！");
+                    } else if (data.result == "no") {
+                        layer.alert(data.msg);
+                    }
+                    table.draw(false);
+                    clearData();
+                }
+            });
         });
+
     });
 }
 
@@ -397,14 +400,18 @@ function showPhotos(){
         layer.alert("请选择人员信息！");
         return
     }
-
+    if(urls==""||typeof urls =='undefined'){
+        layer.alert("该人员暂无照片")
+        return
+    }
     window.dataId = dataId;
     window.imgs = urls;
+
     console.log(urls)
-    layer.open({
+    let index=layer.open({
         type: 2,
         title: false,
-        area: ['820px','560px'],
+        area: ['500px','560px'],
         // skin: 'layui-layer-nobg', //没有背景色
         shadeClose: true,
         content: getWebRootPath()+'/page/manage/BR/showFacePhoto.jsp',
@@ -412,6 +419,7 @@ function showPhotos(){
             table.draw(false);
         }
     });
+    window.showStaffFaceIndex =index;
 
 
 
@@ -425,7 +433,12 @@ function insertPhoto(){
             layer.alert("请选择人员信息！");
             return
         }
+        if($('#staffPhotoFileName').val()==""){
+            layer.alert("请选择图片！");
+            return
+        }
         compressImg($('#staffPhoto')[0].files[0],function (newFile){
+
             var formData = new FormData();
             formData.append("userHiddenId", dataId);
             formData.append("uploadinfo", newFile);
@@ -443,10 +456,13 @@ function insertPhoto(){
                     console.log(data.result=="no")
                     if (data.result == "ok") {
                         layer.msg("上传成功！");
+                        table.draw();
                     } else  {
                         console.log(data.msg)
                         layer.alert("上传失败！"+data.msg);
                     }
+                    table.draw(false);
+                    clearData();
 
                 }
             });
@@ -520,6 +536,10 @@ function imgSizeCheck(file){//$("#fileUpload")[0].files[0]
     }
 }
 function compressImg(file,callback) {
+    if(typeof file =="undefined"){
+        callback();
+        return ;
+    }
 
     var reader = new FileReader();
     reader.readAsDataURL(file);

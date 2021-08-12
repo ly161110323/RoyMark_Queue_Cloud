@@ -82,7 +82,7 @@ function loadOneCameraIcon(mainDiv, camObj) {
     var labelNode = $('<div></div>');
     labelNode.text(camObj.camName);
     var imgNode = new Image(camSize, camSize);
-    imgNode.src = green_src;
+    imgNode.src = camObj.camStatus=="正常"?green_src:error_src;
     divNode.append(imgNode);
     divNode.append(labelNode);
     mainDiv.append(divNode);
@@ -818,8 +818,11 @@ function anomalyConfirm() {
         var firstAnomaly = '';
         if(anomalyList.length>0){
             firstAnomaly = anomalyList[0];
-        }else {
+        }else if(camState[rightHiidenId]) {
             layer.msg('当前摄像头无异常')
+            return
+        }else {
+            layer.msg('当前摄像头离线')
             return
         }
 
@@ -890,13 +893,17 @@ function anomalyConfirm() {
             }
         )
     }else {
-        layer.msg("当前摄像头无异常");
+        layer.msg("anomalyList 出现问题");
         return
     }
 }
 
 // 点击监控函数
 function realtimeMinitor() {
+    if(!camState[rightHiidenId]) {
+        layer.msg('当前摄像头离线')
+        return
+    }
     var addr = hasCoordCams.find(e => e.camHiddenId == rightHiidenId).camVideoAddr;
     if (addr) {
         window.videoPath = addr;
@@ -938,12 +945,11 @@ function mapEdit() {
 // 异常照片展示函数
 function reviewImage() {//只查看第一个异常录像
     console.log(anomalyRecord[rightHiidenId])
-    if(!anomalyRecord.hasOwnProperty(rightHiidenId)){
-        layer.msg("当前摄像头无异常");
+    if(!camState[rightHiidenId]) {
+        layer.msg('当前摄像头离线')
         return
-    }
-    if(anomalyRecord[rightHiidenId].length==0){
-        layer.msg("当前摄像头无异常");
+    }else if(anomalyRecord[rightHiidenId].length==0) {
+        layer.msg('当前摄像头无异常')
         return
     }
     let videoImgList = anomalyRecord[rightHiidenId][0].anomalyImagePath;
@@ -966,12 +972,11 @@ function showPhotos(imgs) {
 // 录像回放函数
 function reviewVideo() {//只查看第一个异常录像
     console.log(anomalyRecord[rightHiidenId])
-    if(!anomalyRecord.hasOwnProperty(rightHiidenId)){
-        layer.msg("当前摄像头无异常");
+    if(!camState[rightHiidenId]) {
+        layer.msg('当前摄像头离线')
         return
-    }
-    if(anomalyRecord[rightHiidenId].length==0){
-        layer.msg("当前摄像头无异常");
+    }else if(anomalyRecord[rightHiidenId].length==0) {
+        layer.msg('当前摄像头无异常')
         return
     }
     let videoAddr = anomalyRecord[rightHiidenId][0].anomalyVideoPath;

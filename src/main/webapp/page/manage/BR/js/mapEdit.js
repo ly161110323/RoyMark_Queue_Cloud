@@ -27,7 +27,7 @@ const yellow_src=getWebRootPath() + "/resources/images/xw/" + 'yellow' + "_camer
 const red_src=getWebRootPath() + "/resources/images/xw/" + 'red' + "_camera.png";
 const black_src=getWebRootPath() + "/resources/images/xw/" + 'black' + "_camera.png";
 const gray_src=getWebRootPath() + "/resources/images/xw/" + 'gray' + "_camera.png";
-
+const error_src = getWebRootPath() + "/resources/images/xw/" + 'error' + "_camera.png";
 var normal_src = green_src;
 
 var status_src = {'play':yellow_src,'sleep':red_src,'leave':gray_src,'gather':black_src}
@@ -81,7 +81,7 @@ function loadOneCameraIcon(mainDiv, camObj) {
     divNode.css('position', 'absolute');
     divNode.offset({top: parseInt(coord[1]), left: parseInt(coord[0])});
     var imgNode = new Image(camSize,camSize);
-    imgNode.src = green_src;
+    imgNode.src = camObj.camStatus=="正常"?green_src:error_src;
     var labelNode = $('<div></div>');
     labelNode.text(camObj.camName);
     divNode.append(imgNode);
@@ -396,7 +396,7 @@ function uploadMap() {
 }
 //图片压缩
 function compressImg(file,callback) {
-    if(typeof file !='Blob'){
+    if(typeof file =="undefined"){
         callback();
         return ;
     }
@@ -504,7 +504,6 @@ function queryMap(id = "", name = "") {
                 // curMap = mapList[curMapIndex]
                 loadMapAndCamera(mapList[curMapIndex].mapPath, mapList[curMapIndex].mapHiddenId); //加载背景图
                 loadMapOptions();
-                // setInterval(queryAnomalyEvent,3000);
             } else if ((typeof (datainfos) == "undefined") && pageNo > 1) {
 
             } else {

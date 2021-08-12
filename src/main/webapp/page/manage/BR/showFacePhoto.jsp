@@ -53,10 +53,16 @@
         imgsrclist.push(rootPath+item);
     });
     function loadimages(){
+        if(imgsrclist.length==0){
+            layer.msg("该员工个人照片已经清空，请点击右上角叉关闭")
+        }
         $('#imgs').empty();
         imgsrclist.forEach(function (item){
-
-            $('#imgs').append('<img src='+item+'  >')
+            let image =new Image();
+            image.src = item;
+            image.onload = function (){
+            }
+            $('#imgs').append('<img    src='+item+'  >')
         });
     }
     loadimages();
@@ -75,42 +81,43 @@
             console.log(obj.item); //当前条目的元素对象
             curIndex = obj.index;
         });
-        $('#deleteFace').click(function (){
-            console.log(curIndex)
 
-            var formData = new FormData();
-            formData.append("userHiddenId", hiddenId);
-            formData.append("imgPath",oriUrls[curIndex] );
-            console.log("path:",oriUrls[curIndex])
-            var url = rootPath + "/user/deleteFace";
+    });
+    $('#deleteFace').click(function (){
+        console.log(curIndex)
 
-            $.ajax({
-                url: url,
-                type: "post",
-                datatype: "json",
-                processData: false, // 使数据不做处理
-                contentType: false, // 不要设置Content-Type请求头
-                data: formData,
-                success: function (data) {
-                    if (data.result == "error") {
-                        layer.alert(data.msg);
-                        return;
-                    }
-                    if (data.result == "ok") {
-                        layer.msg(data.msg);
-                        imgsrclist.splice(curIndex,1);
-                        oriUrls.splice(curIndex,1);
-                        loadimages();
-                        ren.reload();
+        var formData = new FormData();
+        formData.append("userHiddenId", hiddenId);
+        formData.append("imgPath",oriUrls[curIndex] );
+        console.log("path:",oriUrls[curIndex])
+        var url = rootPath + "/user/deleteFace";
 
-                    } else if (data.result == "no") {
-                        layer.alert(data.msg);
+        $.ajax({
+            url: url,
+            type: "post",
+            datatype: "json",
+            processData: false, // 使数据不做处理
+            contentType: false, // 不要设置Content-Type请求头
+            data: formData,
+            success: function (data) {
+                if (data.result == "error") {
+                    layer.alert(data.msg);
+                    return;
+                }
+                if (data.result == "ok") {
+                    layer.msg(data.msg);
+                    imgsrclist.splice(curIndex,1);
+                    oriUrls.splice(curIndex,1);
+                    loadimages();
+                    ren.reload();
 
-                    }
-
+                } else if (data.result == "no") {
+                    layer.alert(data.msg);
 
                 }
-            });
+
+
+            }
         });
     });
 
