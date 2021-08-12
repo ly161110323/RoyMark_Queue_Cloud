@@ -261,7 +261,7 @@ public class CameraController {
 			}
 			// 以线程来执行 状态设置，以达到和数据库访问同时进行
             Runnable runnable = () -> {
-                cameraService.setCamsStatus(pageList.getRecords(), 2000);
+                cameraService.setCamsStatus(pageList.getRecords(), 3000);
             };
 			Thread thread = new Thread(runnable);
 			thread.start();
@@ -282,7 +282,6 @@ public class CameraController {
 			} catch (InterruptedException e) {
             	logger.error("Thread Interrupt:", e);
 			}
-            cameraService.setCamsStatus(pageList.getRecords(), 500);
             jsonObject.put("pageList", pageList);
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "搜索成功");

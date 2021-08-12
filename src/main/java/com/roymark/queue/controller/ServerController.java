@@ -253,7 +253,7 @@ public class ServerController {
                 jsonObject.put("pageList", pageList);
                 return jsonObject;
             }
-            serverService.setServersStatus(pageList.getRecords(), 500);
+            serverService.setServersStatus(pageList.getRecords(), 3000);
             jsonObject.put("pageList", pageList);
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "搜索成功");
@@ -305,7 +305,7 @@ public class ServerController {
                     // 服务器绑定摄像头启动信息
                     StringBuilder cameraStartInfo = new StringBuilder();
                     try {
-                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 3000);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
                         } else {
@@ -424,7 +424,7 @@ public class ServerController {
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/stop";
                     try {
-                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 500);
+                        boolean connectResult = HttpUtils.isReachable(ip_address, String.valueOf(port), 3000);
                         if (!connectResult) {
                             msg.append("服务器名：").append(serverName).append("连接失败，请检查ip和端口;\n");
                         } else {
@@ -473,7 +473,7 @@ public class ServerController {
         String host = "http://" + ip_address + ":" + port;
         String path = "/startFaceManager";
         try {
-            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
             if (!connectResult) {
                 msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");
@@ -538,7 +538,7 @@ public class ServerController {
         String host = "http://" + ip_address + ":" + port;
         String path = "/stopFaceManager";
         try {
-            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
             if (!connectResult) {
                 msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");
@@ -592,7 +592,7 @@ public class ServerController {
         String host = "http://" + ip_address + ":" + port;
         String path = "/getFaceManagerStatus";
         try {
-            boolean connectResult = HttpUtils.isReachable(ip_address, port, 500);
+            boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
             if (!connectResult) {
                 msg.append("人脸服务器连接失败，请检查参数face_server_ip与face_controller_port！");
                 result.append("no");

@@ -14,7 +14,7 @@ public class AnomalyDateControlUtil {
     // 以AnomalyHiddenId索引快速查找时间
     private static final Map<Long, Date> anomalyControlMap = new HashMap<>();
 
-    public Map<Long, Date> getAnomalyControlMap() {
+    public static Map<Long, Date> getAnomalyControlMap() {
         return anomalyControlMap;
     }
 

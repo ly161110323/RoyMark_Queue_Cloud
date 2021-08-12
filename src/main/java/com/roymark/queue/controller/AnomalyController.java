@@ -583,11 +583,10 @@ public class AnomalyController {
             }
             // 摄像头id,摄像头状态，摄像头所处服务器状态一一对应的String；同时每个摄像头对应不超过3个最新异常
             Map<String, List<Anomaly>> cameraMap = new HashMap<>();
-            List<Anomaly> anomalies;
 
             // 以线程来执行摄像头状态设置
             Runnable cameraRunnable = () -> {
-                cameraService.setCamsStatus(cameras, 500);
+                cameraService.setCamsStatus(cameras, 3000);
             };
             Thread cameraThread = new Thread(cameraRunnable);
             cameraThread.start();
@@ -598,7 +597,7 @@ public class AnomalyController {
             }
             // 以线程来执行服务器状态设置
             Runnable serverRunnable = () -> {
-                serverService.setServersStatus(servers, 500);
+                serverService.setServersStatus(servers, 3000);
             };
             Thread serverThread = new Thread(serverRunnable);
             serverThread.start();
@@ -611,40 +610,54 @@ public class AnomalyController {
                 logger.error("Thread Exception: ", e);
             }
 
+            // 当天凌晨
+            Date date = new Date();
+            SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            String dateStr = dateFormat.format(date);
+
+            List<Thread> readAnomalyThread = new ArrayList<>();
             // 获取camera
             for (int i=0; i<cameras.size(); i++) {
                 Camera camera = cameras.get(i);
                 Server server = servers.get(i);
                 Long camHiddenId = camera.getCamHiddenId();
 
-                // 当天凌晨
-                Date date = new Date();
-                SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
-                String dateStr = dateFormat.format(date).toString();
-
-                // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
-                QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("br_anomaly.cam_hidden_id", camHiddenId)
-                        .isNull("anomaly_end_date")
-                        .eq("anomaly_end_date_valid", true)
-                        .ne("anomaly_status", "invalid")
-                        .ge("anomaly_start_date", dateStr+ " 00:00:00")             // 当天
-                        .orderByDesc("anomaly_start_date");
-                anomalies = anomalyService.list(queryWrapper);
-                if (anomalies.size() > 3) {
-                    anomalies = anomalies.subList(0, 3);
-                }
-                for (Anomaly anomaly: anomalies) {
-                    if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
-                        ActionUser user = userService.getById(anomaly.getUserHiddenId());
-                        addDefaultUser(anomaly, user);
+                Runnable runnable = () -> {
+                    // 获取的异常满足窗口，结束时间为空且有效，并且异常状态有效或待处理
+                    QueryWrapper<Anomaly> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.eq("br_anomaly.cam_hidden_id", camHiddenId)
+                            .isNull("anomaly_end_date")
+                            .eq("anomaly_end_date_valid", true)
+                            .ne("anomaly_status", "invalid")
+                            .ge("anomaly_start_date", dateStr+ " 00:00:00")             // 当天
+                            .orderByDesc("anomaly_start_date");
+                    List<Anomaly> anomalies = anomalyService.list(queryWrapper);
+                    if (anomalies.size() > 3) {
+                        anomalies = anomalies.subList(0, 3);
                     }
+                    for (Anomaly anomaly: anomalies) {
+                        if (anomaly.getUserShortInfos().size() == 0 && anomaly.getUserHiddenId() != null) {
+                            ActionUser user = userService.getById(anomaly.getUserHiddenId());
+                            addDefaultUser(anomaly, user);
+                        }
+                    }
+                    // 设置摄像头及其相关状态
+                    String camInfoStr = String.valueOf(camHiddenId) + ','
+                            + (camera.getCamStatus().equals("正常")? (long)1:0) + ','
+                            + (server==null?0:server.getProgramStatus().equals("运行中")? (long)1:0);
+                    cameraMap.put(camInfoStr, anomalies);
+                };
+                Thread thread = new Thread(runnable);
+                readAnomalyThread.add(thread);
+                thread.start();
+            }
+            // 等待进程完成
+            try {
+                for (Thread thread: readAnomalyThread) {
+                    thread.join();
                 }
-                // 设置摄像头及其相关状态
-                String camInfoStr = String.valueOf(camHiddenId) + ','
-                        + (camera.getCamStatus().equals("正常")? (long)1:0) + ','
-                        + (server==null?0:server.getProgramStatus().equals("运行中")? (long)1:0);
-                cameraMap.put(camInfoStr, anomalies);
+            } catch (InterruptedException e) {
+                logger.info("Thread join:", e);
             }
             jsonObject.put("result", "ok");
             jsonObject.put("msg", "获取成功");

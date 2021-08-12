@@ -1,5 +1,6 @@
 package com.roymark.queue.util.web;
 
+import javafx.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -29,9 +30,7 @@ import java.net.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpUtils {
 
@@ -39,6 +38,8 @@ public class HttpUtils {
 
 	private static RequestConfig config = RequestConfig.custom().setConnectTimeout(1000).setConnectionRequestTimeout(5000).setSocketTimeout(5000).build();
 
+	// 维护的有效Socket以及其创建时间
+	private final static Map<String, Date> validSocketMap = new HashMap<>();
 	/**
 	 * get
 	 *
@@ -353,20 +354,28 @@ public class HttpUtils {
 		}
 	}
 
+	// 使用map来保存一定时间内的有效连接，避免频繁连接导致socket连接失败
 	public static boolean isSocketReachable(String ip, String port, int timeout) {
-		Socket rtspSocket = new Socket();
+		// 清除超过一分钟的交由定时任务BRTask完成
 		// 建立TCP Scoket连接
 		try {
-			rtspSocket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), timeout);
-			rtspSocket.close();
-			return true;
-		} catch (IOException e) {
-			try {
-				rtspSocket.close();
-			} catch (IOException ex) {
-				return false;
+			String key = ip + ":" + port;
+			if (validSocketMap.containsKey(key)) {
+				return true;
 			}
+			else {
+				Socket rtspSocket = new Socket();
+				rtspSocket.connect(new InetSocketAddress(ip, Integer.parseInt(port)), timeout);
+				rtspSocket.close();
+				validSocketMap.put(key, new Date());
+				return true;
+			}
+		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	public static Map<String, Date> getValidSocketMap() {
+		return validSocketMap;
 	}
 }

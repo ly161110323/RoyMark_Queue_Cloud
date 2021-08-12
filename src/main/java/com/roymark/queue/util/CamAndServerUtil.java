@@ -38,7 +38,7 @@ public class CamAndServerUtil {
             if (ipAndPort.length < 2) {
                 return;
             }
-            boolean result = HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000);
+            boolean result = HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 3000);
             if (result) {
                 camera.setCamStatus("正常");
             }
@@ -72,7 +72,7 @@ public class CamAndServerUtil {
                     // 判断服务器是否可用
                     String host = "http://" + ip_address + ":" + port;
                     String path = "/status";
-                    if (HttpUtils.isReachable(ip_address, String.valueOf(port), 1000)) {
+                    if (HttpUtils.isReachable(ip_address, String.valueOf(port), 3000)) {
                         HttpResponse response = HttpUtils.doGet(host, path, "get", new HashMap<>(), null);
                         if (response.getStatusLine().getStatusCode() == 200) {
                             if ("on".equals(EntityUtils.toString(response.getEntity(), "UTF-8"))) {

@@ -10,20 +10,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.roymark.queue.entity.Anomaly;
 import com.roymark.queue.entity.ActionUser;
 import com.roymark.queue.entity.FaceVector;
-import com.roymark.queue.entity.Parameter;
 import com.roymark.queue.service.AnomalyService;
 import com.roymark.queue.service.FaceVectorService;
 import com.roymark.queue.service.ParameterService;
 import com.roymark.queue.util.HttpUtil;
 import com.roymark.queue.util.ParamUtil;
 import com.roymark.queue.util.web.HttpUtils;
-import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opencv.face.Face;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -156,7 +152,7 @@ public class UserController {
 				return jsonObject;
 			}
 			String host = "http://" + ip_address + ":" + port;
-			boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
 			if (!connectResult) {
 				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 				jsonObject.put("result", "no");
@@ -290,7 +286,7 @@ public class UserController {
 						return jsonObject;
 					}
 					String host = "http://" + ip_address + ":" + port;
-					boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
+					boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
 					if (!connectResult) {
 						jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 						jsonObject.put("result", "no");
@@ -439,7 +435,7 @@ public class UserController {
 				return jsonObject;
 			}
 			String host = "http://" + ip_address + ":" + port;
-			boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
+			boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
 			String path = "/insertFaceImage";
 			if (!connectResult) {
 				jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
@@ -582,7 +578,7 @@ public class UserController {
 					return jsonObject;
 				}
 				String host = "http://" + ip_address + ":" + port;
-				boolean connectResult = HttpUtils.isReachable(ip_address, port, 1000);
+				boolean connectResult = HttpUtils.isReachable(ip_address, port, 3000);
 				if (!connectResult) {
 					jsonObject.put("msg", "人脸服务器连接失败，请检查参数face_server_ip与face_manager_port！");
 					jsonObject.put("result", "no");
