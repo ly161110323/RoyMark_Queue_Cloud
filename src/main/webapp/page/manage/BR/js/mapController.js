@@ -933,7 +933,7 @@ function mapEdit() {
             title: argTitle,
             shadeClose: true,
             shade: 0.8,
-            area: ['1280px', '720px'],
+            area: ['1600px', '800px'],
             content: targetUrl,
             cancel:function (index,layero){
                 queryMap();

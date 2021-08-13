@@ -291,19 +291,19 @@ function validateData(isAdd) {
                 }
             }
         }
-        // if ($(element).find("td:eq(4)").text() == chooseIp) {
-        //     if (isAdd) {
-        //         isExit = true;
-        //         layer.alert("摄像头IP已存在！");
-        //         return false;
-        //     } else {
-        //         if (objLs != dataId) {
-        //             isExit = true;
-        //             layer.alert("摄像头IP已存在！");
-        //             return false;
-        //         }
-        //     }
-        // }
+        if ($(element).find("td:eq(4)").text() == chooseIp) {
+            if (isAdd) {
+                isExit = true;
+                layer.alert("摄像头IP已存在！");
+                return false;
+            } else {
+                if (objLs != dataId) {
+                    isExit = true;
+                    layer.alert("摄像头IP已存在！");
+                    return false;
+                }
+            }
+        }
         if ($(element).find("td:eq(3)").text() == chooseName) {
             if (isAdd) {
                 isExit = true;
