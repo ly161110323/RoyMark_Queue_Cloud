@@ -287,7 +287,8 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">摄像头名称：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd"><span
+                                                style="color: red;">*</span>摄像头名称：</label>
                                         <div class="col-sm-8">
                                             <input type="text" autocomplete="off" spellcheck="false"
                                                    placeholder="" class="form-control table_content_zd"

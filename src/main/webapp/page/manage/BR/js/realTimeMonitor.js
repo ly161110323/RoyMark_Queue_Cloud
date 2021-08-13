@@ -106,11 +106,11 @@ function queryCamByGroup(groupHiddenId,pageNo){
             totalPage = pageList.pages;
             list.forEach(function (item){
                 urls.push(item['camVideoAddr']);
-                ids.push(item['camId']);
+                ids.push(item['camName']);
             })
 
             videoPath = urls.toString();
-            logids = ids.toString();
+            lognames = ids.toString();
             if(videoPath==""){
                 layer.msg("当前分组无摄像头！");
                 return ;
@@ -129,7 +129,7 @@ function showVideoImg(){
         ws1.ws.close();
         ws1 = null;
     }
-    var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height+'&cam_id='+logids;
+    var wsUrl = getWebRootPath()+"/webSocketService"+'?video_address='+videoPath+'&x='+grid.x+'&y='+grid.y+'&width='+width+'&height='+height+'&cam_id='+lognames;
 
     ws1 = new Ws({
         host: window.location.host.split(":")[0]
