@@ -269,9 +269,8 @@
                                         <label style="width: 38%;"
                                                class="col-sm-3 control-label input_lable_hm table_label_zd">部门：</label>
                                         <div class="col-sm-8">
-                                            <input type="text" autocomplete="off" spellcheck="false"
-                                                   class="form-control table_content_zd"
-                                                   name="userDepartment" id="userDepartment">
+                                            <select class="form-control table_content_zd"
+                                                    name="userDepartment" id="userDepartment"></select>
                                         </div>
                                     </div>
                                 </td>
@@ -347,16 +346,12 @@
                                             name="inputCommitUserId"
                                             id="inputCommitUserId">
 
-                                    <input
-                                            type="text"
-                                            placeholder="请输入所属部门"
-                                            autocomplete="off"
-                                            spellcheck="false"
-                                            placeholder=""
+                                    <select
                                             style="width: 15%;"
                                             class="form-control input_btn_input table_content_zd"
-                                            name="inputCommitUserDepartment"
-                                            id="inputCommitUserDepartment">
+                                            name="selectCommitUserDepartment"
+                                            id="selectCommitUserDepartment"></select>
+
 
                                     <button type="button"
                                             class="btn btn-sm input_btn_btn search_rm_button_index table_button_zd"

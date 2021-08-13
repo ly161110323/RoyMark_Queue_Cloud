@@ -128,7 +128,7 @@ function queryServerList() {
 //若未出错，则获取信息设置到控件中
             var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverId + "</option>";
+                str += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverName + "</option>";
             }
 
             // $("#formCaseAreaLs").empty();
@@ -165,19 +165,19 @@ function trClick() {
         dataId = $(this).find("td:eq(0) input[type='checkbox']").val();
 
         $("#camId").val($(this).find("td:eq(2)").text());
-
-        $("#camIp").val($(this).find("td:eq(3)").text());
+        $("#camName").val($(this).find("td:eq(3)").text());
+        $("#camIp").val($(this).find("td:eq(4)").text());
         // $("#windowId").val($(this).find("td:eq(4)").text());
         // $("#serverId").val($(this).find("td:eq(4)").text());
         // $("#camVideoAddr").val($(this).find("td:eq(6)").text());
-        $("#camVideoAddr").val($(this).find("td:eq(8)").text());
-        $("#camMacAddr").val($(this).find("td:eq(9)").text());
-        $("#camBrand").val($(this).find("td:eq(10)").text());
-        $("#camType").val($(this).find("td:eq(11)").text());
-        $("#camBirth").val($(this).find("td:eq(12)").text());
-        $("#serverId").val($(this).find("td:eq(13)").text());
-        $("#mapId").val($(this).find("td:eq(14)").text());
-        $("#groupId").val($(this).find("td:eq(15)").text());
+        $("#camVideoAddr").val($(this).find("td:eq(9)").text());
+        $("#camMacAddr").val($(this).find("td:eq(10)").text());
+        $("#camBrand").val($(this).find("td:eq(11)").text());
+        $("#camType").val($(this).find("td:eq(12)").text());
+        $("#camBirth").val($(this).find("td:eq(13)").text());
+        $("#serverId").val($(this).find("td:eq(14)").text());
+        $("#mapId").val($(this).find("td:eq(15)").text());
+        $("#groupId").val($(this).find("td:eq(16)").text());
 
         // var tempValue = $(this).find("td:eq(0) input[name='deptImagepath']").val();
         //
@@ -242,7 +242,10 @@ function validateData(isAdd) {
         layer.alert("摄像头ID不能为空！");
         return;
     }
-
+    if ($("#camName").val().trim() === "") {
+        layer.alert("摄像头名称不能为空！");
+        return;
+    }
     var regexIP = /^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/g;
     let ip = $("#camIp").val().trim();
     if (ip === "") {
@@ -270,6 +273,7 @@ function validateData(isAdd) {
     var chooseId = $("#camId").val();
     var isExit = false;
     var chooseIp = $("#camIp").val();
+    var chooseName = $("#camName").val();
 //循环列表判断是否已经存在,放在客户端校验
     trs.each(function (index, element) {
         var objLs = $(element).find("td:eq(0)>input").val();
@@ -287,7 +291,7 @@ function validateData(isAdd) {
                 }
             }
         }
-        // if ($(element).find("td:eq(3)").text() == chooseIp) {
+        // if ($(element).find("td:eq(4)").text() == chooseIp) {
         //     if (isAdd) {
         //         isExit = true;
         //         layer.alert("摄像头IP已存在！");
@@ -300,6 +304,19 @@ function validateData(isAdd) {
         //         }
         //     }
         // }
+        if ($(element).find("td:eq(3)").text() == chooseName) {
+            if (isAdd) {
+                isExit = true;
+                layer.alert("摄像头名称已存在！");
+                return false;
+            } else {
+                if (objLs != dataId) {
+                    isExit = true;
+                    layer.alert("摄像头名称已存在！");
+                    return false;
+                }
+            }
+        }
     });
 
     if (isExit) {
@@ -342,6 +359,7 @@ function addClick() {
 
         var formData = new FormData();
         formData.append("camId", $('#camId').val());
+        formData.append("camName", $("#camName").val());
         formData.append("camIp", $("#camIp").val());
         formData.append("camVideoAddr", $("#camVideoAddr").val());
         formData.append("camMacAddr", $("#camMacAddr").val());
@@ -392,6 +410,7 @@ function updateClick() {
         var formData = new FormData();
         formData.append("camHiddenId", dataId);
         formData.append("camId", $('#camId').val());
+        formData.append("camName", $("#camName").val());
         formData.append("camIp", $("#camIp").val());
         formData.append("camVideoAddr", $("#camVideoAddr").val());
         formData.append("camMacAddr", $("#camMacAddr").val());

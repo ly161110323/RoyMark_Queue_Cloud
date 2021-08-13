@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+    init_dept();
     addClick();
     updateClick();
     contactManagerClick();
@@ -16,7 +16,43 @@ $(document).ready(function () {
 
     flashFaceManagerStatus();
 });
+function init_dept()
+{
+    var rootPath=getWebRootPath();
+    var serverUrl=rootPath+"/QueueDept/listall";
+    var params;
+    params={status:1,areaLs:defaultAreaLs};
+    $.ajax({
+        type: 'POST',
+        url: serverUrl,
+        cache: false,
+        async: true,
+        dataType: 'json',
+        data:params,
+        success: function (resule) {
+            var resultList = resule.returnObject;//树节点数组
+            var deptStr= "";
+            if(resultList.length>0) {
 
+                for (var index = 0; index < resultList.length; index++) {
+                    deptStr += "<option value='" + resultList[index].deptLs + "'>" + resultList[index].deptName + "</option>";
+                }
+            }
+
+            //将DOM对象设置到节点中
+            var firstOptioin="<option value=''>请选择部门</option>";
+            $("#userDepartment").empty();//先清空
+            $("#userDepartment").append(firstOptioin);
+            $("#userDepartment").append(deptStr);//再插入
+
+            $("#selectCommitUserDepartment").empty();//先清空\
+            $("#selectCommitUserDepartment").append(firstOptioin);
+            $("#selectCommitUserDepartment").append(deptStr);//再插入
+
+
+        }
+    });
+}
 function choosePhoto() {
     $(document).on('click', '#btnChooseStaffPhoto', function () {
         //让文件选择组件做一次点击

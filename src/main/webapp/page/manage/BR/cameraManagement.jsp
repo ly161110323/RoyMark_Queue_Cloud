@@ -65,6 +65,7 @@
                             {'mData': 'camHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'camHiddenId', 'sClass': 'center'},
                             {'mData': 'camHiddenId', 'sTitle': '序号', 'sName': 'camHiddenId', 'sClass': 'center'},
                             {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
+                            {'mData': 'camName', 'sTitle': '摄像头名称', 'sName': 'camName', 'sClass': 'center'},
                             {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
                             {'mData': 'serverName', 'sTitle': '服务器', 'sName': 'serverName', 'sClass': 'center'},
                             {'mData': 'mapName', 'sTitle': '地图', 'sName': 'mapName', 'sClass': 'center'},
@@ -283,19 +284,18 @@
 
                             </tr>
                             <tr>
-<%--&lt;%&ndash;                                <td style="width: 25%;">&ndash;%&gt;--%>
-<%--                                    <div class="form-group" style="float: left; width: 100%">--%>
-<%--                                        <label style="width: 10%;"--%>
-<%--                                               class="col-sm-6 control-label input_lable_hm table_label_zd"><span--%>
-<%--                                                style="color: red;">*</span>视频流地址：</label>--%>
-<%--                                        <div class="col-sm-8" style="width: 90%">--%>
-<%--                                            <input type="text" autocomplete="off" spellcheck="false"--%>
-<%--                                                   placeholder="" class="form-control table_content_zd"--%>
-<%--                                                   name="camVideoAddr" id="camVideoAddr">--%>
-<%--                                        </div>--%>
+                                <td style="width: 25%;">
+                                    <div class="form-group">
+                                        <label style="width: 38%;"
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">摄像头名称：</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" autocomplete="off" spellcheck="false"
+                                                   placeholder="" class="form-control table_content_zd"
+                                                   name="camName" id="camName">
+                                        </div>
 
-<%--                                    </div>--%>
-<%--&lt;%&ndash;                                </td>&ndash;%&gt;--%>
+                                    </div>
+                                </td>
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
