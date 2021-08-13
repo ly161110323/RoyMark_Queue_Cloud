@@ -324,7 +324,7 @@ public class CameraController {
                 return jsonObject;
             }
             // socket探测
-            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 1000)) {
+            if (!HttpUtils.isSocketReachable(ipAndPort[0], ipAndPort[1], 3000)) {
                 jsonObject.put("result", "no");
                 jsonObject.put("msg", "rtsp流IP和端口不可达，请检查");
                 return jsonObject;
