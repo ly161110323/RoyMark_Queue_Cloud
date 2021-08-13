@@ -61,10 +61,10 @@ function queryWindowList() {
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#windowId").empty();
-            $("#windowId").append("<option value=''>请选择绑定窗口ID</option>");
+            $("#windowId").append("<option value=''>请选择绑定窗口</option>");
             $("#windowId").append(str);
             $("#selectCommitWindowId").empty();
-            $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
+            $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口</option>");
             $("#selectCommitWindowId").append(str);
         }
     });

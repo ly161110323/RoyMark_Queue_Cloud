@@ -298,31 +298,60 @@ function addClick() {
 }
 function updateCoord(Coord){
     var formData = new FormData();
-    formData.append("windowHiddenId", dataId);
-    formData.append("windowCoordinates",Coord);
     var rootPath = getWebRootPath();
     var url = rootPath + "/window/updateCoordinates";
-    $.ajax({
-        url: url,
-        type: "post",
-        datatype: "json",
-        processData : false, // 使数据不做处理
-        contentType : false, // 不要设置Content-Type请求头
-        data: formData,
-        success: function (data) {
-            if (data.result == "error") {
-                layer.alert("错误！"+data.msg);
-                return;
+    var items = new Array();
+    var cBox = $("[name=choice]:checked");
+    if (cBox.length <=0) {
+        formData.append("windowHiddenId", dataId);
+        formData.append("windowCoordinates",Coord);
+
+    }else {
+        layer.confirm("您确定要" +"更新" + "这" + cBox.length+ "条记录吗？点击取消将只更新当前一条",
+            {
+                btn : [ '确定', '取消' ],
+                yes:function (index, layero){
+                    for (var i = 0; i < cBox.length; i++) {
+                        items.push(cBox.eq(i).val());
+                    }
+                    url = rootPath + "/window/batchUpdateCoordinates";
+                    formData.append("windowHiddenIds", items.toString());
+                    formData.append("windowCoordinates",Coord);
+                    console.log("ssssss")
+                    layer.close(index)
+                },
+                btn2:function (){
+                    formData.append("windowHiddenId", dataId);
+                    formData.append("windowCoordinates",Coord);
+                },
+                end:function (){
+                    $.ajax({
+                        url: url,
+                        type: "post",
+                        datatype: "json",
+                        processData : false, // 使数据不做处理
+                        contentType : false, // 不要设置Content-Type请求头
+                        data: formData,
+                        success: function (data) {
+                            if (data.result == "error") {
+                                layer.alert("错误！"+data.msg);
+                                return;
+                            }
+                            if (data.result == "ok") {
+                                layer.msg("坐标修改成功！");
+                            } else if (data.result == "no") {
+                                layer.msg("坐标修改失败！"+data.msg);
+                            }
+                            table.draw(false);
+                            clearData();
+                        }
+                    });
+                }
             }
-            if (data.result == "ok") {
-                layer.msg("坐标修改成功！");
-            } else if (data.result == "no") {
-                layer.msg("坐标修改失败！"+data.msg);
-            }
-            table.draw(false);
-            clearData();
-        }
-    });
+            );
+
+    }
+
 
 }
 function updateClick() {
@@ -468,12 +497,15 @@ function drawWindow()
             url : url,
             data : data,
             success:function (data){
+
                 if(data.result=='ok'){
                     var path = rootPath+data.path
-                    window.imgPath = path
-                    window.windowId = selectInfo.windowId
-                    window.windowCoordinates = selectInfo.windowCoordinates
-                    window.windowHiddenId = selectInfo.windowHiddenId
+                    window.imgPath = path;
+                    window.windowId = selectInfo.windowId;
+                    window.windowCoordinates = selectInfo.windowCoordinates;
+                    window.windowHiddenId = selectInfo.windowHiddenId;
+
+
                     layer.open({
                         type: 2,
                         title: false,

@@ -54,7 +54,9 @@
     });
     function loadimages(){
         if(imgsrclist.length==0){
-            layer.msg("该员工个人照片已经清空，请点击右上角叉关闭")
+
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);//关闭当前页
         }
         $('#imgs').empty();
         imgsrclist.forEach(function (item){
