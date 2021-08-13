@@ -1,5 +1,7 @@
 package com.roymark.queue.util;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +12,16 @@ import java.util.Map;
 * */
 
 public class AnomalyDateControlUtil {
-
+    public static void main(String[] args) {
+        try {
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress("10.249.41.66", 555), 3000);
+            socket.sendUrgentData(0xFF);
+            socket.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
     // 以AnomalyHiddenId索引快速查找时间
     private static final Map<Long, Date> anomalyControlMap = new HashMap<>();
 

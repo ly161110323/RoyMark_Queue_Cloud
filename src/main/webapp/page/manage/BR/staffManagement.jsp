@@ -70,7 +70,7 @@
                             {'mData': 'userName', 'sTitle': '姓名', 'sName': 'userName', 'sClass': 'center'},
                             {'mData': 'userSex', 'sTitle': '性别', 'sName': 'userSex', 'sClass': 'center'},
                             {'mData': 'userId', 'sTitle': '编号', 'sName': 'userId', 'sClass': 'center'},
-                            {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
+                            {'mData': 'windowName', 'sTitle': '窗口', 'sName': 'windowName', 'sClass': 'center'},
                             {'mData': 'userDepartment', 'sTitle': '部门', 'sName': 'userDepartment', 'sClass': 'center'},
                             {'mData': 'userPost', 'sTitle': '岗位', 'sName': 'userPost', 'sClass': 'center'},
                             {'mData': 'windowHiddenId', 'sTitle': 'windowHiddenId', 'sName': 'windowHiddenId', 'sClass': 'hidden'},
@@ -252,11 +252,11 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">窗口ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">窗口：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="windowId" name="windowId">
-                                                <option value="0">请选择绑定窗口ID</option>
+                                                <option value="">请选择绑定窗口</option>
                                             </select>
                                         </div>
 

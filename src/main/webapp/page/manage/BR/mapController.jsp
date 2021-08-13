@@ -236,7 +236,7 @@
                         </table>
                     </form>
 <%--                    main 的positon必须设置为absolute--%>
-                    <div style="height: 100%">
+                    <div style="height: 700px">
                         <div id="main" style="height:80%;position: absolute; left:0; right:0;margin: auto;float: top">
                             <%--                        <canvas id="myCanvas" width="1280" height="720" style="">--%>
                             <%--                            Your browser does not support the HTML5 canvas tag.--%>

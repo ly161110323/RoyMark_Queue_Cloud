@@ -89,13 +89,13 @@ function queryCamList()
 //若未出错，则获取信息设置到控件中
             var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].camHiddenId + "'>" + list[i].camId + "</option>";
+                str += "<option value='" + list[i].camHiddenId + "'>" + list[i].camName + "</option>";
             }
 
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#camId").empty();
-            $("#camId").append("<option value=''>请选择绑定摄像头ID</option>");
+            $("#camId").append("<option value=''>请选择绑定摄像头</option>");
             $("#camId").append(str);
         }
     });

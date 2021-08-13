@@ -66,8 +66,8 @@
                             {'mData': 'camHiddenId', 'sTitle': '序号', 'sName': 'camHiddenId', 'sClass': 'center'},
                             {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
                             {'mData': 'camIp', 'sTitle': '摄像头IP', 'sName': 'camIp', 'sClass': 'center'},
-                            {'mData': 'serverId', 'sTitle': '服务器ID', 'sName': 'serverId', 'sClass': 'center'},
-                            {'mData': 'mapId', 'sTitle': '地图ID', 'sName': 'mapId', 'sClass': 'center'},
+                            {'mData': 'serverName', 'sTitle': '服务器', 'sName': 'serverName', 'sClass': 'center'},
+                            {'mData': 'mapName', 'sTitle': '地图', 'sName': 'mapName', 'sClass': 'center'},
                             {'mData': 'groupId', 'sTitle': '所在分组', 'sName': 'groupId', 'sClass': 'center'},
                             {'mData': 'camStatus', 'sTitle': '设备状态', 'sName': 'camStatus', 'sClass': 'center'},
                             {'mData': 'camVideoAddr', 'sTitle': '视频流地址', 'sName': 'camVideoAddr', 'sClass': 'center'},
@@ -243,11 +243,11 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">服务器：</label>
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="serverId" name="serverId">
-                                                <option value="">请选择绑定服务器ID</option>
+                                                <option value="">请选择绑定服务器</option>
                                             </select>
                                         </div>
 
@@ -344,7 +344,7 @@
                                         <div class="col-sm-8">
                                             <select class="form-control m-b table_content_zd"
                                                     id="mapId" name="mapId">
-                                                <option value="">请选择绑定地图ID</option>
+                                                <option value="">请选择绑定地图</option>
                                             </select>
                                         </div>
 
@@ -395,7 +395,7 @@
                                             class="form-control table_content_zd" name="selectCommitServerId"
                                             id="selectCommitServerId"
                                             style="width: 25%; float: left; margin-right: 10px">
-                                        <option value="">请选择绑定服务器ID</option>
+                                        <option value="">请选择绑定服务器</option>
                                     </select>
 
 

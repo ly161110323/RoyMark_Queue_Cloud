@@ -99,13 +99,13 @@
 
         </div>
     </div>
-    <div style="width: 100%;height: 100%;display: block;position: relative;top:60px">
+    <div style="width: 100%;height: 80%;display: block;position: relative;top:60px">
         <%--<video width="1024" height="576" controls>
             <source src="http://localhost:8080/crowdManagement/getVideo?video_address=" +${video_address}
                     type="video/mp4">
         </video>--%>
         <img id="show_video" style="width: auto;height: 750px;object-fit:cover;position: absolute;
-                                top:50%;left: 50%; transform: translate(-50%, -50%)" src="">
+                                top:55%;left: 50%; transform: translate(-50%, -50%)" src="">
     </div>
 </div>
 

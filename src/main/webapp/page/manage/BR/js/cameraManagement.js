@@ -54,13 +54,13 @@ function queryMapList() {
 //若未出错，则获取信息设置到控件中
             var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].mapHiddenId + "'>" + list[i].mapId + "</option>";
+                str += "<option value='" + list[i].mapHiddenId + "'>" + list[i].mapName + "</option>";
             }
 
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#mapId").empty();
-            $("#mapId").append("<option value=''>请选择绑定楼层ID</option>");
+            $("#mapId").append("<option value=''>请选择绑定楼层</option>");
             $("#mapId").append(str);
             // $("#selectCommitWindowId").empty();
             // $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
@@ -134,10 +134,10 @@ function queryServerList() {
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#serverId").empty();
-            $("#serverId").append("<option value=''>请选择绑定服务器ID</option>");
+            $("#serverId").append("<option value=''>请选择绑定服务器</option>");
             $("#serverId").append(str);
             $("#selectCommitServerId").empty();
-            $("#selectCommitServerId").append("<option value=''>请选择绑定服务器ID</option>");
+            $("#selectCommitServerId").append("<option value=''>请选择绑定服务器</option>");
             $("#selectCommitServerId").append(str);
         }
     });

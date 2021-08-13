@@ -64,8 +64,8 @@
                             {'mData': 'windowHiddenId', 'sTitle': '<input type="checkbox" name="checklist" id="checkall" />', 'sName': 'windowHiddenId', 'sClass': 'center'},
                             {'mData': 'windowHiddenId', 'sTitle': '序号', 'sName': 'windowHiddenId', 'sClass': 'center'},
                             {'mData': 'windowId', 'sTitle': '窗口ID', 'sName': 'windowId', 'sClass': 'center'},
-                            {'mData': 'windowName', 'sTitle': '名称', 'sName': 'windowName', 'sClass': 'center'},
-                            {'mData': 'camId', 'sTitle': '摄像头ID', 'sName': 'camId', 'sClass': 'center'},
+                            {'mData': 'windowName', 'sTitle': '窗口名称', 'sName': 'windowName', 'sClass': 'center'},
+                            {'mData': 'camName', 'sTitle': '摄像头名称', 'sName': 'camName', 'sClass': 'center'},
                             {'mData': 'windowDepartment', 'sTitle': '部门', 'sName': 'windowDepartment', 'sClass': 'center'},
                             {'mData': 'windowEvent', 'sTitle': '事项', 'sName': 'windowEvent', 'sClass': 'center'},
 
@@ -316,12 +316,12 @@
                                 <td style="width: 25%;">
                                     <div class="form-group">
                                         <label style="width: 38%;"
-                                               class="col-sm-3 control-label input_lable_hm table_label_zd">绑定摄像头ID：</label>
+                                               class="col-sm-3 control-label input_lable_hm table_label_zd">绑定摄像头：</label>
                                         <div class="col-sm-8">
                                             <select
                                                     class="form-control m-b table_content_zd"
                                                     id="camId">
-                                                <option value="">请选择绑定摄像头ID</option>
+                                                <option value="">请选择绑定摄像头</option>
                                             </select>
                                         </div>
 

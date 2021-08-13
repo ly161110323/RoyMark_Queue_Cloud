@@ -415,7 +415,7 @@ function compressImg(file,callback) {
             var originHeight = this.height;
             // 最大尺寸限制，可通过设置宽高来实现图片压缩程度
             var maxWidth = 1500,
-                maxHeight = 750;
+                maxHeight = 700;
             // 目标尺寸
             var targetWidth = originWidth
             var targetHeight = originHeight;
@@ -431,6 +431,7 @@ function compressImg(file,callback) {
                     targetWidth = Math.round(maxHeight * (originWidth / originHeight));
                 }
             }
+            console.log("img:",targetWidth,targetHeight)
             // canvas对图片进行缩放
             canvas.width = targetWidth;
             canvas.height = targetHeight;
