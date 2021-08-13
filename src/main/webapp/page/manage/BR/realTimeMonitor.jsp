@@ -104,7 +104,7 @@
             <source src="http://localhost:8080/crowdManagement/getVideo?video_address=" +${video_address}
                     type="video/mp4">
         </video>--%>
-        <img id="show_video" style="width: auto;height: 100%;object-fit:cover;position: absolute;
+        <img id="show_video" style="width: auto;height: 750px;object-fit:cover;position: absolute;
                                 top:50%;left: 50%; transform: translate(-50%, -50%)" src="">
     </div>
 </div>
