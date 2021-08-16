@@ -45,11 +45,6 @@ public class UserController {
 	@Autowired
     private UserService userService;
 
-	@Autowired
-	private AnomalyService anomalyService;
-
-	@Autowired
-	private ParameterService parameterService;
 
 	@Autowired
 	private FaceVectorService faceVectorService;
