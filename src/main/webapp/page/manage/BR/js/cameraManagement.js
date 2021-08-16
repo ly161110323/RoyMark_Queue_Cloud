@@ -128,7 +128,7 @@ function queryServerList() {
 //若未出错，则获取信息设置到控件中
             var str = "";
             for (var i = 0; i < list.length; i++) {
-                str += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverName + "</option>";
+                str += "<option value='" + list[i].serverId + "'>" + list[i].serverName + "</option>";
             }
 
             // $("#formCaseAreaLs").empty();
@@ -501,7 +501,7 @@ function searchClick() {
     $(document).on('click', '#queCommit', function () {
         isSearch = "1";
         var inputCamId = $("#inputCommitCamId").val();
-        var selectServerId = $("#selectCommitServerId").find("option:selected").text();
+        var selectServerId = $("#selectCommitServerId").val();
         // var selectWindowId = $("#selectCommitWindowId").find("option:selected").text();
         let params = {};
         if ($("#selectCommitServerId").val() != "") {
