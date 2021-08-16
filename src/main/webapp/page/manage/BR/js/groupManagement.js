@@ -115,7 +115,7 @@ function checkBoxStyle_Control() {
 //页面数据合法性验证
 function validateData(isAdd) {
     if ($("#groupId").val().trim() == "") {
-        layer.alert("分组ID不能为空！");
+        layer.alert("分组名称不能为空！");
         return;
     }
 
@@ -131,12 +131,12 @@ function validateData(isAdd) {
         if ($(element).find("td:eq(2)").text() == chooseId) {
             if (isAdd) {
                 isExit = true;
-                layer.alert("分组ID已存在！");
+                layer.alert("分组名称已存在！");
                 return false;
             } else {
                 if (objLs != dataId) {
                     isExit = true;
-                    layer.alert("分组ID已存在！");
+                    layer.alert("分组名称已存在！");
                     return false;
                 }
             }

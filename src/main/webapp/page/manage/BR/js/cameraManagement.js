@@ -60,7 +60,7 @@ function queryMapList() {
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#mapId").empty();
-            $("#mapId").append("<option value=''>请选择绑定楼层</option>");
+            $("#mapId").append("<option value=''>请选择绑定地图</option>");
             $("#mapId").append(str);
             // $("#selectCommitWindowId").empty();
             // $("#selectCommitWindowId").append("<option value=''>请选择绑定窗口ID</option>");
