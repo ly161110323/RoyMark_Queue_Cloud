@@ -47,10 +47,10 @@
         u.area_ls,a.area_name,u.userinfo_sex,u.create_user,u.create_time,u.update_user,u.update_time,u.status,
         u.UserInfo_Mail,u.UserInfo_Code,u.UserInfo_Tel,u.UserInfo_ImagePath,u.dept_ls,t.Dept_Name,
         d.Dictionary_Name Position_Name,u.UserInfo_Position,u.UserInfo_IsTheParty,u.UserInfo_IsMatter
-        from queue_userInfo u
+        from queue_userinfo u
         left join queue_dept t on u.Dept_Ls=t.dept_ls
         left join queue_area a on u.area_ls=a.area_ls
-        left join queue_WebAccount w on w.UserInfo_Ls=u.UserInfo_Ls and w.Status='1'
+        left join queue_webaccount w on w.UserInfo_Ls=u.UserInfo_Ls and w.Status='1'
         left join queue_dictionary d on u.UserInfo_Position=d.Dictionary_Ls
         where 1=1
         <if test="userinfo.deptLs != null and userinfo.deptLs !=-1">
@@ -72,7 +72,7 @@
         u.UserInfo_Mail,u.UserInfo_Code,u.UserInfo_Tel,u.UserInfo_ImagePath,u.dept_ls,t.Dept_Name,
 
         d.Dictionary_Name Position_Name,u.UserInfo_Position,u.UserInfo_IsTheParty,u.UserInfo_isMatter
-        from queue_userInfo u
+        from queue_userinfo u
         left join queue_dept t on u.Dept_Ls=t.dept_ls
         left join queue_area a on u.area_ls=a.area_ls
         <!-- left join hos_section hs on u.`up_Section_Ls`=hs.`Section_Ls` -->

@@ -45,8 +45,8 @@ public class QueueUserinfoController {
 
 
     /**
-         * 新增
-         */
+     * 新增
+     */
     @RequestMapping(value = "/insert", produces = "application/json;charset=utf-8")
     public Object insert(QueueUserinfo tempQueueUserinfo,@RequestParam(value = "uploadinfo", required = false) MultipartFile uploadinfo) {
         JSONObject jsonObject = new JSONObject();
@@ -96,24 +96,24 @@ public class QueueUserinfoController {
         String updateUser = user.getUserID();
 
         try {
-                tempQueueUserinfo.setUpdateUser(updateUser);
-                LocalDateTime updateTime = LocalDateTime.now();
-                tempQueueUserinfo.setUpdateTime(updateTime);
-                tempQueueUserinfo.setStatus("1");
-                String filePath = "";// 头像的路径
-                if (uploadinfo != null) {
-                    // 账号的附件路径参考医院和政务的后台代码
-                    String areaLs = String.valueOf(tempQueueUserinfo.getAreaLs());
-                    String uploadPath = "/RemoteQueue/"+areaLs+"/upload/employee/";
-                    filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
-                    tempQueueUserinfo.setUserinfoImagepath(filePath);
-                }
-                int result = queueUserinfoMapper.updateById(tempQueueUserinfo);
-                if (result > 0) {
-                    jsonObject.put("result", "ok");
-                } else {
-                    jsonObject.put("result", "no");
-                }
+            tempQueueUserinfo.setUpdateUser(updateUser);
+            LocalDateTime updateTime = LocalDateTime.now();
+            tempQueueUserinfo.setUpdateTime(updateTime);
+            tempQueueUserinfo.setStatus("1");
+            String filePath = "";// 头像的路径
+            if (uploadinfo != null) {
+                // 账号的附件路径参考医院和政务的后台代码
+                String areaLs = String.valueOf(tempQueueUserinfo.getAreaLs());
+                String uploadPath = "/RemoteQueue/"+areaLs+"/upload/employee/";
+                filePath = UploadUtil.fileupload(request, uploadinfo, uploadPath);
+                tempQueueUserinfo.setUserinfoImagepath(filePath);
+            }
+            int result = queueUserinfoMapper.updateById(tempQueueUserinfo);
+            if (result > 0) {
+                jsonObject.put("result", "ok");
+            } else {
+                jsonObject.put("result", "no");
+            }
 
         }
         catch (Exception e) {
@@ -138,8 +138,8 @@ public class QueueUserinfoController {
             for (int i = 0; i < deletes.length; i++) {
                 QueueUserinfo entity = new QueueUserinfo();
                 entity.setStatus("0");
-                            queueUserinfoMapper.update(entity,
-                                new QueryWrapper<QueueUserinfo>().eq("UserInfo_Ls", deletes[i]));
+                queueUserinfoMapper.update(entity,
+                        new QueryWrapper<QueueUserinfo>().eq("UserInfo_Ls", deletes[i]));
             }
             jsonObject.put("result", "ok");
             return jsonObject;
@@ -152,8 +152,8 @@ public class QueueUserinfoController {
 
 
     /**
-    * 分页查询
-    */
+     * 分页查询
+     */
     @PostMapping("/list")
     public Object list(QueueUserinfo entity,
                        @RequestParam(required = false, defaultValue = "0") int pageNo,
@@ -201,20 +201,20 @@ public class QueueUserinfoController {
 
     }
     /**
-* 分页查询
-*/
+     * 分页查询
+     */
     @RequestMapping(value = "/singletablelist", produces = "application/json;charset=utf-8")
     public Object singletablelist(QueueUserinfo entity, int pageNo, int pageSize) {
         try {
             // 分页构造器
             Page<QueueUserinfo> page = new Page<QueueUserinfo>(pageNo, pageSize);
-                    String primaryName = entity.getUserinfoName();
-                    QueryWrapper<QueueUserinfo> queryWrapper = new QueryWrapper<QueueUserinfo>();
-                    queryWrapper.eq("Status","1");
-                    if(!StrUtil.isBlank(primaryName)) //根据诊室名称的查询条件不为空
-                    {
-                        queryWrapper.like ("UserInfo_Name",primaryName);
-                    }
+            String primaryName = entity.getUserinfoName();
+            QueryWrapper<QueueUserinfo> queryWrapper = new QueryWrapper<QueueUserinfo>();
+            queryWrapper.eq("Status","1");
+            if(!StrUtil.isBlank(primaryName)) //根据诊室名称的查询条件不为空
+            {
+                queryWrapper.like ("UserInfo_Name",primaryName);
+            }
             // 执行分页
             IPage<QueueUserinfo> pageList = queueUserinfoMapper.selectPage(page, queryWrapper);
             // 返回结果
@@ -245,7 +245,7 @@ public class QueueUserinfoController {
         }
         catch(Exception e)
         {
-          logger.error("/QueueUserinfo/createwebaccount错误:" + e.getMessage(), e);
+            logger.error("/QueueUserinfo/createwebaccount错误:" + e.getMessage(), e);
             jsonObject.put("result", "error");
         }
 
