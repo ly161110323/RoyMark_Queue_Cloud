@@ -2,7 +2,7 @@ $(document).ready(function () {
     init_dept();
     addClick();
     updateClick();
-    contactManagerClick();
+
     deleteClick();
     searchClick();
     clearClick();
@@ -694,21 +694,6 @@ function configClick() {
     });
 }
 
-function contactManagerClick(){
-    $('#contactManagerButton').click(function (){
-        var targetUrl = getWebRootPath() + "/page/manage/BR/alarmContact.jsp";
-        layer.open({
-            type: 2,
-            title: "报警联系人管理",
-            shadeClose: true,
-            shade: 0.8,
-            area: ['1280px', '720px'],
-            content: targetUrl,
-            cancel:function (index,layero){
-                // queryMap();
-            }
-        });
-    });
-}
+
 
 

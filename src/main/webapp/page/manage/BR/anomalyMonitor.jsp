@@ -453,6 +453,11 @@
                                                 style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
                                                 id="showVideo">查看视频
                                         </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm input_btn_btn list_btn table_button_zd"
+                                                style="float: left; margin-top: 2.5px; margin-bottom: 2px;"
+                                                id="contactManagerButton">报警联系人管理
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

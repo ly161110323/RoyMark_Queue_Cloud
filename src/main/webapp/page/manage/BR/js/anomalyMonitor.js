@@ -11,6 +11,7 @@ $(document).ready(function () {
     clearUser();
     queryWindowList();
     queryUserList();
+    contactManagerClick();
     // icon_operate();//部门图标处理
     loadTimeSelect();
     // caseAreaClick();
@@ -710,7 +711,22 @@ function configClick() {
         showVideo(videopath);
     });
 }
-
+function contactManagerClick(){
+    $('#contactManagerButton').click(function (){
+        var targetUrl = getWebRootPath() + "/page/manage/BR/alarmContact.jsp";
+        layer.open({
+            type: 2,
+            title: "报警联系人管理",
+            shadeClose: true,
+            shade: 0.8,
+            area: ['1280px', '720px'],
+            content: targetUrl,
+            cancel:function (index,layero){
+                // queryMap();
+            }
+        });
+    });
+}
 
 function caseAreaClick() {
     var rootPath = getWebRootPath();
