@@ -246,7 +246,7 @@ public class CameraController {
             if (camId != null)
                 queryWrapper.like("cam_id", camId);
             if (serverId != null)
-                queryWrapper.like("server_id", serverId);
+                queryWrapper.eq("server_id", serverId);
             if (mapHiddenId != null)
                 queryWrapper.eq("br_cam.map_hidden_id", mapHiddenId);
             queryWrapper.orderByAsc("cam_id");
