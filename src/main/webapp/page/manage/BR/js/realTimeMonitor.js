@@ -106,7 +106,7 @@ function queryCamByGroup(groupHiddenId,pageNo){
             totalPage = pageList.pages;
             list.forEach(function (item){
                 urls.push(item['camVideoAddr']);
-                if(item['camName']!=null){
+                if(item['camName']!=null&&item['camName']!=""){
                     ids.push(item['camName']);
                 }
                 else {
