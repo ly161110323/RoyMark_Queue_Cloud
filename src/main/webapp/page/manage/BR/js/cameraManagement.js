@@ -126,16 +126,19 @@ function queryServerList() {
 // 调用成功时对返回的值进行解析
             var list = data.pageList.records;
 //若未出错，则获取信息设置到控件中
+            var hiddenIDstr = "";
+            for (var i = 0; i < list.length; i++) {
+                hiddenIDstr += "<option value='" + list[i].serverHiddenId + "'>" + list[i].serverName + "</option>";
+            }
             var str = "";
             for (var i = 0; i < list.length; i++) {
                 str += "<option value='" + list[i].serverId + "'>" + list[i].serverName + "</option>";
             }
-
             // $("#formCaseAreaLs").empty();
             // $("#formCaseAreaLs").append(str);
             $("#serverId").empty();
             $("#serverId").append("<option value=''>请选择绑定服务器</option>");
-            $("#serverId").append(str);
+            $("#serverId").append(hiddenIDstr);
             $("#selectCommitServerId").empty();
             $("#selectCommitServerId").append("<option value=''>请选择绑定服务器</option>");
             $("#selectCommitServerId").append(str);
