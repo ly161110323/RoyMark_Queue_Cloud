@@ -280,7 +280,7 @@ public class WebSocketServer {
             readPicThreads = new ArrayList<>();
             for (int i = 0; i < rtspUrls.size(); i++) {
                 ReadPicThread readPicThread;
-                String readPicThreadName = "thread_" + camIds.get(i);
+                String readPicThreadName = "thread_" + rtspUrls.get(i);
                 try {
                     if (globalReadPicThreadMap.containsKey(readPicThreadName)) {
                         ReadPicThreadInfo readPicThreadInfo = globalReadPicThreadMap.get(readPicThreadName);
@@ -377,7 +377,9 @@ public class WebSocketServer {
                                 partImage = new BufferedImage(singleWidth, singleHeight, BufferedImage.TYPE_INT_RGB);
                             }
                             // 绘制CAM ID
-                            WaterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
+                            if (currentIndex < camIds.size()) {
+                                WaterMarkUtil.mark(partImage, Color.RED, camIds.get(currentIndex));
+                            }
                             int[] imageArray = new int[width * height];
                             imageArray = partImage.getRGB(0, 0, singleWidth, singleHeight, imageArray, 0, singleWidth);
                             returnImg.setRGB(j * singleWidth, i * singleHeight, singleWidth, singleHeight, imageArray, 0, singleWidth);

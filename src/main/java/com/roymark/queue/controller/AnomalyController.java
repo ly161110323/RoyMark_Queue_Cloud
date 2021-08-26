@@ -284,8 +284,11 @@ public class AnomalyController {
                 }
             }
 
+            // 发短信功能是否开启
+            String smsEnable = ParamUtil.getParamValueByName("sms_enable");
+
             // 发送短信只能在中间表完成之后，因为可能人脸先到，行为后到，此时可填入人脸姓名
-            if (insertFlag) {
+            if (insertFlag && smsEnable.equals("是")) {
                 // 线程执行发送
                 Runnable runnable = () -> {
                     SmsSendService smsSendService = new SmsSendService();

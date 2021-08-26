@@ -120,7 +120,7 @@ public class CameraController {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            if (!cameraBirthStr.equals("")) {
+            if (cameraBirthStr!=null && !cameraBirthStr.equals("")) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date cameraBirth = simpleDateFormat.parse(cameraBirthStr);
                 camera.setCamBirth(cameraBirth);
